@@ -164,10 +164,13 @@ body.planques #cadran { opacity: .35; }
 #aide { display: none; width: 100%; font-family: var(--police-chiffres); font-size: .8rem; color: var(--texte-doux); background: var(--fond-2); border-radius: 8px; padding: 6px 10px; }
 body.aide-visuelle #aide { display: block; }
 
-/* Boutons du mode test */
+/* Boutons du mode « Sans scan » */
 #test { display: none; width: 100%; flex-wrap: wrap; gap: 6px; }
 body.mode-test #test { display: flex; }
-#test button { flex: 1 1 30%; padding: 8px 6px; font-size: .8rem; }
+body.mode-test #apercu { visibility: hidden; }       /* pas de caméra */
+#test button { flex: 1 1 30%; padding: 12px 6px; font-size: .85rem; }
+#test .btn-planque { flex: 1 1 100%; background: var(--danger); border-color: var(--danger); color: #fff; font-weight: 700; padding: 14px; }
+#test .btn-action { flex: 1 1 45%; }
 
 /* ---------- Écran entre deux coffres / fin ---------- */
 #entracte, #fin { align-items: center; justify-content: center; text-align: center; gap: 18px; }

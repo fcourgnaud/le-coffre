@@ -49,7 +49,13 @@
   </div>
 
   <div class="reglage">
-    <label class="case"><input type="checkbox" id="opt-test"> Mode test (boutons à la place des cartes)</label>
+    <div class="etiquette">Cartes</div>
+    <div class="choix" id="choix-mode">
+      <button data-v="scan" class="on">Scanner les QR</button><button data-v="boutons">Sans scan (boutons)</button>
+    </div>
+  </div>
+
+  <div class="reglage">
     <label class="case"><input type="checkbox" id="opt-aide"> Aide visuelle (garde, chien, bonne réponse)</label>
   </div>
 
@@ -282,7 +288,7 @@ function message(txt, alerte = false) { const m = $('#message'); m.textContent =
 const hasard = (a, b) => a + Math.random() * (b - a);
 
 /* ---------------- Réglages de l'accueil ---------------- */
-const reglages = { joueurs: 3, duree: 9 };
+const reglages = { joueurs: 3, duree: 9, mode: 'scan' };
 function brancherChoix(sel, cle) {
   document.querySelectorAll(sel + ' button').forEach((b) => b.addEventListener('click', () => {
     document.querySelectorAll(sel + ' button').forEach((x) => x.classList.remove('on'));
@@ -291,7 +297,15 @@ function brancherChoix(sel, cle) {
 }
 brancherChoix('#choix-joueurs', 'joueurs');
 brancherChoix('#choix-duree', 'duree');
-$('#opt-test').addEventListener('change', (e) => document.body.classList.toggle('mode-test', e.target.checked));
+// Mode de jeu : scan des QR ou boutons (mémorisé sur le téléphone)
+function choisirMode(m) {
+  reglages.mode = m;
+  document.querySelectorAll('#choix-mode button').forEach((b) => b.classList.toggle('on', b.dataset.v === m));
+  document.body.classList.toggle('mode-test', m === 'boutons');
+  try { localStorage.setItem('casse-mode', m); } catch (e) {}
+}
+document.querySelectorAll('#choix-mode button').forEach((b) => b.addEventListener('click', () => choisirMode(b.dataset.v)));
+try { choisirMode(localStorage.getItem('casse-mode') || 'scan'); } catch (e) { choisirMode('scan'); }
 $('#opt-aide').addEventListener('change', (e) => document.body.classList.toggle('aide-visuelle', e.target.checked));
 
 // Écran « Écouter les serrures »
@@ -306,10 +320,22 @@ $('#btn-retour-serrures').addEventListener('click', () => ecran('accueil'));
 $('#btn-regles').addEventListener('click', () => ecran('regles'));
 $('#btn-retour-regles').addEventListener('click', () => ecran('accueil'));
 
-// Boutons du mode test
-[...OUTILS.map((o, i) => [o.nom, 'CASSE:O' + String(i * 5 + 1).padStart(2, '0')]),
- ['Planquez-vous !', 'CASSE:P01'], ['Os', 'CASSE:C01'], ['Court-circuit', 'CASSE:B01']]
-  .forEach(([nom, code]) => { const b = document.createElement('button'); b.textContent = nom; b.addEventListener('click', () => quandCarte(code)); $('#test').appendChild(b); });
+// Boutons du mode sans scan (et raccourcis clavier : 1 à 6, Espace, O, C)
+const BOUTONS = [
+  ...OUTILS.map((o, i) => [o.nom, 'CASSE:O' + String(i * 5 + 1).padStart(2, '0'), 'outil', String(i + 1)]),
+  ['Planquez-vous !', 'CASSE:P01', 'planque', ' '],
+  ['Os', 'CASSE:C01', 'action', 'o'],
+  ['Court-circuit', 'CASSE:B01', 'action', 'c']
+];
+BOUTONS.forEach(([nom, code, famille]) => {
+  const b = document.createElement('button'); b.textContent = nom; b.className = 'btn-' + famille;
+  b.addEventListener('click', () => { Son.init(); quandCarte(code); });
+  $('#test').appendChild(b);
+});
+document.addEventListener('keydown', (e) => {
+  const k = BOUTONS.find((x) => x[3] === e.key.toLowerCase());
+  if (k && J && !J.fini) { e.preventDefault(); quandCarte(k[1]); }
+});
 
 // Jauge d'alarme
 for (let i = 0; i < ALARME_MAX; i++) { const s = document.createElement('div'); s.className = 'seg'; $('#segments').appendChild(s); }
@@ -338,7 +364,7 @@ function lancerPartie() {
     stats: { erreurs: 0, vu: 0, aboiements: 0 },
     enPause: false, fini: false
   };
-  demarrerCamera();
+  if (reglages.mode === 'scan') demarrerCamera();
   verrouEcran();
   demarrerCoffre();
 }
@@ -548,7 +574,7 @@ async function demarrerCamera() {
     const v = $('#apercu'); v.srcObject = flux; await v.play();
     scanActif = true; boucleScan();
   } catch (e) {
-    toast('Caméra indisponible — active le mode test');
+    toast('Caméra indisponible — choisis « Sans scan » à l\'accueil');
   }
 }
 function arreterCamera() { scanActif = false; if (flux) { flux.getTracks().forEach((t) => t.stop()); flux = null; } }
