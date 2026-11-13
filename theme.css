@@ -1,0 +1,181 @@
+/* =========================================================
+   LE CASSE DU SIÈCLE — THEME.CSS
+   ---------------------------------------------------------
+   Tout le visuel de l'app est ici. Tu peux tout modifier.
+   1) Les VARIABLES juste en dessous : couleurs, polices,
+      arrondis. C'est le plus simple à changer.
+   2) Ensuite, chaque écran a sa section, avec un titre.
+   Ambiance par défaut : casse rétro années 60 (noir + laiton).
+   ========================================================= */
+
+:root {
+  /* --- Couleurs --- */
+  --fond: #0d0b09;           /* fond général */
+  --fond-2: #1a1612;         /* panneaux, boutons secondaires */
+  --fond-3: #2a231b;         /* bordures, séparations */
+  --texte: #efe6d2;          /* texte principal */
+  --texte-doux: #9c8f78;     /* texte secondaire */
+  --accent: #c9a24a;         /* laiton : boutons, cadran */
+  --accent-texte: #120f0b;   /* texte posé sur l'accent */
+  --danger: #d23b2f;         /* alarme, erreurs */
+  --succes: #5fae6b;         /* étape réussie */
+  --voyant-eteint: #3a3127;  /* voyants du cadran éteints */
+
+  /* --- Polices --- */
+  --police-titre: Georgia, 'Times New Roman', serif;
+  --police-texte: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --police-chiffres: 'Courier New', Courier, monospace;
+
+  /* --- Formes --- */
+  --rayon: 14px;             /* arrondi des boutons et panneaux */
+  --taille-cadran: min(70vw, 42vh);
+}
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--police-texte);
+  font-size: 17px;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.ecran { display: none; position: fixed; inset: 0; padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); overflow-y: auto; flex-direction: column; }
+.ecran.actif { display: flex; }
+
+h1, h2, h3 { font-family: var(--police-titre); font-weight: normal; margin: 0; }
+
+button {
+  font: inherit;
+  color: var(--texte);
+  background: var(--fond-2);
+  border: 1px solid var(--fond-3);
+  border-radius: var(--rayon);
+  padding: 14px 18px;
+  cursor: pointer;
+}
+button:active { transform: scale(0.97); }
+button.principal { background: var(--accent); color: var(--accent-texte); border-color: var(--accent); font-weight: 700; font-size: 1.15rem; }
+button.discret { background: transparent; border-color: transparent; color: var(--texte-doux); padding: 8px; }
+
+/* ---------- Bandeau de mise à jour ---------- */
+#maj {
+  display: none;
+  position: fixed; left: 12px; right: 12px; top: max(12px, env(safe-area-inset-top));
+  z-index: 50;
+  background: var(--accent); color: var(--accent-texte);
+  border-radius: var(--rayon);
+  padding: 14px 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.6);
+}
+#maj.visible { display: block; }
+body.en-jeu #maj { display: none; }   /* jamais pendant une partie */
+#maj strong { display: block; font-size: 1.05rem; }
+#maj ul { margin: 6px 0 10px; padding-left: 18px; font-size: .9rem; }
+#maj .boutons { display: flex; gap: 8px; }
+#maj button { background: var(--accent-texte); color: var(--accent); border: none; padding: 10px 14px; }
+#maj button.plus-tard { background: transparent; color: var(--accent-texte); }
+
+/* ---------- Écran d'accueil ---------- */
+#accueil { align-items: stretch; gap: 18px; }
+#accueil .titre { text-align: center; margin-top: 4vh; }
+#accueil .titre .sur-titre { color: var(--accent); letter-spacing: .3em; text-transform: uppercase; font-size: .8rem; }
+#accueil .titre h1 { font-size: 2.6rem; line-height: 1.05; margin-top: 8px; }
+#accueil .titre p { color: var(--texte-doux); margin: 10px 0 0; }
+.reglage { background: var(--fond-2); border: 1px solid var(--fond-3); border-radius: var(--rayon); padding: 12px 14px; }
+.reglage .etiquette { color: var(--texte-doux); font-size: .85rem; margin-bottom: 8px; }
+.choix { display: flex; gap: 8px; }
+.choix button { flex: 1; padding: 10px; }
+.choix button.on { background: var(--accent); color: var(--accent-texte); border-color: var(--accent); }
+.case { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: .95rem; }
+.case input { width: 22px; height: 22px; accent-color: var(--accent); }
+#accueil .actions { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+#accueil .pied { display: flex; justify-content: space-between; align-items: center; color: var(--texte-doux); font-size: .85rem; }
+#info-maj { color: var(--texte-doux); font-size: .85rem; text-align: center; min-height: 1.2em; }
+
+/* ---------- Écran « écouter les serrures » / règles ---------- */
+#serrures, #regles { gap: 12px; }
+.ligne-son { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--fond-2); border: 1px solid var(--fond-3); border-radius: var(--rayon); padding: 12px 14px; }
+.ligne-son .nom { font-size: 1.1rem; }
+.ligne-son .desc { color: var(--texte-doux); font-size: .85rem; }
+.ligne-son button { background: var(--accent); color: var(--accent-texte); border: none; min-width: 64px; }
+#regles .texte { line-height: 1.5; color: var(--texte); }
+#regles .texte h3 { color: var(--accent); margin: 16px 0 4px; font-size: 1.15rem; }
+
+/* ---------- Écran de jeu ---------- */
+#jeu { align-items: center; gap: 14px; }
+#jeu .haut { width: 100%; display: flex; justify-content: space-between; align-items: flex-start; }
+#jeu .coffre-nom { font-family: var(--police-titre); font-size: 1.2rem; }
+#jeu .coffre-num { color: var(--accent); font-size: .8rem; letter-spacing: .2em; text-transform: uppercase; }
+#chrono { font-family: var(--police-chiffres); font-size: 1.6rem; color: var(--texte); }
+#chrono.presse { color: var(--danger); }
+
+/* Jauge d'alarme */
+#alarme { width: 100%; }
+#alarme .etiquette { color: var(--texte-doux); font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; margin-bottom: 6px; }
+#alarme .segments { display: flex; gap: 6px; }
+#alarme .seg { flex: 1; height: 14px; border-radius: 4px; background: var(--fond-3); transition: background .3s; }
+#alarme .seg.on { background: var(--danger); box-shadow: 0 0 12px var(--danger); }
+
+/* Cadran du coffre */
+#cadran {
+  position: relative;
+  width: var(--taille-cadran); height: var(--taille-cadran);
+  margin: auto 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #3b3127, #15110d 70%);
+  border: 6px solid var(--accent);
+  box-shadow: 0 0 0 10px var(--fond-2), 0 20px 60px rgba(0,0,0,.7);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+#cadran .molette {
+  width: 46%; height: 46%; border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, var(--accent), #6b5223);
+  transition: transform .4s cubic-bezier(.3,1.6,.5,1);
+}
+#cadran .molette::after { content: ''; display: block; width: 6px; height: 30%; margin: 6% auto 0; background: var(--accent-texte); border-radius: 3px; }
+#cadran .voyant { position: absolute; width: 18px; height: 18px; border-radius: 50%; background: var(--voyant-eteint); transition: background .3s, box-shadow .3s; }
+#cadran .voyant.on { background: var(--succes); box-shadow: 0 0 14px var(--succes); }
+#cadran .voyant:nth-child(1) { top: 6%; left: calc(50% - 9px); }
+#cadran .voyant:nth-child(2) { right: 6%; top: calc(50% - 9px); }
+#cadran .voyant:nth-child(3) { bottom: 6%; left: calc(50% - 9px); }
+#cadran .voyant:nth-child(4) { left: 6%; top: calc(50% - 9px); }
+#cadran.secoue { animation: secoue .35s; }
+#cadran.ouvert { border-color: var(--succes); }
+@keyframes secoue { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+
+#message { min-height: 2.6em; text-align: center; font-size: 1.05rem; color: var(--texte); max-width: 90%; }
+#message.alerte { color: var(--danger); }
+#indice-ecoute { color: var(--texte-doux); font-size: .8rem; }
+
+#jeu .bas { width: 100%; display: flex; justify-content: space-between; align-items: flex-end; }
+#apercu { width: 84px; height: 84px; border-radius: 12px; object-fit: cover; transform: scaleX(-1); border: 2px solid var(--fond-3); background: #000; }
+#apercu.lu { border-color: var(--accent); }
+
+/* Planque : l'écran s'assombrit */
+body.planques #jeu { background: #050403; }
+body.planques #cadran { opacity: .35; }
+
+/* Aide visuelle (pour tester) */
+#aide { display: none; width: 100%; font-family: var(--police-chiffres); font-size: .8rem; color: var(--texte-doux); background: var(--fond-2); border-radius: 8px; padding: 6px 10px; }
+body.aide-visuelle #aide { display: block; }
+
+/* Boutons du mode test */
+#test { display: none; width: 100%; flex-wrap: wrap; gap: 6px; }
+body.mode-test #test { display: flex; }
+#test button { flex: 1 1 30%; padding: 8px 6px; font-size: .8rem; }
+
+/* ---------- Écran entre deux coffres / fin ---------- */
+#entracte, #fin { align-items: center; justify-content: center; text-align: center; gap: 18px; }
+#entracte h2, #fin h2 { font-size: 2.2rem; }
+#entracte p, #fin p { color: var(--texte-doux); margin: 0; }
+#fin.gagne h2 { color: var(--accent); }
+#fin.perdu h2 { color: var(--danger); }
+
+/* Petit message temporaire */
+#toast { position: fixed; left: 50%; bottom: 120px; transform: translateX(-50%); background: var(--fond-2); border: 1px solid var(--accent); color: var(--texte); padding: 10px 16px; border-radius: 999px; font-size: .9rem; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 40; white-space: nowrap; }
+#toast.visible { opacity: 1; }

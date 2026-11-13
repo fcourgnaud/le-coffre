@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le Casse du siècle — cartes à imprimer</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<style>
+  /* Planche de cartes prototype (63 × 88 mm, format poker).
+     Imprimer en A4, échelle 100 %, sans marges ajoutées. */
+  @page { size: A4; margin: 8mm; }
+  body { font-family: Georgia, serif; margin: 0; background: #ddd; }
+  .info { font-family: system-ui, sans-serif; padding: 12px; background: #fff; }
+  .info button { font-size: 16px; padding: 8px 14px; }
+  .planche { display: flex; flex-wrap: wrap; gap: 0; justify-content: flex-start; padding: 0; }
+  .carte { width: 63mm; height: 88mm; border: 0.3mm dashed #999; background: #fff; box-sizing: border-box;
+           display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 5mm; page-break-inside: avoid; }
+  .carte .famille { font-family: system-ui, sans-serif; font-size: 7pt; letter-spacing: .2em; text-transform: uppercase; color: #8a6d2a; }
+  .carte .nom { font-size: 15pt; text-align: center; }
+  .carte .qr svg { width: 38mm; height: 38mm; display: block; }
+  .carte .code { font-family: monospace; font-size: 7pt; color: #888; }
+  @media print { .info { display: none; } body { background: #fff; } }
+</style>
+</head>
+<body>
+<div class="info">
+  <b>Cartes prototype</b> — 30 outils, 4 « Planquez-vous ! », 2 Os, 1 Court-circuit, 4 rôles.
+  QR standard (pas de Micro QR). Imprimer à l'échelle 100 %.
+  <button onclick="print()">Imprimer</button>
+</div>
+<div class="planche" id="planche"></div>
+<script>
+const outils = ['Stéthoscope', 'Perceuse', 'Brouilleur', 'Crochet', 'Aimant', 'Pied-de-biche'];
+const cartes = [];
+for (let i = 1; i <= 30; i++) cartes.push(['Outil', outils[Math.floor((i - 1) / 5)], 'CASSE:O' + String(i).padStart(2, '0')]);
+for (let i = 1; i <= 4; i++) cartes.push(['Planque', 'Planquez-vous !', 'CASSE:P0' + i]);
+for (let i = 1; i <= 2; i++) cartes.push(['Chien', 'Os à moelle', 'CASSE:C0' + i]);
+cartes.push(['Électricien', 'Court-circuit', 'CASSE:B01']);
+['Perceur', 'Guetteur', 'Maître-chien', 'Électricien'].forEach((r, i) => cartes.push(['Rôle', r, 'CASSE:R0' + (i + 1)]));
+
+const planche = document.getElementById('planche');
+cartes.forEach(([famille, nom, code]) => {
+  const qr = qrcode(0, 'M'); qr.addData(code); qr.make();
+  const d = document.createElement('div'); d.className = 'carte';
+  d.innerHTML = `<div class="famille">${famille}</div><div class="nom">${nom}</div><div class="qr">${qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true })}</div><div class="code">${code}</div>`;
+  planche.appendChild(d);
+});
+</script>
+</body>
+</html>

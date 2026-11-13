@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Le Casse du siècle</title>
+<meta name="theme-color" content="#0d0b09">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Le Coffre">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="theme.css">
+<script src="version.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+</head>
+<body>
+
+<!-- ============ BANDEAU DE MISE À JOUR ============ -->
+<div id="maj">
+  <strong id="maj-titre">Nouvelle version disponible</strong>
+  <ul id="maj-notes"></ul>
+  <div class="boutons">
+    <button id="maj-ok">Mettre à jour</button>
+    <button id="maj-plus-tard" class="plus-tard">Plus tard</button>
+  </div>
+</div>
+
+<!-- ============ ACCUEIL ============ -->
+<section id="accueil" class="ecran actif">
+  <div class="titre">
+    <div class="sur-titre">Une nuit, trois coffres</div>
+    <h1>Le Casse<br>du siècle</h1>
+    <p>Taisez-vous. Écoutez. Ouvrez.</p>
+  </div>
+
+  <div class="reglage">
+    <div class="etiquette">Nombre de joueurs</div>
+    <div class="choix" id="choix-joueurs">
+      <button data-v="2">2</button><button data-v="3" class="on">3</button><button data-v="4">4</button>
+    </div>
+  </div>
+
+  <div class="reglage">
+    <div class="etiquette">Durée de la nuit</div>
+    <div class="choix" id="choix-duree">
+      <button data-v="12">12 min</button><button data-v="9" class="on">9 min</button><button data-v="7">7 min</button>
+    </div>
+  </div>
+
+  <div class="reglage">
+    <label class="case"><input type="checkbox" id="opt-test"> Mode test (boutons à la place des cartes)</label>
+    <label class="case"><input type="checkbox" id="opt-aide"> Aide visuelle (garde, chien, bonne réponse)</label>
+  </div>
+
+  <div class="actions">
+    <button class="principal" id="btn-lancer">Commencer le casse</button>
+    <button id="btn-serrures">Écouter les serrures</button>
+    <button id="btn-regles">Règles rapides</button>
+    <div id="info-maj"></div>
+    <div class="pied">
+      <span id="version-affichee">v—</span>
+      <button class="discret" id="btn-verifier">Vérifier les mises à jour</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ÉCOUTER LES SERRURES ============ -->
+<section id="serrures" class="ecran">
+  <h2>Les serrures</h2>
+  <p style="color:var(--texte-doux);margin:0">Chaque serrure a un son. Apprenez-les avant le casse : pendant la partie, c'est le seul indice.</p>
+  <div id="liste-serrures"></div>
+  <button id="btn-retour-serrures" style="margin-top:auto">Retour</button>
+</section>
+
+<!-- ============ RÈGLES RAPIDES ============ -->
+<section id="regles" class="ecran">
+  <h2>Règles rapides</h2>
+  <div class="texte">
+    <h3>But</h3>
+    Ouvrir 3 coffres avant l'aube, sans que l'alarme n'atteigne 5.
+    <h3>Le coffre</h3>
+    Chaque coffre a 4 serrures. Le téléphone joue le son de la serrure en cours (touchez le cadran pour le réentendre). Le <b>Perceur</b> scanne l'outil qui correspond. Bon outil : un voyant s'allume. Mauvais outil : +1 alarme.
+    <h3>Le garde</h3>
+    Écoutez ses pas. Le <b>Guetteur</b> scanne « Planquez-vous ! » quand il approche. Planqués, personne ne peut scanner d'outil jusqu'à ce qu'il reparte. Trop tard : +2 alarme. Pour rien (aucun pas) : +1 alarme. Parfois, il fait demi-tour…
+    <h3>Le chien (coffres 2 et 3)</h3>
+    Quand il renifle, le <b>Maître-chien</b> scanne l'Os avant qu'il aboie, sinon +1 alarme.
+    <h3>L'électricien</h3>
+    Une fois par nuit, il scanne « Court-circuit » : −1 alarme.
+    <h3>Coffre 3</h3>
+    Une erreur rebloque tout le mécanisme : on recommence à la serrure 1.
+    <h3>Silence</h3>
+    Aucune parole pendant le casse. Gestes uniquement.
+  </div>
+  <button id="btn-retour-regles" style="margin-top:16px">Retour</button>
+</section>
+
+<!-- ============ JEU ============ -->
+<section id="jeu" class="ecran">
+  <div class="haut">
+    <div>
+      <div class="coffre-num" id="coffre-num">Coffre 1 / 3</div>
+      <div class="coffre-nom" id="coffre-nom">—</div>
+    </div>
+    <div id="chrono">9:00</div>
+  </div>
+
+  <div id="alarme">
+    <div class="etiquette">Alarme</div>
+    <div class="segments" id="segments"></div>
+  </div>
+
+  <div id="cadran">
+    <div class="voyant"></div><div class="voyant"></div><div class="voyant"></div><div class="voyant"></div>
+    <div class="molette" id="molette"></div>
+  </div>
+
+  <div id="message">Écoutez la serrure…</div>
+  <div id="indice-ecoute">Touchez le cadran pour réentendre la serrure</div>
+  <div id="aide"></div>
+  <div id="test"></div>
+
+  <div class="bas">
+    <video id="apercu" playsinline muted></video>
+    <button class="discret" id="btn-pause">Pause</button>
+  </div>
+</section>
+
+<!-- ============ ENTRE DEUX COFFRES ============ -->
+<section id="entracte" class="ecran">
+  <h2 id="entracte-titre">Coffre ouvert !</h2>
+  <p id="entracte-texte"></p>
+  <button class="principal" id="btn-suivant">Coffre suivant</button>
+</section>
+
+<!-- ============ PAUSE ============ -->
+<section id="pause" class="ecran" style="align-items:center;justify-content:center;gap:14px">
+  <h2>Pause</h2>
+  <button class="principal" id="btn-reprendre">Reprendre</button>
+  <button id="btn-abandon">Abandonner le casse</button>
+</section>
+
+<!-- ============ FIN ============ -->
+<section id="fin" class="ecran">
+  <h2 id="fin-titre">—</h2>
+  <p id="fin-texte"></p>
+  <button class="principal" id="btn-rejouer">Nouvelle nuit</button>
+  <button id="btn-accueil">Accueil</button>
+</section>
+
+<div id="toast"></div>
+<canvas id="canvas-scan" style="display:none"></canvas>
+
+<script>
+/* =========================================================
+   LE CASSE DU SIÈCLE — logique de l'app
+   ========================================================= */
+
+/* ---------------- Données du jeu ---------------- */
+// Les 6 types d'outils. Cartes : CASSE:O01 à CASSE:O30 (5 cartes par type).
+const OUTILS = [
+  { id: 'steto',    nom: 'Stéthoscope',   desc: 'Serrure à gorges : petits « toc » réguliers' },
+  { id: 'perceuse', nom: 'Perceuse',      desc: 'Plaque d\'acier : grincement métallique' },
+  { id: 'brouille', nom: 'Brouilleur',    desc: 'Clavier électronique : bips aigus' },
+  { id: 'crochet',  nom: 'Crochet',       desc: 'Serrure à goupilles : cliquetis rapides' },
+  { id: 'aimant',   nom: 'Aimant',        desc: 'Verrou magnétique : bourdonnement qui monte' },
+  { id: 'pied',     nom: 'Pied-de-biche', desc: 'Porte en bois : craquement' }
+];
+
+// Les 3 coffres de la nuit, du plus facile au plus dur
+const COFFRES = [
+  { nom: 'Le coffre du directeur', attenteMin: 18, attenteMax: 28, approche: 10, chien: false, demiTour: 0,    volumeSerrure: 1.0, rebloque: false },
+  { nom: 'La salle des archives',  attenteMin: 14, attenteMax: 22, approche: 9,  chien: true,  demiTour: 0.25, volumeSerrure: 0.8, rebloque: false },
+  { nom: 'La chambre forte',       attenteMin: 10, attenteMax: 18, approche: 8,  chien: true,  demiTour: 0.35, volumeSerrure: 0.55, rebloque: true }
+];
+
+const ALARME_MAX = 5;
+
+// Lit le contenu d'un QR et renvoie ce que c'est
+function lireCarte(code) {
+  const m = /^CASSE:([A-Z])(\d{2})$/.exec(String(code).trim().toUpperCase());
+  if (!m) return null;
+  const lettre = m[1], n = parseInt(m[2], 10);
+  if (lettre === 'O' && n >= 1 && n <= 30) return { type: 'outil', outil: OUTILS[Math.floor((n - 1) / 5)].id };
+  if (lettre === 'P') return { type: 'planque' };
+  if (lettre === 'C') return { type: 'os' };
+  if (lettre === 'B') return { type: 'courtcircuit' };
+  if (lettre === 'R') return { type: 'role', n };
+  return null;
+}
+const ROLES = ['', 'Perceur', 'Guetteur', 'Maître-chien', 'Électricien'];
+
+/* ---------------- Sons (générés, pas de fichiers) ---------------- */
+const Son = {
+  ctx: null, sortie: null, bruit: null,
+  init() {
+    if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
+    const C = window.AudioContext || window.webkitAudioContext;
+    this.ctx = new C();
+    this.sortie = this.ctx.createGain();
+    this.sortie.gain.value = 0.9;
+    this.sortie.connect(this.ctx.destination);
+    const len = this.ctx.sampleRate;
+    this.bruit = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+    const d = this.bruit.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  },
+  t() { return this.ctx.currentTime; },
+  _pan(p) {
+    if (this.ctx.createStereoPanner) { const n = this.ctx.createStereoPanner(); n.pan.value = p; n.connect(this.sortie); return n; }
+    return this.sortie;
+  },
+  ton(t, dur, { f = 440, f2 = null, type = 'sine', g = 0.3, pan = 0, att = 0.005 } = {}) {
+    const o = this.ctx.createOscillator(), v = this.ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    v.gain.setValueAtTime(0.0001, t);
+    v.gain.exponentialRampToValueAtTime(g, t + att);
+    v.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(v); v.connect(this._pan(pan));
+    o.start(t); o.stop(t + dur + 0.05);
+  },
+  souffle(t, dur, { filtre = 'bandpass', f = 1000, q = 1, g = 0.3, pan = 0, att = 0.003 } = {}) {
+    const s = this.ctx.createBufferSource(), fi = this.ctx.createBiquadFilter(), v = this.ctx.createGain();
+    s.buffer = this.bruit; fi.type = filtre; fi.frequency.value = f; fi.Q.value = q;
+    v.gain.setValueAtTime(0.0001, t);
+    v.gain.exponentialRampToValueAtTime(g, t + att);
+    v.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    s.connect(fi); fi.connect(v); v.connect(this._pan(pan));
+    s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.05);
+  },
+  tic(t, g = 0.4) { this.souffle(t, 0.03, { f: 3500, q: 8, g }); this.ton(t, 0.02, { f: 2400, g: g * 0.3 }); },
+
+  // Bruits de jeu
+  pas(g, pan) { const t = this.t(); this.ton(t, 0.14, { f: 180, f2: 90, g: g * 0.6, pan }); this.souffle(t, 0.1, { filtre: 'lowpass', f: 900, g: g * 0.5, pan }); },
+  reniflement(g) { const t = this.t(); for (let i = 0; i < 3; i++) this.souffle(t + i * 0.12, 0.08, { f: 2200, q: 2, g: g * 0.5, pan: 0.3 }); },
+  aboiement() { const t = this.t(); [0, 0.28].forEach((d) => { this.ton(t + d, 0.16, { f: 620, f2: 280, type: 'sawtooth', g: 0.35 }); this.souffle(t + d, 0.12, { f: 900, q: 1, g: 0.3 }); }); },
+  chienContent() { const t = this.t(); this.ton(t, 0.25, { f: 900, f2: 1300, type: 'triangle', g: 0.15 }); },
+  reussite() { const t = this.t(); this.tic(t); this.tic(t + 0.08); this.ton(t + 0.16, 0.3, { f: 200, f2: 120, type: 'triangle', g: 0.5 }); this.ton(t + 0.2, 0.4, { f: 880, type: 'triangle', g: 0.15 }); this.ton(t + 0.3, 0.5, { f: 1320, type: 'triangle', g: 0.12 }); },
+  erreur() { const t = this.t(); this.ton(t, 0.45, { f: 160, type: 'square', g: 0.25 }); this.souffle(t, 0.3, { filtre: 'lowpass', f: 600, g: 0.3 }); },
+  alarme(niveau) { const t = this.t(); const f = 600 + niveau * 140; this.ton(t, 0.18, { f, type: 'square', g: 0.2 }); this.ton(t + 0.24, 0.18, { f: f * 1.25, type: 'square', g: 0.2 }); },
+  chut() { const t = this.t(); this.souffle(t, 0.5, { filtre: 'highpass', f: 3000, g: 0.15, att: 0.1 }); },
+  ouverture() { const t = this.t(); for (let i = 0; i < 6; i++) this.tic(t + i * 0.07, 0.3); this.ton(t + 0.5, 0.6, { f: 150, f2: 70, type: 'triangle', g: 0.6 }); [523, 659, 784, 1047].forEach((f, i) => this.ton(t + 0.7 + i * 0.1, 0.9, { f, type: 'triangle', g: 0.12 })); },
+  cloche() { const t = this.t(); [880, 660].forEach((f, i) => this.ton(t + i * 0.6, 1.4, { f, type: 'sine', g: 0.2 })); },
+
+  // Signature sonore de chaque serrure
+  serrure(id, vol = 1) {
+    const t = this.t() + 0.05, g = vol;
+    if (id === 'steto') { for (let i = 0; i < 4; i++) { this.tic(t + i * 0.38, 0.35 * g); this.ton(t + i * 0.38, 0.12, { f: 300, f2: 180, g: 0.2 * g }); } }
+    if (id === 'perceuse') {
+      const o = this.ctx.createOscillator(), v = this.ctx.createGain(), l = this.ctx.createOscillator(), lg = this.ctx.createGain();
+      o.type = 'sawtooth'; o.frequency.setValueAtTime(260, t); o.frequency.linearRampToValueAtTime(320, t + 1.4);
+      l.frequency.value = 22; lg.gain.value = 0.08 * g; l.connect(lg); lg.connect(v.gain);
+      v.gain.setValueAtTime(0.0001, t); v.gain.linearRampToValueAtTime(0.12 * g, t + 0.1); v.gain.linearRampToValueAtTime(0.0001, t + 1.4);
+      o.connect(v); v.connect(this.sortie); o.start(t); l.start(t); o.stop(t + 1.5); l.stop(t + 1.5);
+      this.souffle(t, 1.4, { f: 1800, q: 3, g: 0.12 * g, att: 0.1 });
+    }
+    if (id === 'brouille') { const notes = [2400, 1800, 2400, 2400, 1600, 2400, 1800, 2000]; notes.forEach((f, i) => this.ton(t + i * 0.15, 0.07, { f, type: 'square', g: 0.12 * g })); }
+    if (id === 'crochet') { let d = 0; for (let i = 0; i < 14; i++) { this.tic(t + d, (0.15 + Math.random() * 0.25) * g); d += 0.04 + Math.random() * 0.07; } }
+    if (id === 'aimant') {
+      [1, 2].forEach((h) => {
+        const o = this.ctx.createOscillator(), v = this.ctx.createGain(), l = this.ctx.createOscillator(), lg = this.ctx.createGain();
+        o.frequency.setValueAtTime(300 * h, t); o.frequency.exponentialRampToValueAtTime(620 * h, t + 1.4);
+        l.frequency.value = 6; lg.gain.value = 12 * h; l.connect(lg); lg.connect(o.frequency);
+        v.gain.setValueAtTime(0.0001, t); v.gain.linearRampToValueAtTime(0.2 * g / h, t + 0.6); v.gain.linearRampToValueAtTime(0.0001, t + 1.4);
+        o.connect(v); v.connect(this.sortie); o.start(t); l.start(t); o.stop(t + 1.5); l.stop(t + 1.5);
+      });
+    }
+    if (id === 'pied') { let d = 0, ecart = 0.06; while (d < 1.3) { this.souffle(t + d, 0.03, { f: 700 + d * 300, q: 6, g: 0.4 * g }); d += ecart; ecart = Math.max(0.012, ecart * 0.9); } }
+  }
+};
+
+/* ---------------- Outils d'interface ---------------- */
+const $ = (s) => document.querySelector(s);
+function ecran(id) {
+  document.querySelectorAll('.ecran').forEach((e) => e.classList.toggle('actif', e.id === id));
+  document.body.classList.toggle('en-jeu', id === 'jeu' || id === 'pause' || id === 'entracte');
+}
+let toastMinuteur;
+function toast(txt) { const t = $('#toast'); t.textContent = txt; t.classList.add('visible'); clearTimeout(toastMinuteur); toastMinuteur = setTimeout(() => t.classList.remove('visible'), 2000); }
+function message(txt, alerte = false) { const m = $('#message'); m.textContent = txt; m.classList.toggle('alerte', alerte); }
+const hasard = (a, b) => a + Math.random() * (b - a);
+
+/* ---------------- Réglages de l'accueil ---------------- */
+const reglages = { joueurs: 3, duree: 9 };
+function brancherChoix(sel, cle) {
+  document.querySelectorAll(sel + ' button').forEach((b) => b.addEventListener('click', () => {
+    document.querySelectorAll(sel + ' button').forEach((x) => x.classList.remove('on'));
+    b.classList.add('on'); reglages[cle] = parseInt(b.dataset.v, 10);
+  }));
+}
+brancherChoix('#choix-joueurs', 'joueurs');
+brancherChoix('#choix-duree', 'duree');
+$('#opt-test').addEventListener('change', (e) => document.body.classList.toggle('mode-test', e.target.checked));
+$('#opt-aide').addEventListener('change', (e) => document.body.classList.toggle('aide-visuelle', e.target.checked));
+
+// Écran « Écouter les serrures »
+OUTILS.forEach((o) => {
+  const l = document.createElement('div'); l.className = 'ligne-son';
+  l.innerHTML = `<div><div class="nom">${o.nom}</div><div class="desc">${o.desc}</div></div><button>▶</button>`;
+  l.querySelector('button').addEventListener('click', () => { Son.init(); Son.serrure(o.id); });
+  $('#liste-serrures').appendChild(l);
+});
+$('#btn-serrures').addEventListener('click', () => ecran('serrures'));
+$('#btn-retour-serrures').addEventListener('click', () => ecran('accueil'));
+$('#btn-regles').addEventListener('click', () => ecran('regles'));
+$('#btn-retour-regles').addEventListener('click', () => ecran('accueil'));
+
+// Boutons du mode test
+[...OUTILS.map((o, i) => [o.nom, 'CASSE:O' + String(i * 5 + 1).padStart(2, '0')]),
+ ['Planquez-vous !', 'CASSE:P01'], ['Os', 'CASSE:C01'], ['Court-circuit', 'CASSE:B01']]
+  .forEach(([nom, code]) => { const b = document.createElement('button'); b.textContent = nom; b.addEventListener('click', () => quandCarte(code)); $('#test').appendChild(b); });
+
+// Jauge d'alarme
+for (let i = 0; i < ALARME_MAX; i++) { const s = document.createElement('div'); s.className = 'seg'; $('#segments').appendChild(s); }
+
+/* ---------------- La partie ---------------- */
+let J = null;           // état de la partie
+let boucle = null;      // minuteur principal
+
+function nouvelleCombinaison() {
+  const c = [];
+  while (c.length < 4) { const o = OUTILS[Math.floor(Math.random() * OUTILS.length)].id; if (o !== c[c.length - 1]) c.push(o); }
+  return c;
+}
+
+function lancerPartie() {
+  Son.init();
+  J = {
+    horloge: 0,                         // temps de jeu en secondes (s'arrête en pause)
+    nuit: reglages.duree * 60,
+    coffre: 0, combinaison: [], etape: 0,
+    alarme: 0, courtCircuitUtilise: false,
+    planques: false,
+    garde: { etat: 'repos', prochain: 0, debut: 0, arrivee: 0, demiTour: null, prochainPas: 0, finDepart: 0, gainDepart: 0, pan: 0 },
+    chien: { etat: 'absent', prochain: 0, fin: 0, prochainReni: 0 },
+    prochaineSerrure: 0, derniereEcoute: -9,
+    stats: { erreurs: 0, vu: 0, aboiements: 0 },
+    enPause: false, fini: false
+  };
+  demarrerCamera();
+  verrouEcran();
+  demarrerCoffre();
+}
+
+function demarrerCoffre() {
+  const c = COFFRES[J.coffre];
+  J.combinaison = nouvelleCombinaison();
+  J.etape = 0;
+  J.planques = false; document.body.classList.remove('planques');
+  J.garde.etat = 'repos'; J.garde.prochain = J.horloge + hasard(c.attenteMin, c.attenteMax);
+  J.chien.etat = 'absent'; J.chien.prochain = J.horloge + hasard(20, 35);
+  J.prochaineSerrure = J.horloge + 1.2;
+  $('#coffre-num').textContent = `Coffre ${J.coffre + 1} / 3`;
+  $('#coffre-nom').textContent = c.nom;
+  $('#cadran').classList.remove('ouvert');
+  message('Écoutez la serrure…');
+  majAffichage();
+  ecran('jeu');
+  let avant = performance.now();
+  clearInterval(boucle);
+  boucle = setInterval(() => { const m = performance.now(); const dt = Math.min(0.25, (m - avant) / 1000); avant = m; if (!J.enPause && !J.fini) tic(dt); }, 50);
+}
+
+function tic(dt) {
+  J.horloge += dt;
+  const h = J.horloge, c = COFFRES[J.coffre], g = J.garde, ch = J.chien;
+
+  // Chrono de la nuit
+  const reste = Math.max(0, J.nuit - h);
+  $('#chrono').textContent = `${Math.floor(reste / 60)}:${String(Math.floor(reste % 60)).padStart(2, '0')}`;
+  $('#chrono').classList.toggle('presse', reste < 60);
+  if (reste <= 0) return finPartie(false, 'L\'aube se lève. Le casse est raté.');
+
+  // La serrure rejoue son son régulièrement
+  if (!J.planques && h >= J.prochaineSerrure) { jouerSerrure(); J.prochaineSerrure = h + 7; }
+
+  // ---- Le garde ----
+  if (g.etat === 'repos' && h >= g.prochain) {
+    g.etat = 'approche'; g.debut = h; g.arrivee = h + c.approche; g.prochainPas = h; g.pan = hasard(-0.7, 0.7);
+    g.demiTour = Math.random() < c.demiTour ? h + c.approche * hasard(0.45, 0.7) : null;
+  }
+  if (g.etat === 'approche') {
+    const p = Math.min(1, (h - g.debut) / c.approche);
+    if (h >= g.prochainPas) { Son.pas(0.04 + 0.96 * Math.pow(p, 1.6), g.pan * (1 - p)); g.prochainPas = h + (0.8 - 0.38 * p); }
+    if (g.demiTour && h >= g.demiTour) { depart(0.04 + 0.96 * Math.pow(p, 1.6)); toastAide('Le garde fait demi-tour'); }
+    else if (h >= g.arrivee) {
+      if (J.planques) { message('Le garde passe sans vous voir…'); }
+      else { J.stats.vu++; message('Le garde vous a vus ! Alarme +2', true); monterAlarme(2); }
+      depart(1);
+    }
+  }
+  if (g.etat === 'depart') {
+    const p = Math.min(1, (h - (g.finDepart - 4)) / 4);
+    if (h >= g.prochainPas) { Son.pas(g.gainDepart * (1 - p) + 0.02, -g.pan * p); g.prochainPas = h + 0.45 + 0.4 * p; }
+    if (h >= g.finDepart) {
+      g.etat = 'repos'; g.prochain = h + hasard(c.attenteMin, c.attenteMax);
+      if (J.planques) { J.planques = false; document.body.classList.remove('planques'); message('La voie est libre.'); J.prochaineSerrure = h + 0.6; }
+    }
+  }
+
+  // ---- Le chien ----
+  if (c.chien && J.planques && ch.etat === 'renifle') ch.fin += dt;   // planqués : le chien attend
+  if (c.chien && !J.planques) {
+    if (ch.etat === 'absent' && h >= ch.prochain && g.etat === 'repos' && g.prochain - h > 9) {
+      ch.etat = 'renifle'; ch.fin = h + 7; ch.prochainReni = h;
+    }
+    if (ch.etat === 'renifle') {
+      const p = 1 - (ch.fin - h) / 7;
+      if (h >= ch.prochainReni) { Son.reniflement(0.2 + 0.8 * p); ch.prochainReni = h + 0.9; }
+      if (h >= ch.fin) { Son.aboiement(); J.stats.aboiements++; message('Le chien aboie ! Alarme +1', true); ch.etat = 'absent'; ch.prochain = h + hasard(25, 40); monterAlarme(1); }
+    }
+  }
+
+  majAide();
+}
+
+function depart(gainActuel) { const g = J.garde; g.etat = 'depart'; g.finDepart = J.horloge + 4; g.gainDepart = gainActuel; g.prochainPas = J.horloge + 0.4; }
+
+function jouerSerrure() {
+  if (J.etape >= 4) return;
+  Son.serrure(J.combinaison[J.etape], COFFRES[J.coffre].volumeSerrure);
+  const mol = $('#molette'); mol.style.transform = `rotate(${Math.floor(Math.random() * 300) - 150}deg)`;
+}
+
+$('#cadran').addEventListener('click', () => {
+  if (!J || J.planques || J.fini) return;
+  if (J.horloge - J.derniereEcoute < 1.6) return;
+  J.derniereEcoute = J.horloge; jouerSerrure(); J.prochaineSerrure = J.horloge + 7;
+});
+
+/* ---------------- Quand une carte est scannée ---------------- */
+function quandCarte(code) {
+  if (!J || J.fini || J.enPause || !$('#jeu').classList.contains('actif')) return;
+  const carte = lireCarte(code);
+  if (!carte) { toast('Carte inconnue'); return; }
+  const h = J.horloge, g = J.garde;
+
+  if (carte.type === 'role') { toast('Rôle : ' + ROLES[carte.n]); return; }
+
+  if (carte.type === 'planque') {
+    if (J.planques) return;
+    if (g.etat === 'approche') {
+      J.planques = true; document.body.classList.add('planques'); Son.chut();
+      message('Planqués… on ne bouge plus.');
+    } else if (g.etat === 'depart') {
+      toast('Le garde s\'éloigne déjà');
+    } else {
+      message('Fausse alerte, vous avez fait du bruit ! Alarme +1', true); monterAlarme(1);
+    }
+    return;
+  }
+
+  if (carte.type === 'os') {
+    if (J.chien.etat === 'renifle') { J.chien.etat = 'absent'; J.chien.prochain = h + hasard(25, 40); Son.chienContent(); message('Le chien ronge son os.'); }
+    else toast('Pas de chien en vue');
+    return;
+  }
+
+  if (carte.type === 'courtcircuit') {
+    if (J.courtCircuitUtilise) { toast('Court-circuit déjà utilisé cette nuit'); return; }
+    if (J.alarme === 0) { toast('L\'alarme est déjà au minimum'); return; }
+    J.courtCircuitUtilise = true; J.alarme--; majAffichage(); Son.chut(); message('Court-circuit ! Alarme −1');
+    return;
+  }
+
+  if (carte.type === 'outil') {
+    if (J.planques) { Son.chut(); toast('Vous êtes planqués !'); return; }
+    if (carte.outil === J.combinaison[J.etape]) {
+      J.etape++; majAffichage();
+      if (J.etape >= 4) return coffreOuvert();
+      Son.reussite(); message(`Serrure ${J.etape} ouverte !`);
+      J.prochaineSerrure = h + 1.4;
+    } else {
+      J.stats.erreurs++;
+      Son.erreur();
+      $('#cadran').classList.remove('secoue'); void $('#cadran').offsetWidth; $('#cadran').classList.add('secoue');
+      if (COFFRES[J.coffre].rebloque && J.etape > 0) { J.etape = 0; majAffichage(); message('Mauvais outil ! Le mécanisme se rebloque. Alarme +1', true); }
+      else message('Mauvais outil ! Alarme +1', true);
+      monterAlarme(1);
+      J.prochaineSerrure = h + 1.6;
+    }
+  }
+}
+
+function monterAlarme(n) {
+  J.alarme = Math.min(ALARME_MAX, J.alarme + n);
+  majAffichage();
+  setTimeout(() => Son.alarme(J.alarme), 400);
+  if (navigator.vibrate) navigator.vibrate(200);
+  if (J.alarme >= ALARME_MAX) setTimeout(() => finPartie(false, 'L\'alarme hurle dans tout le bâtiment. Tout le monde au poste !'), 900);
+}
+
+function coffreOuvert() {
+  Son.ouverture();
+  $('#cadran').classList.add('ouvert');
+  message('Le coffre est ouvert !');
+  if (J.coffre >= COFFRES.length - 1) return setTimeout(() => finPartie(true, ''), 1500);
+  J.enPause = true;
+  setTimeout(() => {
+    $('#entracte-titre').textContent = `Coffre ${J.coffre + 1} ouvert !`;
+    $('#entracte-texte').textContent = `Prochain : ${COFFRES[J.coffre + 1].nom}. ${J.coffre + 1 === 1 ? 'Attention, un chien rôde.' : 'Une seule erreur rebloque tout.'}`;
+    ecran('entracte');
+  }, 1500);
+}
+$('#btn-suivant').addEventListener('click', () => { J.coffre++; J.enPause = false; demarrerCoffre(); });
+
+function finPartie(gagne, texte) {
+  if (J.fini) return;
+  J.fini = true; clearInterval(boucle); arreterCamera(); libererEcran();
+  if (gagne) Son.ouverture(); else Son.cloche();
+  const reste = Math.max(0, J.nuit - J.horloge);
+  $('#fin').className = 'ecran ' + (gagne ? 'gagne' : 'perdu');
+  $('#fin-titre').textContent = gagne ? 'Le casse du siècle !' : 'Raté…';
+  $('#fin-texte').textContent = (gagne ? `Trois coffres vidés, ${Math.floor(reste / 60)} min ${Math.floor(reste % 60)} s avant l'aube. ` : texte + ' ')
+    + `Coffres ouverts : ${gagne ? 3 : J.coffre}. Erreurs : ${J.stats.erreurs}. Vus par le garde : ${J.stats.vu}. Aboiements : ${J.stats.aboiements}.`;
+  ecran('fin');
+}
+
+function majAffichage() {
+  document.querySelectorAll('#cadran .voyant').forEach((v, i) => v.classList.toggle('on', i < J.etape));
+  document.querySelectorAll('#segments .seg').forEach((s, i) => s.classList.toggle('on', i < J.alarme));
+}
+
+function majAide() {
+  if (!document.body.classList.contains('aide-visuelle')) return;
+  const g = J.garde, h = J.horloge;
+  let tg = g.etat === 'repos' ? `repos (${Math.ceil(g.prochain - h)} s)` : g.etat === 'approche' ? `APPROCHE (arrive dans ${Math.ceil(g.arrivee - h)} s${g.demiTour ? ', fera demi-tour' : ''})` : 'repart';
+  const outil = OUTILS.find((o) => o.id === J.combinaison[J.etape]);
+  $('#aide').textContent = `Garde : ${tg} · Chien : ${J.chien.etat} · Réponse : ${outil ? outil.nom : '—'}`;
+}
+function toastAide(t) { if (document.body.classList.contains('aide-visuelle')) toast(t); }
+
+// Pause / abandon
+$('#btn-pause').addEventListener('click', () => { J.enPause = true; ecran('pause'); });
+$('#btn-reprendre').addEventListener('click', () => { J.enPause = false; ecran('jeu'); });
+$('#btn-abandon').addEventListener('click', () => { J.enPause = false; finPartie(false, 'Vous avez abandonné le casse.'); });
+$('#btn-lancer').addEventListener('click', lancerPartie);
+$('#btn-rejouer').addEventListener('click', lancerPartie);
+$('#btn-accueil').addEventListener('click', () => ecran('accueil'));
+
+/* ---------------- Caméra et lecture des QR ---------------- */
+let flux = null, scanActif = false, dernierCode = '', dernierCodeA = 0, dernierScanA = 0;
+async function demarrerCamera() {
+  if (flux) { scanActif = true; boucleScan(); return; }
+  try {
+    flux = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
+    const v = $('#apercu'); v.srcObject = flux; await v.play();
+    scanActif = true; boucleScan();
+  } catch (e) {
+    toast('Caméra indisponible — active le mode test');
+  }
+}
+function arreterCamera() { scanActif = false; if (flux) { flux.getTracks().forEach((t) => t.stop()); flux = null; } }
+function boucleScan() {
+  if (!scanActif) return;
+  const v = $('#apercu'), cv = $('#canvas-scan');
+  if (v.readyState >= 2 && window.jsQR) {
+    const w = 320, hh = Math.round(320 * v.videoHeight / v.videoWidth) || 240;
+    cv.width = w; cv.height = hh;
+    const cx = cv.getContext('2d', { willReadFrequently: true });
+    cx.drawImage(v, 0, 0, w, hh);
+    const img = cx.getImageData(0, 0, w, hh);
+    const r = jsQR(img.data, w, hh, { inversionAttempts: 'dontInvert' });
+    if (r && r.data) {
+      const m = performance.now();
+      if ((r.data !== dernierCode || m - dernierCodeA > 2500) && m - dernierScanA > 600) {
+        dernierCode = r.data; dernierCodeA = m; dernierScanA = m;
+        v.classList.add('lu'); setTimeout(() => v.classList.remove('lu'), 300);
+        quandCarte(r.data);
+      } else if (r.data === dernierCode) dernierCodeA = m;
+    }
+  }
+  setTimeout(() => requestAnimationFrame(boucleScan), 90);
+}
+
+// Garder l'écran allumé pendant la partie
+let verrou = null;
+async function verrouEcran() { try { if ('wakeLock' in navigator) verrou = await navigator.wakeLock.request('screen'); } catch (e) {} }
+function libererEcran() { if (verrou) { verrou.release().catch(() => {}); verrou = null; } }
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && J && !J.fini) verrouEcran(); });
+
+/* =========================================================
+   VERSIONS ET MISES À JOUR
+   ========================================================= */
+$('#version-affichee').textContent = 'v' + self.APP_VERSION;
+let enregistrementSW = null, rechargement = false;
+
+async function lireVersionEnLigne() {
+  // On lit version.js directement sur GitHub (sans passer par la mémoire du téléphone)
+  const r = await fetch('version.js?verif=' + Date.now(), { cache: 'no-store' });
+  const txt = await r.text();
+  const v = /APP_VERSION\s*=\s*'([^']+)'/.exec(txt);
+  const notes = /APP_NOTES\s*=\s*\[([\s\S]*?)\]/.exec(txt);
+  return {
+    version: v ? v[1] : null,
+    notes: notes ? [...notes[1].matchAll(/'((?:[^'\\]|\\.)*)'/g)].map((m) => m[1].replace(/\\'/g, '\'')) : []
+  };
+}
+
+async function afficherBandeau() {
+  let info = { version: null, notes: [] };
+  try { info = await lireVersionEnLigne(); } catch (e) {}
+  $('#maj-titre').textContent = info.version ? `Nouvelle version v${info.version} disponible` : 'Nouvelle version disponible';
+  $('#maj-notes').innerHTML = info.notes.map((n) => `<li>${n}</li>`).join('');
+  $('#maj').classList.add('visible');
+}
+
+async function appliquerMiseAJour() {
+  $('#maj-ok').textContent = 'Mise à jour…';
+  if (enregistrementSW && enregistrementSW.waiting) {
+    enregistrementSW.waiting.postMessage('SKIP_WAITING');   // la page se recharge toute seule ensuite
+    setTimeout(forcerMiseAJour, 4000);                       // filet de sécurité
+  } else {
+    forcerMiseAJour();
+  }
+}
+
+async function forcerMiseAJour() {
+  try {
+    if ('caches' in window) { for (const k of await caches.keys()) await caches.delete(k); }
+    if (navigator.serviceWorker) { for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister(); }
+  } catch (e) {}
+  location.reload();
+}
+
+$('#maj-ok').addEventListener('click', appliquerMiseAJour);
+$('#maj-plus-tard').addEventListener('click', () => $('#maj').classList.remove('visible'));
+
+$('#btn-verifier').addEventListener('click', async () => {
+  const info = $('#info-maj');
+  info.textContent = 'Vérification…';
+  try {
+    if (enregistrementSW) await enregistrementSW.update();
+    const enLigne = await lireVersionEnLigne();
+    if (enLigne.version && enLigne.version !== self.APP_VERSION) {
+      info.textContent = '';
+      afficherBandeau();
+    } else {
+      info.textContent = `Tu as la dernière version (v${self.APP_VERSION}) ✓`;
+    }
+  } catch (e) {
+    info.textContent = 'Pas de connexion : impossible de vérifier.';
+  }
+});
+
+function surveiller(reg) {
+  if (reg.waiting && navigator.serviceWorker.controller) afficherBandeau();
+  reg.addEventListener('updatefound', () => {
+    const nouveau = reg.installing;
+    if (!nouveau) return;
+    nouveau.addEventListener('statechange', () => {
+      if (nouveau.state === 'installed' && navigator.serviceWorker.controller) afficherBandeau();
+    });
+  });
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((reg) => {
+    enregistrementSW = reg; surveiller(reg); reg.update().catch(() => {});
+  }).catch(() => {});
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (rechargement) return; rechargement = true; location.reload();
+  });
+  // Vérifie aussi quand on revient sur l'app
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && enregistrementSW && !(J && !J.fini)) enregistrementSW.update().catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
