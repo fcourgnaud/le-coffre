@@ -20,6 +20,9 @@
   --danger: #d23b2f;         /* alarme, erreurs */
   --succes: #5fae6b;         /* étape réussie */
   --voyant-eteint: #3a3127;  /* voyants du cadran éteints */
+  --picto: #f3d58a;          /* pictos des serrures */
+  --lumiere: 255, 214, 120;  /* couleur de la lampe du veilleur (rouge, vert, bleu) */
+  --patte: #b98a5a;          /* empreintes du chien */
 
   /* --- Polices --- */
   --police-titre: Georgia, 'Times New Roman', serif;
@@ -188,3 +191,61 @@ body.mode-test #apercu { visibility: hidden; }       /* pas de caméra */
 /* Petit message temporaire */
 #toast { position: fixed; left: 50%; bottom: 120px; transform: translateX(-50%); background: var(--fond-2); border: 1px solid var(--accent); color: var(--texte); padding: 10px 16px; border-radius: 999px; font-size: .9rem; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 40; white-space: nowrap; }
 #toast.visible { opacity: 1; }
+
+/* =========================================================
+   INDICES VISUELS (pour jouer dans le bruit)
+   Activés par la case « Indices visuels » de l'accueil.
+   --garde va de 0 (garde loin) à 1 (garde arrivé) : l'app
+   le met à jour en continu, tu peux t'en servir partout.
+   ========================================================= */
+:root { --garde: 0; }
+body:not(.visuels) #picto, body:not(.visuels) #lampe, body:not(.visuels) #pattes { display: none; }
+
+/* Picto de la serrure : apparaît le temps du son, au centre du cadran */
+#picto { position: absolute; inset: 18%; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+         background: radial-gradient(circle, #15110d 55%, transparent 72%); opacity: 0; pointer-events: none; }
+#picto.on { animation: picto 1.7s ease-out; }
+.picto-svg { width: 70%; height: 70%; fill: none; stroke: var(--picto); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+@keyframes picto { 0% { opacity: 0; transform: scale(.7); } 12% { opacity: 1; transform: scale(1.05); } 30% { transform: scale(1); } 80% { opacity: 1; } 100% { opacity: 0; } }
+
+/* Écran « Écouter les serrures » : picto à gauche */
+.picto-ligne { width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.picto-ligne .picto-svg { width: 100%; height: 100%; }
+.picto-ligne.flash { animation: picto-ligne 1.6s; }
+@keyframes picto-ligne { 0%, 80% { filter: drop-shadow(0 0 6px var(--picto)); transform: scale(1.15); } 100% { filter: none; transform: none; } }
+
+/* Lampe du veilleur : un halo descend du haut de l'écran quand il approche */
+#lampe { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+#lampe .halo { position: absolute; inset: 0;
+  background: radial-gradient(ellipse 90% 70% at 50% 0%, rgba(var(--lumiere), .7), rgba(var(--lumiere), .18) 55%, transparent 80%);
+  opacity: var(--garde); }
+#lampe .ampoule { position: absolute; top: max(6px, env(safe-area-inset-top)); left: 50%; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%;
+  background: rgb(var(--lumiere)); opacity: calc(.15 + var(--garde) * .85);
+  box-shadow: 0 0 calc(var(--garde) * 40px) calc(var(--garde) * 14px) rgba(var(--lumiere), .8); }
+#jeu > *:not(#lampe):not(#annonce) { position: relative; z-index: 1; }
+
+/* Empreintes du chien : une patte de plus toutes les 1,4 s ; 5 pattes = il aboie */
+#pattes { display: flex; justify-content: center; gap: 10px; height: 26px; }
+#pattes .patte { width: 24px; height: 24px; opacity: 0; transform: scale(.4); transition: opacity .3s, transform .3s; }
+#pattes .patte:nth-child(odd) { margin-top: 6px; rotate: -12deg; }
+#pattes .patte:nth-child(even) { rotate: 12deg; }
+#pattes .patte.on { opacity: 1; transform: scale(1); }
+#pattes .patte:nth-child(5).on { animation: patte 0.5s infinite alternate; }
+#pattes svg { width: 100%; height: 100%; fill: var(--patte); }
+@keyframes patte { to { transform: scale(1.25); } }
+
+/* Annonce du plan au début de chaque coffre */
+#annonce { position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+  background: rgba(13, 11, 9, .92); opacity: 0; pointer-events: none; transition: opacity .3s; }
+#annonce.visible { opacity: 1; }
+#annonce .titre-plan { font-family: var(--police-titre); font-size: 2rem; color: var(--texte); }
+#annonce-lettre { font-size: 5rem; color: var(--accent); display: block; text-align: center; line-height: 1; }
+#annonce-coups { display: flex; gap: 12px; }
+#annonce-coups span { width: 18px; height: 18px; border-radius: 50%; background: var(--fond-3); transition: background .15s, box-shadow .15s; }
+#annonce-coups span.on { background: var(--accent); box-shadow: 0 0 14px var(--accent); }
+
+/* Flashs : garde qui vous voit, chien qui aboie */
+#jeu.flash-garde { animation: flash-garde .9s; }
+#jeu.flash-chien { animation: flash-chien .9s; }
+@keyframes flash-garde { 0%, 30% { background: rgb(var(--lumiere)); } 100% { background: var(--fond); } }
+@keyframes flash-chien { 0%, 100% { transform: none; } 10%, 50% { transform: translateX(-8px); background: #3a2414; } 30%, 70% { transform: translateX(8px); } }

@@ -57,6 +57,7 @@
 
   <div class="reglage">
     <label class="case"><input type="checkbox" id="opt-reecoutes"> Réécoutes limitées (2 par serrure, puis +1 alarme)</label>
+    <label class="case"><input type="checkbox" id="opt-visuels" checked> Indices visuels (pour jouer dans le bruit)</label>
     <label class="case"><input type="checkbox" id="opt-aide"> Aide visuelle (garde, chien, bonne réponse)</label>
   </div>
 
@@ -133,9 +134,13 @@
     <div class="segments" id="segments"></div>
   </div>
 
+  <div id="lampe"><div class="halo"></div><div class="ampoule"></div></div>
+  <div id="pattes"></div>
+  <div id="annonce"><div class="titre-plan">Plan <span id="annonce-lettre"></span></div><div id="annonce-coups"></div></div>
   <div id="cadran">
     <div class="voyant"></div><div class="voyant"></div><div class="voyant"></div><div class="voyant"></div>
     <div class="molette" id="molette"></div>
+    <div id="picto"></div>
   </div>
 
   <div id="message">Écoutez la serrure…</div>
@@ -205,13 +210,15 @@ const NB_CARTES_OUTILS = OUTILS.length * COPIES;   // 32
 
 // Les 6 sons de serrure (noms neutres : ils ne désignent plus un outil)
 const SONS = [
-  { sig: 'steto',    nom: 'Tic-tac',    desc: 'Petits « toc » réguliers' },
-  { sig: 'perceuse', nom: 'Grincement', desc: 'Grincement métallique' },
-  { sig: 'brouille', nom: 'Bips',       desc: 'Bips électroniques aigus' },
-  { sig: 'crochet',  nom: 'Cliquetis',  desc: 'Cliquetis rapides et irréguliers' },
-  { sig: 'aimant',   nom: 'Bourdon',    desc: 'Bourdonnement qui monte' },
-  { sig: 'pied',     nom: 'Craquement', desc: 'Craquement qui accélère' }
+  { sig: 'steto',    nom: 'Tic-tac',    desc: 'Petits « toc » réguliers',        picto: 'M7 21 L12 3 L17 21 Z M12 18 L16 7' },
+  { sig: 'perceuse', nom: 'Grincement', desc: 'Grincement métallique',           picto: 'M2 12 L5 5 L8 19 L11 5 L14 19 L17 5 L20 19 L22 12' },
+  { sig: 'brouille', nom: 'Bips',       desc: 'Bips électroniques aigus',        picto: 'M2 16 H5 V8 H8 V16 H11 V8 H14 V16 H17 V8 H20 V16 H22' },
+  { sig: 'crochet',  nom: 'Cliquetis',  desc: 'Cliquetis rapides et irréguliers', picto: 'M3 14 V10 M6 17 V7 M9 13 V11 M12 19 V5 M15 15 V9 M18 17 V7 M21 13 V11' },
+  { sig: 'aimant',   nom: 'Bourdon',    desc: 'Bourdonnement qui monte',         picto: 'M2 18 Q4 14 6 18 T10 15 T14 11 T18 7 T22 4' },
+  { sig: 'pied',     nom: 'Craquement', desc: 'Craquement qui accélère',         picto: 'M12 2 L10 8 L14 11 L9 16 L12 22 M10 8 L4 10 M14 11 L20 9 M9 16 L5 19' }
 ];
+// Les pictos sont des tracés SVG (grille 24 × 24). Ils sont recopiés dans cartes.html.
+const svgPicto = (i) => `<svg viewBox="0 0 24 24" class="picto-svg"><path d="${SONS[i].picto}"/></svg>`;
 
 // Les 6 cartes Plan (A à F). PLANS[plan][son] = les 2 outils acceptés pour ce son.
 // Chaque outil apparaît 4 ou 5 fois sur l'ensemble des plans, jamais deux fois dans le même plan.
@@ -362,12 +369,24 @@ document.querySelectorAll('#choix-mode button').forEach((b) => b.addEventListene
 try { choisirMode(localStorage.getItem('casse-mode') || 'scan'); } catch (e) { choisirMode('scan'); }
 $('#opt-reecoutes').addEventListener('change', (e) => { reglages.reecoutes = e.target.checked; });
 $('#opt-aide').addEventListener('change', (e) => document.body.classList.toggle('aide-visuelle', e.target.checked));
+// Indices visuels : mémorisé sur le téléphone
+function choisirVisuels(on) {
+  $('#opt-visuels').checked = on; document.body.classList.toggle('visuels', on);
+  try { localStorage.setItem('casse-visuels', on ? '1' : '0'); } catch (e) {}
+}
+$('#opt-visuels').addEventListener('change', (e) => choisirVisuels(e.target.checked));
+try { choisirVisuels(localStorage.getItem('casse-visuels') !== '0'); } catch (e) { choisirVisuels(true); }
+// Les 5 empreintes du chien
+for (let i = 0; i < 5; i++) { const d = document.createElement('div'); d.className = 'patte'; d.innerHTML = '<svg viewBox="0 0 24 24"><ellipse cx="12" cy="16" rx="5" ry="4"/><circle cx="5.5" cy="9.5" r="2.2"/><circle cx="9.5" cy="5.5" r="2.2"/><circle cx="14.5" cy="5.5" r="2.2"/><circle cx="18.5" cy="9.5" r="2.2"/></svg>'; $('#pattes').appendChild(d); }
 
 // Écran « Écouter les serrures »
-SONS.forEach((o) => {
+SONS.forEach((o, i) => {
   const l = document.createElement('div'); l.className = 'ligne-son';
-  l.innerHTML = `<div><div class="nom">${o.nom}</div><div class="desc">${o.desc}</div></div><button>▶</button>`;
-  l.querySelector('button').addEventListener('click', () => { Son.init(); Son.serrure(o.sig); });
+  l.innerHTML = `<div class="picto-ligne">${svgPicto(i)}</div><div style="flex:1"><div class="nom">${o.nom}</div><div class="desc">${o.desc}</div></div><button>▶</button>`;
+  l.querySelector('button').addEventListener('click', () => {
+    Son.init(); Son.serrure(o.sig);
+    const pi = l.querySelector('.picto-ligne'); pi.classList.remove('flash'); void pi.offsetWidth; pi.classList.add('flash');
+  });
   $('#liste-serrures').appendChild(l);
 });
 $('#btn-serrures').addEventListener('click', () => ecran('serrures'));
@@ -448,12 +467,15 @@ function demarrerCoffre() {
   J.etape = 0;
   assurerEtape(); majBoutons();
   J.planques = false; document.body.classList.remove('planques');
+  document.documentElement.style.setProperty('--garde', 0);
+  document.querySelectorAll('#pattes .patte').forEach((pa) => pa.classList.remove('on'));
   J.garde.etat = 'repos'; J.garde.prochain = J.horloge + hasard(c.attenteMin, c.attenteMax);
   J.chien.etat = 'absent'; J.chien.prochain = J.horloge + hasard(20, 35);
   // Annonce du plan : la lettre s'affiche et la cloche sonne (3 coups = plan C)
   const plan = J.plans[J.coffre];
   $('#plan-lettre').textContent = LETTRES[plan];
   setTimeout(() => Son.coups(plan + 1), 400);
+  annoncerPlan(plan);
   J.prochaineSerrure = J.horloge + 1.5 + (plan + 1) * 0.6;
   J.reecoutes = 0;
   $('#coffre-num').textContent = `Coffre ${J.coffre + 1} / 3`;
@@ -491,7 +513,7 @@ function tic(dt) {
     if (g.demiTour && h >= g.demiTour) { depart(0.04 + 0.96 * Math.pow(p, 1.6)); toastAide('Le garde fait demi-tour'); }
     else if (h >= g.arrivee) {
       if (J.planques) { message('Le garde passe sans vous voir…'); }
-      else { J.stats.vu++; message('Le garde vous a vus ! Alarme +2', true); monterAlarme(2); }
+      else { J.stats.vu++; message('Le garde vous a vus ! Alarme +2', true); flashEcran('flash-garde'); monterAlarme(2); }
       depart(1);
     }
   }
@@ -513,11 +535,29 @@ function tic(dt) {
     if (ch.etat === 'renifle') {
       const p = 1 - (ch.fin - h) / 7;
       if (h >= ch.prochainReni) { Son.reniflement(0.2 + 0.8 * p); ch.prochainReni = h + 0.9; }
-      if (h >= ch.fin) { Son.aboiement(); J.stats.aboiements++; message('Le chien aboie ! Alarme +1', true); ch.etat = 'absent'; ch.prochain = h + hasard(25, 40); monterAlarme(1); }
+      if (h >= ch.fin) { flashEcran('flash-chien'); Son.aboiement(); J.stats.aboiements++; message('Le chien aboie ! Alarme +1', true); ch.etat = 'absent'; ch.prochain = h + hasard(25, 40); monterAlarme(1); }
     }
   }
 
+  // ---- Indices visuels ----
+  let lumiere = 0;
+  if (g.etat === 'approche') lumiere = Math.pow(Math.min(1, (h - g.debut) / c.approche), 1.6);
+  if (g.etat === 'depart') lumiere = g.gainDepart * Math.max(0, (g.finDepart - h) / 4);
+  document.documentElement.style.setProperty('--garde', lumiere.toFixed(3));
+  const nbPattes = ch.etat === 'renifle' ? Math.min(5, Math.ceil((1 - (ch.fin - h) / 7) * 5)) : 0;
+  document.querySelectorAll('#pattes .patte').forEach((pa, i) => pa.classList.toggle('on', i < nbPattes));
+
   majAide();
+}
+
+function flashEcran(classe) { const j = $('#jeu'); j.classList.remove(classe); void j.offsetWidth; j.classList.add(classe); setTimeout(() => j.classList.remove(classe), 900); }
+
+function annoncerPlan(plan) {
+  $('#annonce-lettre').textContent = LETTRES[plan];
+  $('#annonce-coups').innerHTML = Array.from({ length: plan + 1 }, () => '<span></span>').join('');
+  const a = $('#annonce'); a.classList.add('visible');
+  a.querySelectorAll('#annonce-coups span').forEach((sp, i) => setTimeout(() => sp.classList.add('on'), 500 + i * 600));
+  setTimeout(() => a.classList.remove('visible'), 1200 + (plan + 1) * 600);
 }
 
 function depart(gainActuel) { const g = J.garde; g.etat = 'depart'; g.finDepart = J.horloge + 4; g.gainDepart = gainActuel; g.prochainPas = J.horloge + 0.4; }
@@ -525,6 +565,9 @@ function depart(gainActuel) { const g = J.garde; g.etat = 'depart'; g.finDepart 
 function jouerSerrure() {
   if (J.etape >= 4) return;
   Son.serrure(SONS[J.combinaison[J.etape]].sig, COFFRES[J.coffre].volumeSerrure);
+  // Le picto apparaît le temps du son (1,6 s), puis s'efface
+  const pi = $('#picto'); pi.innerHTML = svgPicto(J.combinaison[J.etape]);
+  pi.classList.remove('on'); void pi.offsetWidth; pi.classList.add('on');
   const mol = $('#molette'); mol.style.transform = `rotate(${Math.floor(Math.random() * 300) - 150}deg)`;
 }
 

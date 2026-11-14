@@ -5,10 +5,11 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '1.5.0';
+self.APP_VERSION = '1.6.0';
 self.APP_NOTES = [
-  '16 outils différents en 2 exemplaires (32 cartes) : le mime ne s\'use plus',
-  'Chaque son du plan propose 2 outils : le Cerveau choisit lequel mimer',
-  'Mains de 6 cartes par Porteur (10 s\'il est seul)',
-  'Les 4 serrures d\'un coffre ont toujours 4 sons différents'
+  'Indices visuels pour jouer dans le bruit (case à l\'accueil, activée par défaut)',
+  'Chaque son a son picto, qui s\'affiche dans le cadran pendant le son',
+  'Le veilleur : une lampe s\'allume en haut de l\'écran à mesure qu\'il approche',
+  'Le chien : des empreintes apparaissent une à une, à la 5e il aboie',
+  'Annonce du plan en grand, avec un point par coup de cloche'
 ];

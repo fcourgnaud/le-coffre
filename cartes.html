@@ -23,6 +23,7 @@
   .carte.plan table { font-family: system-ui, sans-serif; font-size: 7.5pt; border-collapse: collapse; width: 100%; }
   .carte.plan td { padding: 0.8mm 0.5mm; border-bottom: 0.2mm solid #ddd; }
   .carte.plan td:nth-child(2) { color: #aaa; text-align: center; }
+  .pic { width: 4.5mm; height: 4.5mm; vertical-align: middle; fill: none; stroke: #8a6d2a; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
   @media print { .info { display: none; } body { background: #fff; } }
 </style>
 </head>
@@ -54,6 +55,16 @@ cartes.forEach(([famille, nom, code]) => {
 
 // Cartes Plan (pas de QR : seul le Cerveau les regarde). Même tableau que dans index.html.
 const sons = ['Tic-tac', 'Grincement', 'Bips', 'Cliquetis', 'Bourdon', 'Craquement'];
+// Mêmes pictos que dans index.html (tracés SVG, grille 24 × 24)
+const pictos = [
+  'M7 21 L12 3 L17 21 Z M12 18 L16 7',
+  'M2 12 L5 5 L8 19 L11 5 L14 19 L17 5 L20 19 L22 12',
+  'M2 16 H5 V8 H8 V16 H11 V8 H14 V16 H17 V8 H20 V16 H22',
+  'M3 14 V10 M6 17 V7 M9 13 V11 M12 19 V5 M15 15 V9 M18 17 V7 M21 13 V11',
+  'M2 18 Q4 14 6 18 T10 15 T14 11 T18 7 T22 4',
+  'M12 2 L10 8 L14 11 L9 16 L12 22 M10 8 L4 10 M14 11 L20 9 M9 16 L5 19'
+];
+const svgPicto = (i) => `<svg viewBox="0 0 24 24" class="pic"><path d="${pictos[i]}"/></svg>`;
 const PLANS = [
   [[12, 15], [4, 14], [5, 6], [3, 8], [0, 1], [7, 13]],
   [[9, 11], [6, 12], [8, 15], [0, 5], [4, 13], [2, 10]],
@@ -65,7 +76,7 @@ const PLANS = [
 PLANS.forEach((plan, p) => {
   const d = document.createElement('div'); d.className = 'carte plan';
   d.innerHTML = `<div class="famille">Plan de la banque</div><div class="lettre">${'ABCDEF'[p]}</div>
-    <table>${sons.map((son, i) => `<tr><td>${son}</td><td>→</td><td><b>${outils[plan[i][0]]}</b><br><b>${outils[plan[i][1]]}</b></td></tr>`).join('')}</table>
+    <table>${sons.map((son, i) => `<tr><td>${svgPicto(i)} ${son}</td><td>→</td><td><b>${outils[plan[i][0]]}</b><br><b>${outils[plan[i][1]]}</b></td></tr>`).join('')}</table>
     <div class="code">${p + 1} coup${p ? 's' : ''} de cloche</div>`;
   planche.appendChild(d);
 });
