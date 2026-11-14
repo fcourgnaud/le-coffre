@@ -88,8 +88,12 @@
     Ouvrir 3 coffres avant l'aube, sans que l'alarme n'atteigne 5.
     <h3>Le plan</h3>
     Au début de chaque coffre, la cloche sonne et une lettre s'affiche : c'est le plan à utiliser (3 coups = plan C). Seul le <b>Cerveau</b> regarde la carte Plan. Il ne la montre jamais.
+    <h3>Les outils</h3>
+    Les 30 outils sont mélangés en pioche. Les <b>Porteurs</b> ont les outils en main ; le Perceur et le Cerveau n'en ont jamais. Au début de chaque coffre, les Porteurs complètent leur main (8 cartes au total : 4 chacun à 4 joueurs, 8 pour le seul Porteur à 3 joueurs).
     <h3>Le coffre</h3>
-    Chaque coffre a 4 serrures. Le téléphone joue le son de la serrure en cours (touchez le cadran pour le réentendre). Le Cerveau cherche ce son sur le plan et <b>mime</b> l'outil. Le <b>Perceur</b> interprète le mime et scanne. Bon outil : un voyant s'allume. Mauvais outil : +1 alarme.
+    Chaque coffre a 4 serrures. Le téléphone joue le son de la serrure en cours (touchez le cadran pour le réentendre). Le Cerveau cherche ce son sur le plan et <b>mime</b> l'outil. Les Porteurs glissent face cachée l'outil qu'ils pensent bon au Perceur. Le Perceur choisit et scanne. Bon outil : un voyant s'allume. Mauvais outil : +1 alarme.
+    <h3>Défausse</h3>
+    Tout outil scanné, bon ou mauvais, part à la défausse (l'app refuse une carte déjà utilisée). Le Perceur rend les outils non scannés à leurs Porteurs. Si personne n'a le bon outil, un Porteur peut échanger une carte de sa main contre la première de la pioche, autant de fois qu'il veut : ça ne coûte que du temps.
     <h3>Le garde</h3>
     Écoutez ses pas. Le <b>Guetteur</b> scanne « Planquez-vous ! » quand il approche. Planqués, personne ne peut scanner d'outil jusqu'à ce qu'il reparte. Trop tard : +2 alarme. Pour rien (aucun pas) : +1 alarme. Parfois, il fait demi-tour…
     <h3>Le chien (coffres 2 et 3)</h3>
@@ -99,7 +103,7 @@
     <h3>Silence</h3>
     Aucune parole pendant le casse. Le Cerveau ne montre pas la carte et ne pointe pas les cartes du Perceur : il mime.
     <h3>Rôles selon le nombre de joueurs</h3>
-    2 : Cerveau + Guetteur / Perceur + Maître-chien.<br>3 : Cerveau / Perceur / Guetteur + Maître-chien.<br>4 : un rôle chacun.
+    2 : Cerveau + Guetteur / Perceur + Maître-chien ; le Perceur est aussi Porteur (main de 8).<br>3 : Cerveau / Perceur / Guetteur + Maître-chien, qui est le Porteur.<br>4 : un rôle chacun ; Guetteur et Maître-chien sont Porteurs.
   </div>
   <button id="btn-retour-regles" style="margin-top:16px">Retour</button>
 </section>
@@ -216,7 +220,7 @@ function lireCarte(code) {
   const m = /^CASSE:([A-Z])(\d{2})$/.exec(String(code).trim().toUpperCase());
   if (!m) return null;
   const lettre = m[1], n = parseInt(m[2], 10);
-  if (lettre === 'O' && n >= 1 && n <= 30) return { type: 'outil', outil: OUTILS[Math.floor((n - 1) / 5)].id };
+  if (lettre === 'O' && n >= 1 && n <= 30) return { type: 'outil', outil: OUTILS[Math.floor((n - 1) / 5)].id, num: n };
   if (lettre === 'P') return { type: 'planque' };
   if (lettre === 'C') return { type: 'os' };
   if (lettre === 'B') return { type: 'courtcircuit' };
@@ -358,14 +362,29 @@ const BOUTONS = [
   ['Os', 'CASSE:C01', 'action', 'o'],
   ['Court-circuit', 'CASSE:B01', 'action', 'c']
 ];
+// Un bouton outil joue le prochain exemplaire encore disponible de ce type
+function codeBouton(code) {
+  const m = /^CASSE:O(\d{2})$/.exec(code);
+  if (!m || !J) return code;
+  const type = Math.floor((parseInt(m[1], 10) - 1) / 5);
+  for (let n = type * 5 + 1; n <= type * 5 + 5; n++) if (!J.usees.has(n)) return 'CASSE:O' + String(n).padStart(2, '0');
+  return code;   // plus d'exemplaire : l'app dira « déjà utilisé »
+}
 BOUTONS.forEach(([nom, code, famille]) => {
-  const b = document.createElement('button'); b.textContent = nom; b.className = 'btn-' + famille;
-  b.addEventListener('click', () => { Son.init(); quandCarte(code); });
+  const b = document.createElement('button'); b.className = 'btn-' + famille; b.dataset.nom = nom; b.dataset.code = code;
+  b.textContent = nom;
+  b.addEventListener('click', () => { Son.init(); quandCarte(codeBouton(code)); });
   $('#test').appendChild(b);
 });
+function majBoutons() {
+  document.querySelectorAll('#test .btn-outil').forEach((b, i) => {
+    const reste = J ? restants(i) : 5;
+    b.textContent = `${b.dataset.nom} (${reste})`; b.disabled = reste === 0;
+  });
+}
 document.addEventListener('keydown', (e) => {
   const k = BOUTONS.find((x) => x[3] === e.key.toLowerCase());
-  if (k && J && !J.fini) { e.preventDefault(); quandCarte(k[1]); }
+  if (k && J && !J.fini) { e.preventDefault(); quandCarte(codeBouton(k[1])); }
 });
 
 // Jauge d'alarme
@@ -388,6 +407,7 @@ function lancerPartie() {
     nuit: reglages.duree * 60,
     coffre: 0, combinaison: [], etape: 0,
     plans: [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5).slice(0, 3),   // un plan différent par coffre
+    usees: new Set(),                   // numéros des cartes outils déjà scannées (défaussées) cette nuit
     reecoutes: 0,
     alarme: 0, courtCircuitUtilise: false,
     planques: false,
@@ -406,6 +426,7 @@ function demarrerCoffre() {
   const c = COFFRES[J.coffre];
   J.combinaison = nouvelleCombinaison();
   J.etape = 0;
+  assurerEtape(); majBoutons();
   J.planques = false; document.body.classList.remove('planques');
   J.garde.etat = 'repos'; J.garde.prochain = J.horloge + hasard(c.attenteMin, c.attenteMax);
   J.chien.etat = 'absent'; J.chien.prochain = J.horloge + hasard(20, 35);
@@ -536,8 +557,11 @@ function quandCarte(code) {
 
   if (carte.type === 'outil') {
     if (J.planques) { Son.chut(); toast('Vous êtes planqués !'); return; }
+    if (J.usees.has(carte.num)) { toast('Outil déjà utilisé : il est défaussé'); return; }
+    J.usees.add(carte.num);            // bon ou mauvais, l'outil scanné part à la défausse
+    majBoutons();
     if (carte.outil === outilAttendu()) {
-      J.etape++; J.reecoutes = 0; majAffichage();
+      J.etape++; J.reecoutes = 0; assurerEtape(); majAffichage();
       if (J.etape >= 4) return coffreOuvert();
       Son.reussite(); message(`Serrure ${J.etape} ouverte !`);
       J.prochaineSerrure = h + 1.4;
@@ -545,12 +569,26 @@ function quandCarte(code) {
       J.stats.erreurs++;
       Son.erreur();
       $('#cadran').classList.remove('secoue'); void $('#cadran').offsetWidth; $('#cadran').classList.add('secoue');
-      if (COFFRES[J.coffre].rebloque && J.etape > 0) { J.etape = 0; J.reecoutes = 0; majAffichage(); message('Mauvais outil ! Le mécanisme se rebloque. Alarme +1', true); }
+      if (COFFRES[J.coffre].rebloque && J.etape > 0) { J.etape = 0; J.reecoutes = 0; assurerEtape(); majAffichage(); message('Mauvais outil ! Le mécanisme se rebloque. Alarme +1', true); }
       else message('Mauvais outil ! Alarme +1', true);
+      assurerEtape();
       monterAlarme(1);
       J.prochaineSerrure = h + 1.6;
     }
   }
+}
+
+// Nombre d'exemplaires encore disponibles d'un type d'outil (5 par type)
+function restants(type) { let r = 0; for (let n = type * 5 + 1; n <= type * 5 + 5; n++) if (!J.usees.has(n)) r++; return r; }
+
+// Garantit que la serrure en cours reste ouvrable : si tous les exemplaires de l'outil
+// demandé sont défaussés, l'app choisit un autre son dont l'outil existe encore.
+function assurerEtape() {
+  if (J.etape >= 4) return;
+  const plan = PLANS[J.plans[J.coffre]];
+  if (restants(plan[J.combinaison[J.etape]]) > 0) return;
+  const possibles = SONS.map((_, i) => i).filter((i) => restants(plan[i]) > 0 && i !== J.combinaison[J.etape - 1]);
+  if (possibles.length) J.combinaison[J.etape] = possibles[Math.floor(Math.random() * possibles.length)];
 }
 
 function outilAttendu() { return OUTILS[PLANS[J.plans[J.coffre]][J.combinaison[J.etape]]].id; }
@@ -571,7 +609,7 @@ function coffreOuvert() {
   J.enPause = true;
   setTimeout(() => {
     $('#entracte-titre').textContent = `Coffre ${J.coffre + 1} ouvert !`;
-    $('#entracte-texte').textContent = `Prochain : ${COFFRES[J.coffre + 1].nom}. Nouveau plan à écouter. ${J.coffre + 1 === 1 ? 'Attention, un chien rôde.' : 'Une seule erreur rebloque tout.'}`;
+    $('#entracte-texte').textContent = `Prochain : ${COFFRES[J.coffre + 1].nom}. Nouveau plan à écouter. Porteurs : complétez votre main. ${J.coffre + 1 === 1 ? 'Attention, un chien rôde.' : 'Une seule erreur rebloque tout.'}`;
     ecran('entracte');
   }, 1500);
 }
@@ -600,7 +638,7 @@ function majAide() {
   let tg = g.etat === 'repos' ? `repos (${Math.ceil(g.prochain - h)} s)` : g.etat === 'approche' ? `APPROCHE (arrive dans ${Math.ceil(g.arrivee - h)} s${g.demiTour ? ', fera demi-tour' : ''})` : 'repart';
   const son = J.etape < 4 ? SONS[J.combinaison[J.etape]].nom : '—';
   const outil = J.etape < 4 ? OUTILS.find((o) => o.id === outilAttendu()).nom : '—';
-  $('#aide').textContent = `Garde : ${tg} · Chien : ${J.chien.etat} · Plan ${LETTRES[J.plans[J.coffre]]} : ${son} → ${outil}`;
+  $('#aide').textContent = `Garde : ${tg} · Chien : ${J.chien.etat} · Plan ${LETTRES[J.plans[J.coffre]]} : ${son} → ${outil} · Défausse : ${J.usees.size}/30`;
 }
 function toastAide(t) { if (document.body.classList.contains('aide-visuelle')) toast(t); }
 
