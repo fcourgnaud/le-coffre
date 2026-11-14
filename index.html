@@ -91,12 +91,12 @@
     <h3>Le plan</h3>
     Au début de chaque coffre, la cloche sonne et une lettre s'affiche : c'est le plan à utiliser (3 coups = plan C). Seul le Cerveau regarde la carte Plan. Il ne la montre jamais.
     <h3>Les outils</h3>
-    Les 30 outils sont mélangés en pioche. Chaque Porteur a 4 outils en main (6 s'il est seul Porteur). Le Cerveau n'a pas d'outils.
+    16 outils différents, chacun en 2 exemplaires (32 cartes), mélangés en pioche. Chaque Porteur a 6 outils en main (10 s'il est seul Porteur). Le Cerveau n'a pas d'outils.
     <h3>Une serrure</h3>
-    Le téléphone joue le son de la serrure (touchez le cadran pour le réentendre). Le Cerveau cherche ce son sur le plan et <b>mime</b> l'outil. Puis les Porteurs parlent chacun leur tour, en commençant par celui qui suit le dernier à avoir scanné :<br>
+    Le téléphone joue le son de la serrure (touchez le cadran pour le réentendre). Le Cerveau cherche ce son sur le plan : il y trouve <b>2 outils possibles</b>. Il choisit lequel <b>mimer</b>. Puis les Porteurs parlent chacun leur tour, en commençant par celui qui suit le dernier à avoir scanné :<br>
     • s'il pense avoir le bon outil, il le <b>scanne</b> directement ;<br>
     • sinon, il dit « <b>J'ai pas</b> » et c'est au Porteur suivant.<br>
-    Bon outil : un voyant s'allume. Mauvais outil : +1 alarme. Si tout le monde a dit « J'ai pas », chaque Porteur glisse une carte sous la pioche, en pioche une, et on refait un tour.
+    Bon outil : un voyant s'allume. Mauvais outil : +1 alarme. Si tout le monde a dit « J'ai pas », le Cerveau peut mimer l'autre outil du plan. Si personne n'a l'un ni l'autre, chaque Porteur glisse une carte sous la pioche, en pioche une, et on refait un tour.
     <h3>Défausse</h3>
     Tout outil scanné, bon ou mauvais, est défaussé (l'app refuse une carte déjà utilisée). Celui qui a scanné pioche aussitôt une carte pour revenir à sa main de départ.
     <h3>Les 3 cartes du milieu</h3>
@@ -180,15 +180,28 @@
    ========================================================= */
 
 /* ---------------- Données du jeu ---------------- */
-// Les 6 types d'outils. Cartes : CASSE:O01 à CASSE:O30 (5 cartes par type).
+// Les 16 outils, chacun en 2 exemplaires. Cartes : CASSE:O01 à CASSE:O32
+// (O01-O02 = outil 1, O03-O04 = outil 2, etc.)
+const COPIES = 2;
 const OUTILS = [
-  { id: 'steto',    nom: 'Stéthoscope' },
-  { id: 'perceuse', nom: 'Perceuse' },
-  { id: 'brouille', nom: 'Brouilleur' },
-  { id: 'crochet',  nom: 'Crochet' },
-  { id: 'aimant',   nom: 'Aimant' },
-  { id: 'pied',     nom: 'Pied-de-biche' }
+  { id: 'perceuse',  nom: 'Perceuse' },
+  { id: 'steto',     nom: 'Stéthoscope' },
+  { id: 'pied',      nom: 'Pied-de-biche' },
+  { id: 'crochet',   nom: 'Crochet' },
+  { id: 'aimant',    nom: 'Aimant' },
+  { id: 'chalumeau', nom: 'Chalumeau' },
+  { id: 'ventouse',  nom: 'Ventouse' },
+  { id: 'scie',      nom: 'Scie à métaux' },
+  { id: 'marteau',   nom: 'Marteau' },
+  { id: 'tournevis', nom: 'Tournevis' },
+  { id: 'lampe',     nom: 'Lampe torche' },
+  { id: 'corde',     nom: 'Corde' },
+  { id: 'pince',     nom: 'Pince coupante' },
+  { id: 'loupe',     nom: 'Loupe' },
+  { id: 'cle',       nom: 'Clé à molette' },
+  { id: 'dynamite',  nom: 'Dynamite' }
 ];
+const NB_CARTES_OUTILS = OUTILS.length * COPIES;   // 32
 
 // Les 6 sons de serrure (noms neutres : ils ne désignent plus un outil)
 const SONS = [
@@ -200,16 +213,16 @@ const SONS = [
   { sig: 'pied',     nom: 'Craquement', desc: 'Craquement qui accélère' }
 ];
 
-// Les 6 cartes Plan (A à F). PLANS[plan][son] = numéro de l'outil.
-// Carré latin : sur l'ensemble des plans, chaque son correspond une fois à chaque outil.
+// Les 6 cartes Plan (A à F). PLANS[plan][son] = les 2 outils acceptés pour ce son.
+// Chaque outil apparaît 4 ou 5 fois sur l'ensemble des plans, jamais deux fois dans le même plan.
 // ⚠️ Ce tableau est recopié dans cartes.html : modifier les deux, puis réimprimer les cartes Plan.
 const PLANS = [
-  [2, 5, 4, 0, 3, 1],   // Plan A
-  [3, 0, 5, 4, 1, 2],   // Plan B
-  [5, 3, 2, 1, 0, 4],   // Plan C
-  [4, 2, 1, 3, 5, 0],   // Plan D
-  [0, 1, 3, 2, 4, 5],   // Plan E
-  [1, 4, 0, 5, 2, 3]    // Plan F
+  [[12, 15], [4, 14], [5, 6], [3, 8], [0, 1], [7, 13]],   // Plan A
+  [[9, 11], [6, 12], [8, 15], [0, 5], [4, 13], [2, 10]],  // Plan B
+  [[6, 10], [2, 9], [1, 3], [7, 14], [5, 8], [11, 15]],   // Plan C
+  [[0, 14], [7, 10], [2, 11], [1, 12], [9, 15], [3, 4]],  // Plan D
+  [[7, 8], [1, 5], [0, 13], [4, 10], [2, 12], [9, 14]],   // Plan E
+  [[1, 4], [3, 13], [7, 9], [6, 11], [10, 14], [8, 12]]   // Plan F
 ];
 const LETTRES = 'ABCDEF';
 
@@ -227,7 +240,7 @@ function lireCarte(code) {
   const m = /^CASSE:([A-Z])(\d{2})$/.exec(String(code).trim().toUpperCase());
   if (!m) return null;
   const lettre = m[1], n = parseInt(m[2], 10);
-  if (lettre === 'O' && n >= 1 && n <= 30) return { type: 'outil', outil: OUTILS[Math.floor((n - 1) / 5)].id, num: n };
+  if (lettre === 'O' && n >= 1 && n <= NB_CARTES_OUTILS) return { type: 'outil', type_: Math.floor((n - 1) / COPIES), num: n };
   if (lettre === 'P') return { type: 'planque' };
   if (lettre === 'C') return { type: 'os' };
   if (lettre === 'B') return { type: 'courtcircuit' };
@@ -364,7 +377,7 @@ $('#btn-retour-regles').addEventListener('click', () => ecran('accueil'));
 
 // Boutons du mode sans scan (et raccourcis clavier : 1 à 6, Espace, O, C)
 const BOUTONS = [
-  ...OUTILS.map((o, i) => [o.nom, 'CASSE:O' + String(i * 5 + 1).padStart(2, '0'), 'outil', String(i + 1)]),
+  ...OUTILS.map((o, i) => [o.nom, 'CASSE:O' + String(i * COPIES + 1).padStart(2, '0'), 'outil', '1234567890azerty'[i]]),
   ['Planquez-vous !', 'CASSE:P01', 'planque', ' '],
   ['Os', 'CASSE:C01', 'action', 'o'],
   ['Court-circuit', 'CASSE:B01', 'action', 'c']
@@ -373,8 +386,8 @@ const BOUTONS = [
 function codeBouton(code) {
   const m = /^CASSE:O(\d{2})$/.exec(code);
   if (!m || !J) return code;
-  const type = Math.floor((parseInt(m[1], 10) - 1) / 5);
-  for (let n = type * 5 + 1; n <= type * 5 + 5; n++) if (!J.usees.has(n)) return 'CASSE:O' + String(n).padStart(2, '0');
+  const type = Math.floor((parseInt(m[1], 10) - 1) / COPIES);
+  for (let n = type * COPIES + 1; n <= type * COPIES + COPIES; n++) if (!J.usees.has(n)) return 'CASSE:O' + String(n).padStart(2, '0');
   return code;   // plus d'exemplaire : l'app dira « déjà utilisé »
 }
 BOUTONS.forEach(([nom, code, famille]) => {
@@ -385,7 +398,7 @@ BOUTONS.forEach(([nom, code, famille]) => {
 });
 function majBoutons() {
   document.querySelectorAll('#test .btn-outil').forEach((b, i) => {
-    const reste = J ? restants(i) : 5;
+    const reste = J ? restants(i) : COPIES;
     b.textContent = `${b.dataset.nom} (${reste})`; b.disabled = reste === 0;
   });
 }
@@ -403,7 +416,7 @@ let boucle = null;      // minuteur principal
 
 function nouvelleCombinaison() {
   const c = [];
-  while (c.length < 4) { const o = Math.floor(Math.random() * SONS.length); if (o !== c[c.length - 1]) c.push(o); }
+  while (c.length < 4) { const o = Math.floor(Math.random() * SONS.length); if (!c.includes(o)) c.push(o); }   // 4 sons différents
   return c;
 }
 
@@ -567,7 +580,7 @@ function quandCarte(code) {
     if (J.usees.has(carte.num)) { toast('Outil déjà utilisé : il est défaussé'); return; }
     J.usees.add(carte.num);            // bon ou mauvais, l'outil scanné part à la défausse
     majBoutons();
-    if (carte.outil === outilAttendu()) {
+    if (outilsAcceptes().includes(carte.type_)) {
       J.etape++; J.reecoutes = 0; assurerEtape(); majAffichage();
       if (J.etape >= 4) return coffreOuvert();
       Son.reussite(); message(`Serrure ${J.etape} ouverte !`);
@@ -586,19 +599,22 @@ function quandCarte(code) {
 }
 
 // Nombre d'exemplaires encore disponibles d'un type d'outil (5 par type)
-function restants(type) { let r = 0; for (let n = type * 5 + 1; n <= type * 5 + 5; n++) if (!J.usees.has(n)) r++; return r; }
+function restants(type) { let r = 0; for (let n = type * COPIES + 1; n <= type * COPIES + COPIES; n++) if (!J.usees.has(n)) r++; return r; }
 
 // Garantit que la serrure en cours reste ouvrable : si tous les exemplaires de l'outil
 // demandé sont défaussés, l'app choisit un autre son dont l'outil existe encore.
 function assurerEtape() {
   if (J.etape >= 4) return;
   const plan = PLANS[J.plans[J.coffre]];
-  if (restants(plan[J.combinaison[J.etape]]) > 0) return;
-  const possibles = SONS.map((_, i) => i).filter((i) => restants(plan[i]) > 0 && i !== J.combinaison[J.etape - 1]);
+  const dispo = (son) => plan[son].some((t) => restants(t) > 0);
+  if (dispo(J.combinaison[J.etape])) return;
+  let possibles = SONS.map((_, i) => i).filter((i) => dispo(i) && !J.combinaison.slice(0, J.etape).includes(i));
+  if (!possibles.length) possibles = SONS.map((_, i) => i).filter(dispo);
   if (possibles.length) J.combinaison[J.etape] = possibles[Math.floor(Math.random() * possibles.length)];
 }
 
-function outilAttendu() { return OUTILS[PLANS[J.plans[J.coffre]][J.combinaison[J.etape]]].id; }
+// Les 2 outils (numéros) acceptés pour la serrure en cours
+function outilsAcceptes() { return PLANS[J.plans[J.coffre]][J.combinaison[J.etape]]; }
 
 function monterAlarme(n) {
   J.alarme = Math.min(ALARME_MAX, J.alarme + n);
@@ -644,8 +660,8 @@ function majAide() {
   const g = J.garde, h = J.horloge;
   let tg = g.etat === 'repos' ? `repos (${Math.ceil(g.prochain - h)} s)` : g.etat === 'approche' ? `APPROCHE (arrive dans ${Math.ceil(g.arrivee - h)} s${g.demiTour ? ', fera demi-tour' : ''})` : 'repart';
   const son = J.etape < 4 ? SONS[J.combinaison[J.etape]].nom : '—';
-  const outil = J.etape < 4 ? OUTILS.find((o) => o.id === outilAttendu()).nom : '—';
-  $('#aide').textContent = `Garde : ${tg} · Chien : ${J.chien.etat} · Plan ${LETTRES[J.plans[J.coffre]]} : ${son} → ${outil} · Défausse : ${J.usees.size}/30`;
+  const outil = J.etape < 4 ? outilsAcceptes().map((t) => `${OUTILS[t].nom} (${restants(t)})`).join(' ou ') : '—';
+  $('#aide').textContent = `Garde : ${tg} · Chien : ${J.chien.etat} · Plan ${LETTRES[J.plans[J.coffre]]} : ${son} → ${outil} · Défausse : ${J.usees.size}/${NB_CARTES_OUTILS}`;
 }
 function toastAide(t) { if (document.body.classList.contains('aide-visuelle')) toast(t); }
 

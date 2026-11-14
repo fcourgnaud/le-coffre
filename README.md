@@ -15,7 +15,7 @@ Jeu coopératif en temps réel (2 à 4 joueurs) : le téléphone posé au centre
 
 ## Contenu des QR codes
 
-- `CASSE:O01` à `CASSE:O30` : outils (5 par type, dans l'ordre Stéthoscope, Perceuse, Brouilleur, Crochet, Aimant, Pied-de-biche)
+- `CASSE:O01` à `CASSE:O32` : 16 outils en 2 exemplaires (O01-O02 Perceuse, O03-O04 Stéthoscope, O05-O06 Pied-de-biche, O07-O08 Crochet, O09-O10 Aimant, O11-O12 Chalumeau, O13-O14 Ventouse, O15-O16 Scie à métaux, O17-O18 Marteau, O19-O20 Tournevis, O21-O22 Lampe torche, O23-O24 Corde, O25-O26 Pince coupante, O27-O28 Loupe, O29-O30 Clé à molette, O31-O32 Dynamite)
 - `CASSE:P01` : Planquez-vous ! (milieu de table)
 - `CASSE:C01` : Os (milieu de table)
 - `CASSE:B01` : Court-circuit (milieu de table)
@@ -33,6 +33,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **1.5.0** — 16 outils × 2 exemplaires, 2 outils possibles par son sur les plans, mains de 6 (10 si seul Porteur), 4 sons différents par coffre.
 - **1.4.1** — Planquez-vous !, Os et Court-circuit au milieu de la table, utilisables par tous (1 carte de chaque).
 - **1.4.0** — Plus de Perceur : les Porteurs scannent à tour de rôle (« J'ai pas » pour passer) ; le Cerveau gère garde et chien ; Court-circuit commun aux Porteurs.
 - **1.3.0** — Mains réparties : outils chez les Porteurs, défausse de tout outil scanné, carte déjà utilisée refusée, serrures toujours ouvrables, compteur d'exemplaires en mode sans scan.
