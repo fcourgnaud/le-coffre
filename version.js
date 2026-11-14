@@ -5,9 +5,10 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '1.1.0';
+self.APP_VERSION = '1.2.0';
 self.APP_NOTES = [
-  'Nouveau mode « Sans scan » : jouer avec des boutons, sans caméra',
-  'Le choix Scanner / Sans scan est mémorisé sur le téléphone',
-  'Sur ordinateur : touches 1 à 6 (outils), Espace (planque), O (os), C (court-circuit)'
+  'Le Plan de la banque : chaque coffre a son plan (A à F), annoncé par la cloche',
+  'Les sons ont des noms neutres ; le Cerveau mime l\'outil, le Perceur scanne',
+  'L\'Électricien disparaît : le Maître-chien garde le Court-circuit',
+  'Nuit plus longue (12 min par défaut) et option « Réécoutes limitées »'
 ];

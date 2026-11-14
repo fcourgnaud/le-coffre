@@ -112,6 +112,9 @@ body.en-jeu #maj { display: none; }   /* jamais pendant une partie */
 #jeu .coffre-num { color: var(--accent); font-size: .8rem; letter-spacing: .2em; text-transform: uppercase; }
 #chrono { font-family: var(--police-chiffres); font-size: 1.6rem; color: var(--texte); }
 #chrono.presse { color: var(--danger); }
+#jeu .droite { text-align: right; }
+#plan { color: var(--accent); font-family: var(--police-titre); font-size: 1.1rem; }
+#plan-lettre { font-size: 1.8rem; vertical-align: middle; }
 
 /* Jauge d'alarme */
 #alarme { width: 100%; }

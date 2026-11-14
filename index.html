@@ -44,7 +44,7 @@
   <div class="reglage">
     <div class="etiquette">Durée de la nuit</div>
     <div class="choix" id="choix-duree">
-      <button data-v="12">12 min</button><button data-v="9" class="on">9 min</button><button data-v="7">7 min</button>
+      <button data-v="15">15 min</button><button data-v="12" class="on">12 min</button><button data-v="9">9 min</button>
     </div>
   </div>
 
@@ -56,6 +56,7 @@
   </div>
 
   <div class="reglage">
+    <label class="case"><input type="checkbox" id="opt-reecoutes"> Réécoutes limitées (2 par serrure, puis +1 alarme)</label>
     <label class="case"><input type="checkbox" id="opt-aide"> Aide visuelle (garde, chien, bonne réponse)</label>
   </div>
 
@@ -74,7 +75,7 @@
 <!-- ============ ÉCOUTER LES SERRURES ============ -->
 <section id="serrures" class="ecran">
   <h2>Les serrures</h2>
-  <p style="color:var(--texte-doux);margin:0">Chaque serrure a un son. Apprenez-les avant le casse : pendant la partie, c'est le seul indice.</p>
+  <p style="color:var(--texte-doux);margin:0">Chaque serrure a un son. Le Cerveau doit les reconnaître, puis chercher sur la carte Plan quel outil correspond.</p>
   <div id="liste-serrures"></div>
   <button id="btn-retour-serrures" style="margin-top:auto">Retour</button>
 </section>
@@ -85,18 +86,20 @@
   <div class="texte">
     <h3>But</h3>
     Ouvrir 3 coffres avant l'aube, sans que l'alarme n'atteigne 5.
+    <h3>Le plan</h3>
+    Au début de chaque coffre, la cloche sonne et une lettre s'affiche : c'est le plan à utiliser (3 coups = plan C). Seul le <b>Cerveau</b> regarde la carte Plan. Il ne la montre jamais.
     <h3>Le coffre</h3>
-    Chaque coffre a 4 serrures. Le téléphone joue le son de la serrure en cours (touchez le cadran pour le réentendre). Le <b>Perceur</b> scanne l'outil qui correspond. Bon outil : un voyant s'allume. Mauvais outil : +1 alarme.
+    Chaque coffre a 4 serrures. Le téléphone joue le son de la serrure en cours (touchez le cadran pour le réentendre). Le Cerveau cherche ce son sur le plan et <b>mime</b> l'outil. Le <b>Perceur</b> interprète le mime et scanne. Bon outil : un voyant s'allume. Mauvais outil : +1 alarme.
     <h3>Le garde</h3>
     Écoutez ses pas. Le <b>Guetteur</b> scanne « Planquez-vous ! » quand il approche. Planqués, personne ne peut scanner d'outil jusqu'à ce qu'il reparte. Trop tard : +2 alarme. Pour rien (aucun pas) : +1 alarme. Parfois, il fait demi-tour…
     <h3>Le chien (coffres 2 et 3)</h3>
-    Quand il renifle, le <b>Maître-chien</b> scanne l'Os avant qu'il aboie, sinon +1 alarme.
-    <h3>L'électricien</h3>
-    Une fois par nuit, il scanne « Court-circuit » : −1 alarme.
+    Quand il renifle, le <b>Maître-chien</b> scanne l'Os avant qu'il aboie, sinon +1 alarme. Il garde aussi le <b>Court-circuit</b> : une fois par nuit, −1 alarme.
     <h3>Coffre 3</h3>
     Une erreur rebloque tout le mécanisme : on recommence à la serrure 1.
     <h3>Silence</h3>
-    Aucune parole pendant le casse. Gestes uniquement.
+    Aucune parole pendant le casse. Le Cerveau ne montre pas la carte et ne pointe pas les cartes du Perceur : il mime.
+    <h3>Rôles selon le nombre de joueurs</h3>
+    2 : Cerveau + Guetteur / Perceur + Maître-chien.<br>3 : Cerveau / Perceur / Guetteur + Maître-chien.<br>4 : un rôle chacun.
   </div>
   <button id="btn-retour-regles" style="margin-top:16px">Retour</button>
 </section>
@@ -108,7 +111,10 @@
       <div class="coffre-num" id="coffre-num">Coffre 1 / 3</div>
       <div class="coffre-nom" id="coffre-nom">—</div>
     </div>
-    <div id="chrono">9:00</div>
+    <div class="droite">
+      <div id="chrono">12:00</div>
+      <div id="plan">Plan <span id="plan-lettre">—</span></div>
+    </div>
   </div>
 
   <div id="alarme">
@@ -165,13 +171,36 @@
 /* ---------------- Données du jeu ---------------- */
 // Les 6 types d'outils. Cartes : CASSE:O01 à CASSE:O30 (5 cartes par type).
 const OUTILS = [
-  { id: 'steto',    nom: 'Stéthoscope',   desc: 'Serrure à gorges : petits « toc » réguliers' },
-  { id: 'perceuse', nom: 'Perceuse',      desc: 'Plaque d\'acier : grincement métallique' },
-  { id: 'brouille', nom: 'Brouilleur',    desc: 'Clavier électronique : bips aigus' },
-  { id: 'crochet',  nom: 'Crochet',       desc: 'Serrure à goupilles : cliquetis rapides' },
-  { id: 'aimant',   nom: 'Aimant',        desc: 'Verrou magnétique : bourdonnement qui monte' },
-  { id: 'pied',     nom: 'Pied-de-biche', desc: 'Porte en bois : craquement' }
+  { id: 'steto',    nom: 'Stéthoscope' },
+  { id: 'perceuse', nom: 'Perceuse' },
+  { id: 'brouille', nom: 'Brouilleur' },
+  { id: 'crochet',  nom: 'Crochet' },
+  { id: 'aimant',   nom: 'Aimant' },
+  { id: 'pied',     nom: 'Pied-de-biche' }
 ];
+
+// Les 6 sons de serrure (noms neutres : ils ne désignent plus un outil)
+const SONS = [
+  { sig: 'steto',    nom: 'Tic-tac',    desc: 'Petits « toc » réguliers' },
+  { sig: 'perceuse', nom: 'Grincement', desc: 'Grincement métallique' },
+  { sig: 'brouille', nom: 'Bips',       desc: 'Bips électroniques aigus' },
+  { sig: 'crochet',  nom: 'Cliquetis',  desc: 'Cliquetis rapides et irréguliers' },
+  { sig: 'aimant',   nom: 'Bourdon',    desc: 'Bourdonnement qui monte' },
+  { sig: 'pied',     nom: 'Craquement', desc: 'Craquement qui accélère' }
+];
+
+// Les 6 cartes Plan (A à F). PLANS[plan][son] = numéro de l'outil.
+// Carré latin : sur l'ensemble des plans, chaque son correspond une fois à chaque outil.
+// ⚠️ Ce tableau est recopié dans cartes.html : modifier les deux, puis réimprimer les cartes Plan.
+const PLANS = [
+  [2, 5, 4, 0, 3, 1],   // Plan A
+  [3, 0, 5, 4, 1, 2],   // Plan B
+  [5, 3, 2, 1, 0, 4],   // Plan C
+  [4, 2, 1, 3, 5, 0],   // Plan D
+  [0, 1, 3, 2, 4, 5],   // Plan E
+  [1, 4, 0, 5, 2, 3]    // Plan F
+];
+const LETTRES = 'ABCDEF';
 
 // Les 3 coffres de la nuit, du plus facile au plus dur
 const COFFRES = [
@@ -194,7 +223,7 @@ function lireCarte(code) {
   if (lettre === 'R') return { type: 'role', n };
   return null;
 }
-const ROLES = ['', 'Perceur', 'Guetteur', 'Maître-chien', 'Électricien'];
+const ROLES = ['', 'Perceur', 'Guetteur', 'Maître-chien', 'Cerveau'];
 
 /* ---------------- Sons (générés, pas de fichiers) ---------------- */
 const Son = {
@@ -247,6 +276,7 @@ const Son = {
   alarme(niveau) { const t = this.t(); const f = 600 + niveau * 140; this.ton(t, 0.18, { f, type: 'square', g: 0.2 }); this.ton(t + 0.24, 0.18, { f: f * 1.25, type: 'square', g: 0.2 }); },
   chut() { const t = this.t(); this.souffle(t, 0.5, { filtre: 'highpass', f: 3000, g: 0.15, att: 0.1 }); },
   ouverture() { const t = this.t(); for (let i = 0; i < 6; i++) this.tic(t + i * 0.07, 0.3); this.ton(t + 0.5, 0.6, { f: 150, f2: 70, type: 'triangle', g: 0.6 }); [523, 659, 784, 1047].forEach((f, i) => this.ton(t + 0.7 + i * 0.1, 0.9, { f, type: 'triangle', g: 0.12 })); },
+  coups(n) { const t = this.t() + 0.1; for (let i = 0; i < n; i++) { this.ton(t + i * 0.6, 1.0, { f: 988, type: 'sine', g: 0.25 }); this.ton(t + i * 0.6, 0.6, { f: 1976, type: 'sine', g: 0.06 }); } },
   cloche() { const t = this.t(); [880, 660].forEach((f, i) => this.ton(t + i * 0.6, 1.4, { f, type: 'sine', g: 0.2 })); },
 
   // Signature sonore de chaque serrure
@@ -288,7 +318,7 @@ function message(txt, alerte = false) { const m = $('#message'); m.textContent =
 const hasard = (a, b) => a + Math.random() * (b - a);
 
 /* ---------------- Réglages de l'accueil ---------------- */
-const reglages = { joueurs: 3, duree: 9, mode: 'scan' };
+const reglages = { joueurs: 3, duree: 12, mode: 'scan', reecoutes: false };
 function brancherChoix(sel, cle) {
   document.querySelectorAll(sel + ' button').forEach((b) => b.addEventListener('click', () => {
     document.querySelectorAll(sel + ' button').forEach((x) => x.classList.remove('on'));
@@ -306,13 +336,14 @@ function choisirMode(m) {
 }
 document.querySelectorAll('#choix-mode button').forEach((b) => b.addEventListener('click', () => choisirMode(b.dataset.v)));
 try { choisirMode(localStorage.getItem('casse-mode') || 'scan'); } catch (e) { choisirMode('scan'); }
+$('#opt-reecoutes').addEventListener('change', (e) => { reglages.reecoutes = e.target.checked; });
 $('#opt-aide').addEventListener('change', (e) => document.body.classList.toggle('aide-visuelle', e.target.checked));
 
 // Écran « Écouter les serrures »
-OUTILS.forEach((o) => {
+SONS.forEach((o) => {
   const l = document.createElement('div'); l.className = 'ligne-son';
   l.innerHTML = `<div><div class="nom">${o.nom}</div><div class="desc">${o.desc}</div></div><button>▶</button>`;
-  l.querySelector('button').addEventListener('click', () => { Son.init(); Son.serrure(o.id); });
+  l.querySelector('button').addEventListener('click', () => { Son.init(); Son.serrure(o.sig); });
   $('#liste-serrures').appendChild(l);
 });
 $('#btn-serrures').addEventListener('click', () => ecran('serrures'));
@@ -346,7 +377,7 @@ let boucle = null;      // minuteur principal
 
 function nouvelleCombinaison() {
   const c = [];
-  while (c.length < 4) { const o = OUTILS[Math.floor(Math.random() * OUTILS.length)].id; if (o !== c[c.length - 1]) c.push(o); }
+  while (c.length < 4) { const o = Math.floor(Math.random() * SONS.length); if (o !== c[c.length - 1]) c.push(o); }
   return c;
 }
 
@@ -356,6 +387,8 @@ function lancerPartie() {
     horloge: 0,                         // temps de jeu en secondes (s'arrête en pause)
     nuit: reglages.duree * 60,
     coffre: 0, combinaison: [], etape: 0,
+    plans: [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5).slice(0, 3),   // un plan différent par coffre
+    reecoutes: 0,
     alarme: 0, courtCircuitUtilise: false,
     planques: false,
     garde: { etat: 'repos', prochain: 0, debut: 0, arrivee: 0, demiTour: null, prochainPas: 0, finDepart: 0, gainDepart: 0, pan: 0 },
@@ -376,11 +409,16 @@ function demarrerCoffre() {
   J.planques = false; document.body.classList.remove('planques');
   J.garde.etat = 'repos'; J.garde.prochain = J.horloge + hasard(c.attenteMin, c.attenteMax);
   J.chien.etat = 'absent'; J.chien.prochain = J.horloge + hasard(20, 35);
-  J.prochaineSerrure = J.horloge + 1.2;
+  // Annonce du plan : la lettre s'affiche et la cloche sonne (3 coups = plan C)
+  const plan = J.plans[J.coffre];
+  $('#plan-lettre').textContent = LETTRES[plan];
+  setTimeout(() => Son.coups(plan + 1), 400);
+  J.prochaineSerrure = J.horloge + 1.5 + (plan + 1) * 0.6;
+  J.reecoutes = 0;
   $('#coffre-num').textContent = `Coffre ${J.coffre + 1} / 3`;
   $('#coffre-nom').textContent = c.nom;
   $('#cadran').classList.remove('ouvert');
-  message('Écoutez la serrure…');
+  message(`Plan ${LETTRES[plan]}. Cerveau, à toi.`);
   majAffichage();
   ecran('jeu');
   let avant = performance.now();
@@ -445,14 +483,20 @@ function depart(gainActuel) { const g = J.garde; g.etat = 'depart'; g.finDepart 
 
 function jouerSerrure() {
   if (J.etape >= 4) return;
-  Son.serrure(J.combinaison[J.etape], COFFRES[J.coffre].volumeSerrure);
+  Son.serrure(SONS[J.combinaison[J.etape]].sig, COFFRES[J.coffre].volumeSerrure);
   const mol = $('#molette'); mol.style.transform = `rotate(${Math.floor(Math.random() * 300) - 150}deg)`;
 }
 
 $('#cadran').addEventListener('click', () => {
   if (!J || J.planques || J.fini) return;
   if (J.horloge - J.derniereEcoute < 1.6) return;
-  J.derniereEcoute = J.horloge; jouerSerrure(); J.prochaineSerrure = J.horloge + 7;
+  J.derniereEcoute = J.horloge;
+  if (reglages.reecoutes) {
+    J.reecoutes++;
+    if (J.reecoutes > 2) { message('Le cadran grince ! Alarme +1', true); monterAlarme(1); }
+    else toast(`Réécoute ${J.reecoutes} / 2`);
+  }
+  jouerSerrure(); J.prochaineSerrure = J.horloge + 7;
 });
 
 /* ---------------- Quand une carte est scannée ---------------- */
@@ -492,8 +536,8 @@ function quandCarte(code) {
 
   if (carte.type === 'outil') {
     if (J.planques) { Son.chut(); toast('Vous êtes planqués !'); return; }
-    if (carte.outil === J.combinaison[J.etape]) {
-      J.etape++; majAffichage();
+    if (carte.outil === outilAttendu()) {
+      J.etape++; J.reecoutes = 0; majAffichage();
       if (J.etape >= 4) return coffreOuvert();
       Son.reussite(); message(`Serrure ${J.etape} ouverte !`);
       J.prochaineSerrure = h + 1.4;
@@ -501,13 +545,15 @@ function quandCarte(code) {
       J.stats.erreurs++;
       Son.erreur();
       $('#cadran').classList.remove('secoue'); void $('#cadran').offsetWidth; $('#cadran').classList.add('secoue');
-      if (COFFRES[J.coffre].rebloque && J.etape > 0) { J.etape = 0; majAffichage(); message('Mauvais outil ! Le mécanisme se rebloque. Alarme +1', true); }
+      if (COFFRES[J.coffre].rebloque && J.etape > 0) { J.etape = 0; J.reecoutes = 0; majAffichage(); message('Mauvais outil ! Le mécanisme se rebloque. Alarme +1', true); }
       else message('Mauvais outil ! Alarme +1', true);
       monterAlarme(1);
       J.prochaineSerrure = h + 1.6;
     }
   }
 }
+
+function outilAttendu() { return OUTILS[PLANS[J.plans[J.coffre]][J.combinaison[J.etape]]].id; }
 
 function monterAlarme(n) {
   J.alarme = Math.min(ALARME_MAX, J.alarme + n);
@@ -525,7 +571,7 @@ function coffreOuvert() {
   J.enPause = true;
   setTimeout(() => {
     $('#entracte-titre').textContent = `Coffre ${J.coffre + 1} ouvert !`;
-    $('#entracte-texte').textContent = `Prochain : ${COFFRES[J.coffre + 1].nom}. ${J.coffre + 1 === 1 ? 'Attention, un chien rôde.' : 'Une seule erreur rebloque tout.'}`;
+    $('#entracte-texte').textContent = `Prochain : ${COFFRES[J.coffre + 1].nom}. Nouveau plan à écouter. ${J.coffre + 1 === 1 ? 'Attention, un chien rôde.' : 'Une seule erreur rebloque tout.'}`;
     ecran('entracte');
   }, 1500);
 }
@@ -552,8 +598,9 @@ function majAide() {
   if (!document.body.classList.contains('aide-visuelle')) return;
   const g = J.garde, h = J.horloge;
   let tg = g.etat === 'repos' ? `repos (${Math.ceil(g.prochain - h)} s)` : g.etat === 'approche' ? `APPROCHE (arrive dans ${Math.ceil(g.arrivee - h)} s${g.demiTour ? ', fera demi-tour' : ''})` : 'repart';
-  const outil = OUTILS.find((o) => o.id === J.combinaison[J.etape]);
-  $('#aide').textContent = `Garde : ${tg} · Chien : ${J.chien.etat} · Réponse : ${outil ? outil.nom : '—'}`;
+  const son = J.etape < 4 ? SONS[J.combinaison[J.etape]].nom : '—';
+  const outil = J.etape < 4 ? OUTILS.find((o) => o.id === outilAttendu()).nom : '—';
+  $('#aide').textContent = `Garde : ${tg} · Chien : ${J.chien.etat} · Plan ${LETTRES[J.plans[J.coffre]]} : ${son} → ${outil}`;
 }
 function toastAide(t) { if (document.body.classList.contains('aide-visuelle')) toast(t); }
 

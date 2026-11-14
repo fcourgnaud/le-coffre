@@ -18,8 +18,9 @@ Jeu coopératif en temps réel (2 à 4 joueurs) : le téléphone posé au centre
 - `CASSE:O01` à `CASSE:O30` : outils (5 par type, dans l'ordre Stéthoscope, Perceuse, Brouilleur, Crochet, Aimant, Pied-de-biche)
 - `CASSE:P01` à `CASSE:P04` : Planquez-vous !
 - `CASSE:C01`, `CASSE:C02` : Os (chien)
-- `CASSE:B01` : Court-circuit (électricien)
-- `CASSE:R01` à `CASSE:R04` : rôles (Perceur, Guetteur, Maître-chien, Électricien)
+- `CASSE:B01` : Court-circuit (tenu par le Maître-chien)
+- `CASSE:R01` à `CASSE:R04` : rôles (Perceur, Guetteur, Maître-chien, Cerveau)
+- Cartes Plan A à F : sans QR, seul le Cerveau les regarde
 
 QR standard uniquement (pas de Micro QR).
 
@@ -31,5 +32,6 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **1.2.0** — Plan de la banque (option A : un seul Cerveau) : plans A–F annoncés par la cloche, sons aux noms neutres, Électricien supprimé, nuit 12 min par défaut, option réécoutes limitées.
 - **1.1.0** — Mode « Sans scan » (boutons, sans caméra, mémorisé) + raccourcis clavier sur ordinateur.
 - **1.0.0** — Première version jouable : 3 coffres, garde, chien, jauge d'alarme, sons générés, système de versions.

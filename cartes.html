@@ -19,12 +19,16 @@
   .carte .nom { font-size: 15pt; text-align: center; }
   .carte .qr svg { width: 38mm; height: 38mm; display: block; }
   .carte .code { font-family: monospace; font-size: 7pt; color: #888; }
+  .carte.plan .lettre { font-size: 34pt; color: #8a6d2a; line-height: 1; }
+  .carte.plan table { font-family: system-ui, sans-serif; font-size: 8.5pt; border-collapse: collapse; width: 100%; }
+  .carte.plan td { padding: 1.2mm 0.5mm; border-bottom: 0.2mm solid #ddd; }
+  .carte.plan td:nth-child(2) { color: #aaa; text-align: center; }
   @media print { .info { display: none; } body { background: #fff; } }
 </style>
 </head>
 <body>
 <div class="info">
-  <b>Cartes prototype</b> — 30 outils, 4 « Planquez-vous ! », 2 Os, 1 Court-circuit, 4 rôles.
+  <b>Cartes prototype</b> — 30 outils, 4 « Planquez-vous ! », 2 Os, 1 Court-circuit, 4 rôles, 6 Plans (sans QR).
   QR standard (pas de Micro QR). Imprimer à l'échelle 100 %.
   <button onclick="print()">Imprimer</button>
 </div>
@@ -35,14 +39,29 @@ const cartes = [];
 for (let i = 1; i <= 30; i++) cartes.push(['Outil', outils[Math.floor((i - 1) / 5)], 'CASSE:O' + String(i).padStart(2, '0')]);
 for (let i = 1; i <= 4; i++) cartes.push(['Planque', 'Planquez-vous !', 'CASSE:P0' + i]);
 for (let i = 1; i <= 2; i++) cartes.push(['Chien', 'Os à moelle', 'CASSE:C0' + i]);
-cartes.push(['Électricien', 'Court-circuit', 'CASSE:B01']);
-['Perceur', 'Guetteur', 'Maître-chien', 'Électricien'].forEach((r, i) => cartes.push(['Rôle', r, 'CASSE:R0' + (i + 1)]));
+cartes.push(['Maître-chien', 'Court-circuit', 'CASSE:B01']);
+['Perceur', 'Guetteur', 'Maître-chien', 'Cerveau'].forEach((r, i) => cartes.push(['Rôle', r, 'CASSE:R0' + (i + 1)]));
 
 const planche = document.getElementById('planche');
 cartes.forEach(([famille, nom, code]) => {
-  const qr = qrcode(0, 'M'); qr.addData(code); qr.make();
+  let svg = '<div style="width:38mm;height:38mm;border:1px solid #ccc;display:flex;align-items:center;justify-content:center;font:8pt system-ui">QR indisponible (connexion ?)</div>';
+  if (window.qrcode) { const qr = qrcode(0, 'M'); qr.addData(code); qr.make(); svg = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); }
   const d = document.createElement('div'); d.className = 'carte';
-  d.innerHTML = `<div class="famille">${famille}</div><div class="nom">${nom}</div><div class="qr">${qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true })}</div><div class="code">${code}</div>`;
+  d.innerHTML = `<div class="famille">${famille}</div><div class="nom">${nom}</div><div class="qr">${svg}</div><div class="code">${code}</div>`;
+  planche.appendChild(d);
+});
+
+// Cartes Plan (pas de QR : seul le Cerveau les regarde). Même tableau que dans index.html.
+const sons = ['Tic-tac', 'Grincement', 'Bips', 'Cliquetis', 'Bourdon', 'Craquement'];
+const PLANS = [
+  [2, 5, 4, 0, 3, 1], [3, 0, 5, 4, 1, 2], [5, 3, 2, 1, 0, 4],
+  [4, 2, 1, 3, 5, 0], [0, 1, 3, 2, 4, 5], [1, 4, 0, 5, 2, 3]
+];
+PLANS.forEach((plan, p) => {
+  const d = document.createElement('div'); d.className = 'carte plan';
+  d.innerHTML = `<div class="famille">Plan de la banque</div><div class="lettre">${'ABCDEF'[p]}</div>
+    <table>${sons.map((son, i) => `<tr><td>${son}</td><td>→</td><td><b>${outils[plan[i]]}</b></td></tr>`).join('')}</table>
+    <div class="code">${p + 1} coup${p ? 's' : ''} de cloche</div>`;
   planche.appendChild(d);
 });
 </script>
