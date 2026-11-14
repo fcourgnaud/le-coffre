@@ -86,24 +86,29 @@
   <div class="texte">
     <h3>But</h3>
     Ouvrir 3 coffres avant l'aube, sans que l'alarme n'atteigne 5.
+    <h3>Les rôles</h3>
+    Un joueur est le <b>Cerveau</b>. Tous les autres sont <b>Porteurs</b> (Porteur 1, 2, 3 : c'est l'ordre de parole).
     <h3>Le plan</h3>
-    Au début de chaque coffre, la cloche sonne et une lettre s'affiche : c'est le plan à utiliser (3 coups = plan C). Seul le <b>Cerveau</b> regarde la carte Plan. Il ne la montre jamais.
+    Au début de chaque coffre, la cloche sonne et une lettre s'affiche : c'est le plan à utiliser (3 coups = plan C). Seul le Cerveau regarde la carte Plan. Il ne la montre jamais.
     <h3>Les outils</h3>
-    Les 30 outils sont mélangés en pioche. Les <b>Porteurs</b> ont les outils en main ; le Perceur et le Cerveau n'en ont jamais. Au début de chaque coffre, les Porteurs complètent leur main (8 cartes au total : 4 chacun à 4 joueurs, 8 pour le seul Porteur à 3 joueurs).
-    <h3>Le coffre</h3>
-    Chaque coffre a 4 serrures. Le téléphone joue le son de la serrure en cours (touchez le cadran pour le réentendre). Le Cerveau cherche ce son sur le plan et <b>mime</b> l'outil. Les Porteurs glissent face cachée l'outil qu'ils pensent bon au Perceur. Le Perceur choisit et scanne. Bon outil : un voyant s'allume. Mauvais outil : +1 alarme.
+    Les 30 outils sont mélangés en pioche. Chaque Porteur a 4 outils en main (6 s'il est seul Porteur). Le Cerveau n'a pas d'outils.
+    <h3>Une serrure</h3>
+    Le téléphone joue le son de la serrure (touchez le cadran pour le réentendre). Le Cerveau cherche ce son sur le plan et <b>mime</b> l'outil. Puis les Porteurs parlent chacun leur tour, en commençant par celui qui suit le dernier à avoir scanné :<br>
+    • s'il pense avoir le bon outil, il le <b>scanne</b> directement ;<br>
+    • sinon, il dit « <b>J'ai pas</b> » et c'est au Porteur suivant.<br>
+    Bon outil : un voyant s'allume. Mauvais outil : +1 alarme. Si tout le monde a dit « J'ai pas », chaque Porteur glisse une carte sous la pioche, en pioche une, et on refait un tour.
     <h3>Défausse</h3>
-    Tout outil scanné, bon ou mauvais, part à la défausse (l'app refuse une carte déjà utilisée). Le Perceur rend les outils non scannés à leurs Porteurs. Si personne n'a le bon outil, un Porteur peut échanger une carte de sa main contre la première de la pioche, autant de fois qu'il veut : ça ne coûte que du temps.
+    Tout outil scanné, bon ou mauvais, est défaussé (l'app refuse une carte déjà utilisée). Celui qui a scanné pioche aussitôt une carte pour revenir à sa main de départ.
     <h3>Le garde</h3>
-    Écoutez ses pas. Le <b>Guetteur</b> scanne « Planquez-vous ! » quand il approche. Planqués, personne ne peut scanner d'outil jusqu'à ce qu'il reparte. Trop tard : +2 alarme. Pour rien (aucun pas) : +1 alarme. Parfois, il fait demi-tour…
+    Le Cerveau a les cartes « Planquez-vous ! ». Il les scanne quand les pas approchent. Planqués, personne ne peut scanner d'outil jusqu'à ce que le garde reparte. Trop tard : +2 alarme. Pour rien (aucun pas) : +1 alarme. Parfois, il fait demi-tour…
     <h3>Le chien (coffres 2 et 3)</h3>
-    Quand il renifle, le <b>Maître-chien</b> scanne l'Os avant qu'il aboie, sinon +1 alarme. Il garde aussi le <b>Court-circuit</b> : une fois par nuit, −1 alarme.
+    Le Cerveau a aussi l'<b>Os</b> : il le scanne quand le chien renifle, avant qu'il aboie, sinon +1 alarme.
+    <h3>Court-circuit</h3>
+    Posé au milieu de la table. N'importe quel Porteur peut le scanner, une fois par nuit : −1 alarme.
     <h3>Coffre 3</h3>
     Une erreur rebloque tout le mécanisme : on recommence à la serrure 1.
     <h3>Silence</h3>
-    Aucune parole pendant le casse. Le Cerveau ne montre pas la carte et ne pointe pas les cartes du Perceur : il mime.
-    <h3>Rôles selon le nombre de joueurs</h3>
-    2 : Cerveau + Guetteur / Perceur + Maître-chien ; le Perceur est aussi Porteur (main de 8).<br>3 : Cerveau / Perceur / Guetteur + Maître-chien, qui est le Porteur.<br>4 : un rôle chacun ; Guetteur et Maître-chien sont Porteurs.
+    Les seuls mots autorisés sont « J'ai pas ». Le Cerveau mime, il ne montre pas sa carte et ne pointe rien. Les Porteurs peuvent taper sur la table pour prévenir le Cerveau d'un danger.
   </div>
   <button id="btn-retour-regles" style="margin-top:16px">Retour</button>
 </section>
@@ -227,7 +232,7 @@ function lireCarte(code) {
   if (lettre === 'R') return { type: 'role', n };
   return null;
 }
-const ROLES = ['', 'Perceur', 'Guetteur', 'Maître-chien', 'Cerveau'];
+const ROLES = ['', 'Porteur 1', 'Porteur 2', 'Porteur 3', 'Cerveau'];
 
 /* ---------------- Sons (générés, pas de fichiers) ---------------- */
 const Son = {
@@ -609,7 +614,7 @@ function coffreOuvert() {
   J.enPause = true;
   setTimeout(() => {
     $('#entracte-titre').textContent = `Coffre ${J.coffre + 1} ouvert !`;
-    $('#entracte-texte').textContent = `Prochain : ${COFFRES[J.coffre + 1].nom}. Nouveau plan à écouter. Porteurs : complétez votre main. ${J.coffre + 1 === 1 ? 'Attention, un chien rôde.' : 'Une seule erreur rebloque tout.'}`;
+    $('#entracte-texte').textContent = `Prochain : ${COFFRES[J.coffre + 1].nom}. Nouveau plan à écouter. ${J.coffre + 1 === 1 ? 'Attention, un chien rôde.' : 'Une seule erreur rebloque tout.'}`;
     ecran('entracte');
   }, 1500);
 }

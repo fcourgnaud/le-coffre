@@ -18,8 +18,8 @@ Jeu coopératif en temps réel (2 à 4 joueurs) : le téléphone posé au centre
 - `CASSE:O01` à `CASSE:O30` : outils (5 par type, dans l'ordre Stéthoscope, Perceuse, Brouilleur, Crochet, Aimant, Pied-de-biche)
 - `CASSE:P01` à `CASSE:P04` : Planquez-vous !
 - `CASSE:C01`, `CASSE:C02` : Os (chien)
-- `CASSE:B01` : Court-circuit (tenu par le Maître-chien)
-- `CASSE:R01` à `CASSE:R04` : rôles (Perceur, Guetteur, Maître-chien, Cerveau)
+- `CASSE:B01` : Court-circuit (au milieu de la table, pour les Porteurs)
+- `CASSE:R01` à `CASSE:R04` : rôles (Porteur 1, Porteur 2, Porteur 3, Cerveau)
 - Cartes Plan A à F : sans QR, seul le Cerveau les regarde
 
 QR standard uniquement (pas de Micro QR).
@@ -32,6 +32,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **1.4.0** — Plus de Perceur : les Porteurs scannent à tour de rôle (« J'ai pas » pour passer) ; le Cerveau gère garde et chien ; Court-circuit commun aux Porteurs.
 - **1.3.0** — Mains réparties : outils chez les Porteurs, défausse de tout outil scanné, carte déjà utilisée refusée, serrures toujours ouvrables, compteur d'exemplaires en mode sans scan.
 - **1.2.0** — Plan de la banque (option A : un seul Cerveau) : plans A–F annoncés par la cloche, sons aux noms neutres, Électricien supprimé, nuit 12 min par défaut, option réécoutes limitées.
 - **1.1.0** — Mode « Sans scan » (boutons, sans caméra, mémorisé) + raccourcis clavier sur ordinateur.

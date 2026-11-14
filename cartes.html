@@ -37,10 +37,10 @@
 const outils = ['Stéthoscope', 'Perceuse', 'Brouilleur', 'Crochet', 'Aimant', 'Pied-de-biche'];
 const cartes = [];
 for (let i = 1; i <= 30; i++) cartes.push(['Outil', outils[Math.floor((i - 1) / 5)], 'CASSE:O' + String(i).padStart(2, '0')]);
-for (let i = 1; i <= 4; i++) cartes.push(['Planque', 'Planquez-vous !', 'CASSE:P0' + i]);
-for (let i = 1; i <= 2; i++) cartes.push(['Chien', 'Os à moelle', 'CASSE:C0' + i]);
-cartes.push(['Maître-chien', 'Court-circuit', 'CASSE:B01']);
-['Perceur', 'Guetteur', 'Maître-chien', 'Cerveau'].forEach((r, i) => cartes.push(['Rôle', r, 'CASSE:R0' + (i + 1)]));
+for (let i = 1; i <= 4; i++) cartes.push(['Cerveau', 'Planquez-vous !', 'CASSE:P0' + i]);
+for (let i = 1; i <= 2; i++) cartes.push(['Cerveau', 'Os à moelle', 'CASSE:C0' + i]);
+cartes.push(['Porteurs', 'Court-circuit', 'CASSE:B01']);
+['Porteur 1', 'Porteur 2', 'Porteur 3', 'Cerveau'].forEach((r, i) => cartes.push(['Rôle', r, 'CASSE:R0' + (i + 1)]));
 
 const planche = document.getElementById('planche');
 cartes.forEach(([famille, nom, code]) => {

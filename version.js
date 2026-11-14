@@ -5,10 +5,10 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '1.3.0';
+self.APP_VERSION = '1.4.0';
 self.APP_NOTES = [
-  'Mains réparties : les Porteurs ont les outils, le Perceur scanne ce qu\'on lui passe',
-  'Chaque outil scanné, bon ou mauvais, est défaussé (l\'app refuse une carte déjà utilisée)',
-  'Une serrure reste toujours ouvrable avec les outils qui restent',
-  'Mode sans scan : chaque bouton outil affiche les exemplaires restants'
+  'Plus de Perceur : les Porteurs scannent eux-mêmes, chacun leur tour (« J\'ai pas » pour passer)',
+  'Le Cerveau gère le garde (Planquez-vous !) et le chien (Os)',
+  'Court-circuit au milieu de la table, pour n\'importe quel Porteur',
+  'Règles rapides mises à jour'
 ];
