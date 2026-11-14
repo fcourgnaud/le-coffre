@@ -28,7 +28,7 @@
 </head>
 <body>
 <div class="info">
-  <b>Cartes prototype</b> — 30 outils, 4 « Planquez-vous ! », 2 Os, 1 Court-circuit, 4 rôles, 6 Plans (sans QR).
+  <b>Cartes prototype</b> — 30 outils, 3 cartes du milieu (Planquez-vous !, Os, Court-circuit), 4 rôles, 6 Plans (sans QR).
   QR standard (pas de Micro QR). Imprimer à l'échelle 100 %.
   <button onclick="print()">Imprimer</button>
 </div>
@@ -37,9 +37,9 @@
 const outils = ['Stéthoscope', 'Perceuse', 'Brouilleur', 'Crochet', 'Aimant', 'Pied-de-biche'];
 const cartes = [];
 for (let i = 1; i <= 30; i++) cartes.push(['Outil', outils[Math.floor((i - 1) / 5)], 'CASSE:O' + String(i).padStart(2, '0')]);
-for (let i = 1; i <= 4; i++) cartes.push(['Cerveau', 'Planquez-vous !', 'CASSE:P0' + i]);
-for (let i = 1; i <= 2; i++) cartes.push(['Cerveau', 'Os à moelle', 'CASSE:C0' + i]);
-cartes.push(['Porteurs', 'Court-circuit', 'CASSE:B01']);
+cartes.push(['Milieu de table', 'Planquez-vous !', 'CASSE:P01']);
+cartes.push(['Milieu de table', 'Os à moelle', 'CASSE:C01']);
+cartes.push(['Milieu de table', 'Court-circuit', 'CASSE:B01']);
 ['Porteur 1', 'Porteur 2', 'Porteur 3', 'Cerveau'].forEach((r, i) => cartes.push(['Rôle', r, 'CASSE:R0' + (i + 1)]));
 
 const planche = document.getElementById('planche');
