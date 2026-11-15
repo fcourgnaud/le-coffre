@@ -20,7 +20,6 @@ Jeu coopératif en temps réel (2 à 4 joueurs) : le téléphone posé au centre
 - `CASSE:C01` : Os (milieu de table)
 - `CASSE:B01` : Court-circuit (milieu de table)
 - Tout le monde peut scanner les 3 cartes du milieu
-- `CASSE:R01` à `CASSE:R04` : rôles (Porteur 1, Porteur 2, Porteur 3, Cerveau)
 - Cartes Plan A à F : sans QR, seul le Cerveau les regarde
 
 QR standard uniquement (pas de Micro QR).
@@ -33,6 +32,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **1.6.1** — Plus de cartes de rôle ni de tour de parole : celui qui pense avoir l'outil le scanne.
 - **1.6.0** — Indices visuels : pictos des sons dans le cadran, lampe du veilleur, empreintes du chien, annonce du plan en grand. Pictos aussi sur les cartes Plan.
 - **1.5.0** — 16 outils × 2 exemplaires, 2 outils possibles par son sur les plans, mains de 6 (10 si seul Porteur), 4 sons différents par coffre.
 - **1.4.1** — Planquez-vous !, Os et Court-circuit au milieu de la table, utilisables par tous (1 carte de chaque).
