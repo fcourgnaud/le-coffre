@@ -35,6 +35,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.1.0** — Pictos des sons en formes simples : Tic-tac = cercle, Grincement = triangle, Bips = carré, Cliquetis = losange, Bourdon = hexagone, Craquement = croix.
 - **3.0.3** — Plus de lingots à la fin : directement le panneau de victoire.
 - **3.0.2** — Aide pour les tests en haut des réglages, mémorisée, plus lisible (outil, vigile, chien).
 - **3.0.1** — Phrase d'aide de nouveau visible (aussi en mode sans scan) et plus lisible.

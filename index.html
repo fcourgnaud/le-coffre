@@ -235,14 +235,15 @@ const NB_CARTES_OUTILS = OUTILS.length * COPIES;   // 32
 
 // Les 6 sons de serrure (noms neutres : ils ne désignent plus un outil)
 const SONS = [
-  { sig: 'steto',    nom: 'Tic-tac',    desc: 'Petits « toc » réguliers',        picto: 'M7 21 L12 3 L17 21 Z M12 18 L16 7' },
-  { sig: 'perceuse', nom: 'Grincement', desc: 'Grincement métallique',           picto: 'M2 12 L5 5 L8 19 L11 5 L14 19 L17 5 L20 19 L22 12' },
-  { sig: 'brouille', nom: 'Bips',       desc: 'Bips électroniques aigus',        picto: 'M2 16 H5 V8 H8 V16 H11 V8 H14 V16 H17 V8 H20 V16 H22' },
-  { sig: 'crochet',  nom: 'Cliquetis',  desc: 'Cliquetis rapides et irréguliers', picto: 'M3 14 V10 M6 17 V7 M9 13 V11 M12 19 V5 M15 15 V9 M18 17 V7 M21 13 V11' },
-  { sig: 'aimant',   nom: 'Bourdon',    desc: 'Bourdonnement qui monte',         picto: 'M2 18 Q4 14 6 18 T10 15 T14 11 T18 7 T22 4' },
-  { sig: 'pied',     nom: 'Craquement', desc: 'Craquement qui accélère',         picto: 'M12 2 L10 8 L14 11 L9 16 L12 22 M10 8 L4 10 M14 11 L20 9 M9 16 L5 19' }
+  { sig: 'steto',    nom: 'Tic-tac',    desc: 'Petits « toc » réguliers',        picto: 'M3.5 12 A8.5 8.5 0 1 0 20.5 12 A8.5 8.5 0 1 0 3.5 12 Z' },
+  { sig: 'perceuse', nom: 'Grincement', desc: 'Grincement métallique',           picto: 'M12 3.5 L21 19.5 H3 Z' },
+  { sig: 'brouille', nom: 'Bips',       desc: 'Bips électroniques aigus',        picto: 'M4.5 4.5 H19.5 V19.5 H4.5 Z' },
+  { sig: 'crochet',  nom: 'Cliquetis',  desc: 'Cliquetis rapides et irréguliers', picto: 'M12 2.5 L21.5 12 L12 21.5 L2.5 12 Z' },
+  { sig: 'aimant',   nom: 'Bourdon',    desc: 'Bourdonnement qui monte',         picto: 'M12 2.5 L20.2 7.25 V16.75 L12 21.5 L3.8 16.75 V7.25 Z' },
+  { sig: 'pied',     nom: 'Craquement', desc: 'Craquement qui accélère',         picto: 'M5 5 L19 19 M19 5 L5 19' }
 ];
-// Les pictos sont des tracés SVG (grille 24 × 24). Ils sont recopiés dans cartes.html.
+// Les pictos (formes simples : cercle, triangle, carré, losange, hexagone, croix) sont des tracés SVG
+// sur une grille 24 × 24. Ils sont recopiés dans cartes.html.
 const svgPicto = (i) => `<svg viewBox="0 0 24 24" class="picto-svg"><path d="${SONS[i].picto}"/></svg>`;
 
 // Les 6 cartes Plan (A à F). PLANS[plan][son] = les 2 outils acceptés pour ce son.
