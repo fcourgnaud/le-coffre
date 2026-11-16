@@ -5,7 +5,8 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.0.1';
+self.APP_VERSION = '3.0.2';
 self.APP_NOTES = [
-  'La phrase d\'aide « Touchez le coffre pour réécouter » est de retour, plus lisible, aussi en mode sans scan'
+  'Aide pour les tests : en haut des Réglages, mémorisée sur le téléphone',
+  'Elle affiche l\'outil à utiliser, l\'arrivée du vigile et le chien, sur plusieurs lignes'
 ];

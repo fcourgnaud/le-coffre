@@ -182,7 +182,14 @@ body.en-jeu #maj { display: none; }
 #apercu.lu { border-color: var(--accent); }
 
 /* Aide visuelle (pour tester) */
-#aide { display: none; font-family: var(--police-chiffres); font-size: .7rem; background: var(--panneau); border-radius: 8px; padding: 6px 8px; }
+#aide { display: none; font-size: .75rem; line-height: 1.45; background: rgba(10, 12, 11, .82); border: 1px solid var(--panneau-bord); border-radius: 8px; padding: 6px 9px; }
+#aide b { color: var(--accent-clair); }
+#aide .danger { color: #ff8a7a; }
+#aide .petit { font-size: .65rem; opacity: .7; }
+/* En mode « Sans scan », l'aide passe en bas à droite pour ne pas être cachée par les boutons */
+body.mode-test #aide { position: fixed; z-index: 6; right: max(10px, env(safe-area-inset-right)); bottom: max(8px, env(safe-area-inset-bottom)); width: 250px; }
+.reglage-test { border-color: var(--accent); }
+.reglage-test small { color: var(--texte-doux); }
 body.aide-visuelle #aide { display: block; }
 
 /* Mode « Sans scan » : les boutons sous les infos, dans la colonne de gauche */

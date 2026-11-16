@@ -59,6 +59,10 @@
   <div id="reglages" class="modale">
     <div class="panneau">
       <h2>Réglages</h2>
+  <div class="reglage reglage-test">
+    <label class="case"><input type="checkbox" id="opt-aide"> <span><b>Aide pour les tests</b><br><small>Affiche l'outil à utiliser, l'arrivée du vigile et le chien</small></span></label>
+  </div>
+
   <div class="reglage">
     <div class="etiquette">Nombre de joueurs</div>
     <div class="choix" id="choix-joueurs">
@@ -83,7 +87,6 @@
   <div class="reglage">
     <label class="case"><input type="checkbox" id="opt-reecoutes"> Réécoutes limitées (2 par serrure, puis +1 alarme)</label>
     <label class="case"><input type="checkbox" id="opt-visuels" checked> Indices visuels (pour jouer dans le bruit)</label>
-    <label class="case"><input type="checkbox" id="opt-aide"> Aide visuelle (garde, chien, bonne réponse)</label>
   </div>
 
       <button class="principal" id="btn-fermer-reglages">OK</button>
@@ -390,7 +393,13 @@ function choisirMode(m) {
 document.querySelectorAll('#choix-mode button').forEach((b) => b.addEventListener('click', () => choisirMode(b.dataset.v)));
 try { choisirMode(localStorage.getItem('casse-mode') || 'scan'); } catch (e) { choisirMode('scan'); }
 $('#opt-reecoutes').addEventListener('change', (e) => { reglages.reecoutes = e.target.checked; });
-$('#opt-aide').addEventListener('change', (e) => document.body.classList.toggle('aide-visuelle', e.target.checked));
+// Aide pour les tests : mémorisée sur le téléphone
+function choisirAide(on) {
+  $('#opt-aide').checked = on; document.body.classList.toggle('aide-visuelle', on);
+  try { localStorage.setItem('casse-aide', on ? '1' : '0'); } catch (e) {}
+}
+$('#opt-aide').addEventListener('change', (e) => choisirAide(e.target.checked));
+try { choisirAide(localStorage.getItem('casse-aide') === '1'); } catch (e) {}
 // Indices visuels : mémorisé sur le téléphone
 function choisirVisuels(on) {
   $('#opt-visuels').checked = on; document.body.classList.toggle('visuels', on);
@@ -745,11 +754,15 @@ function majAffichage() {
 
 function majAide() {
   if (!document.body.classList.contains('aide-visuelle')) return;
-  const g = J.garde, h = J.horloge;
-  let tg = g.etat === 'repos' ? `repos (${Math.ceil(g.prochain - h)} s)` : g.etat === 'approche' ? `APPROCHE (arrive dans ${Math.ceil(g.arrivee - h)} s${g.demiTour ? ', fera demi-tour' : ''})` : 'repart';
+  const g = J.garde, h = J.horloge, ch = J.chien;
+  const vigile = g.etat === 'repos' ? `arrive dans ${Math.ceil(g.prochain - h + COFFRES[J.coffre].approche)} s`
+    : g.etat === 'approche' ? `<b class="danger">approche, là dans ${Math.ceil(g.arrivee - h)} s</b>${g.demiTour ? ' (fera demi-tour)' : ''}` : 'repart';
+  const chien = !COFFRES[J.coffre].chien ? 'pas dans ce coffre'
+    : ch.etat === 'renifle' ? `<b class="danger">renifle, aboie dans ${Math.ceil(ch.fin - h)} s</b>` : `revient dans ${Math.max(0, Math.ceil(ch.prochain - h))} s`;
   const son = J.etape < 4 ? SONS[J.combinaison[J.etape]].nom : '—';
   const outil = J.etape < 4 ? outilsAcceptes().map((t) => `${OUTILS[t].nom} (${restants(t)})`).join(' ou ') : '—';
-  $('#aide').textContent = `Garde : ${tg} · Chien : ${J.chien.etat} · Plan ${LETTRES[J.plans[J.coffre]]} : ${son} → ${outil} · Défausse : ${J.usees.size}/${NB_CARTES_OUTILS}`;
+  $('#aide').innerHTML = `<div>🔧 <b>${outil}</b></div><div class="petit">Plan ${LETTRES[J.plans[J.coffre]]} · son : ${son}</div>`
+    + `<div>🔦 Vigile : ${vigile}</div><div>🐕 Chien : ${chien}</div><div class="petit">Défausse : ${J.usees.size}/${NB_CARTES_OUTILS}</div>`;
 }
 function toastAide(t) { if (document.body.classList.contains('aide-visuelle')) toast(t); }
 
