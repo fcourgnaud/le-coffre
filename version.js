@@ -5,8 +5,7 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '1.6.2';
+self.APP_VERSION = '1.6.3';
 self.APP_NOTES = [
-  'Retour du tour de parole (sans cartes de rôle), dans le sens des aiguilles d\'une montre',
-  'Le tour commence par celui qui a scanné la dernière carte'
+  'Tour de parole : on commence par le joueur qui suit le dernier à avoir pioché'
 ];
