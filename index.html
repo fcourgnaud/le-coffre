@@ -12,6 +12,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="stylesheet" href="theme.css">
 <script src="version.js"></script>
+<script src="coffres.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 </head>
 <body>
@@ -28,6 +29,7 @@
 
 <!-- ============ ACCUEIL ============ -->
 <section id="accueil" class="ecran actif">
+  <div id="hero"></div>
   <div class="titre">
     <div class="sur-titre">Une nuit, trois coffres</div>
     <h1>Le Casse<br>du siècle</h1>
@@ -94,7 +96,7 @@
     <h3>Les outils</h3>
     16 outils différents, chacun en 2 exemplaires (32 cartes), mélangés en pioche. Chaque Porteur a 6 outils en main (10 s'il est seul Porteur). Le Cerveau n'a pas d'outils.
     <h3>Une serrure</h3>
-    Le téléphone joue le son de la serrure (touchez le cadran pour le réentendre). Le Cerveau cherche ce son sur le plan : il y trouve <b>2 outils possibles</b>. Il choisit lequel <b>mimer</b>. Puis les Porteurs parlent chacun leur tour, dans le sens des aiguilles d'une montre, <b>en commençant par le joueur qui suit celui qui a scanné (et repioché) en dernier</b> (pour la première serrure : le Porteur à gauche du Cerveau) :<br>
+    Le téléphone joue le son de la serrure (touchez le coffre pour le réentendre). Le Cerveau cherche ce son sur le plan : il y trouve <b>2 outils possibles</b>. Il choisit lequel <b>mimer</b>. Puis les Porteurs parlent chacun leur tour, dans le sens des aiguilles d'une montre, <b>en commençant par le joueur qui suit celui qui a scanné (et repioché) en dernier</b> (pour la première serrure : le Porteur à gauche du Cerveau) :<br>
     • s'il pense avoir le bon outil, il le <b>scanne</b> ;<br>
     • sinon, il dit « <b>J'ai pas</b> » et c'est au suivant.<br>
     Bon outil : un voyant s'allume. Mauvais outil : +1 alarme. Si tout le monde a dit « J'ai pas », le Cerveau mime l'autre outil du plan. Si personne n'a l'un ni l'autre, chaque Porteur glisse une carte sous la pioche, en pioche une, et on refait un tour.
@@ -137,14 +139,10 @@
   <div id="lampe"><div class="halo"></div><div class="ampoule"></div></div>
   <div id="pattes"></div>
   <div id="annonce"><div class="titre-plan">Plan <span id="annonce-lettre"></span></div><div id="annonce-coups"></div></div>
-  <div id="cadran">
-    <div class="voyant"></div><div class="voyant"></div><div class="voyant"></div><div class="voyant"></div>
-    <div class="molette" id="molette"></div>
-    <div id="picto"></div>
-  </div>
+  <div id="scene"><div id="coffre"></div></div>
 
   <div id="message">Écoutez la serrure…</div>
-  <div id="indice-ecoute">Touchez le cadran pour réentendre la serrure</div>
+  <div id="indice-ecoute">Touchez le coffre pour réentendre la serrure</div>
   <div id="aide"></div>
   <div id="test"></div>
 
@@ -152,13 +150,16 @@
     <video id="apercu" playsinline muted></video>
     <button class="discret" id="btn-pause">Pause</button>
   </div>
-</section>
 
-<!-- ============ ENTRE DEUX COFFRES ============ -->
-<section id="entracte" class="ecran">
-  <h2 id="entracte-titre">Coffre ouvert !</h2>
-  <p id="entracte-texte"></p>
-  <button class="principal" id="btn-suivant">Coffre suivant</button>
+  <!-- Entre deux coffres : carte posée par-dessus la scène -->
+  <div id="entracte">
+    <div class="carte-entracte">
+      <div class="sur-titre" id="entracte-num">Coffre 2 / 3</div>
+      <h2 id="entracte-titre">—</h2>
+      <p id="entracte-texte"></p>
+      <button class="principal" id="btn-suivant">On y va</button>
+    </div>
+  </div>
 </section>
 
 <!-- ============ PAUSE ============ -->
@@ -426,6 +427,9 @@ document.addEventListener('keydown', (e) => {
   if (k && J && !J.fini) { e.preventDefault(); quandCarte(codeBouton(k[1])); }
 });
 
+// Coffre décoratif de l'accueil
+$('#hero').innerHTML = dessinerCoffre(2, { mini: true });
+
 // Jauge d'alarme
 for (let i = 0; i < ALARME_MAX; i++) { const s = document.createElement('div'); s.className = 'seg'; $('#segments').appendChild(s); }
 
@@ -441,6 +445,7 @@ function nouvelleCombinaison() {
 
 function lancerPartie() {
   Son.init();
+  $('#entracte').classList.remove('visible');
   J = {
     horloge: 0,                         // temps de jeu en secondes (s'arrête en pause)
     nuit: reglages.duree * 60,
@@ -466,6 +471,7 @@ function demarrerCoffre() {
   J.combinaison = nouvelleCombinaison();
   J.etape = 0;
   assurerEtape(); majBoutons();
+  installerCoffre(J.coffre);
   J.planques = false; document.body.classList.remove('planques');
   document.documentElement.style.setProperty('--garde', 0);
   document.querySelectorAll('#pattes .patte').forEach((pa) => pa.classList.remove('on'));
@@ -480,7 +486,6 @@ function demarrerCoffre() {
   J.reecoutes = 0;
   $('#coffre-num').textContent = `Coffre ${J.coffre + 1} / 3`;
   $('#coffre-nom').textContent = c.nom;
-  $('#cadran').classList.remove('ouvert');
   message(`Plan ${LETTRES[plan]}. Cerveau, à toi.`);
   majAffichage();
   ecran('jeu');
@@ -566,12 +571,12 @@ function jouerSerrure() {
   if (J.etape >= 4) return;
   Son.serrure(SONS[J.combinaison[J.etape]].sig, COFFRES[J.coffre].volumeSerrure);
   // Le picto apparaît le temps du son (1,6 s), puis s'efface
-  const pi = $('#picto'); pi.innerHTML = svgPicto(J.combinaison[J.etape]);
-  pi.classList.remove('on'); void pi.offsetWidth; pi.classList.add('on');
-  const mol = $('#molette'); mol.style.transform = `rotate(${Math.floor(Math.random() * 300) - 150}deg)`;
+  const pi = $('#picto'); if (pi) { pi.innerHTML = svgPicto(J.combinaison[J.etape]); pi.classList.remove('on'); void pi.offsetWidth; pi.classList.add('on'); }
+  const mol = coffreActif().querySelector(':scope > .porte .molette');
+  if (mol) mol.style.transform = `rotate(${Math.floor(Math.random() * 300) - 150}deg)`;
 }
 
-$('#cadran').addEventListener('click', () => {
+$('#scene').addEventListener('click', () => {
   if (!J || J.planques || J.fini) return;
   if (J.horloge - J.derniereEcoute < 1.6) return;
   J.derniereEcoute = J.horloge;
@@ -631,7 +636,7 @@ function quandCarte(code) {
     } else {
       J.stats.erreurs++;
       Son.erreur();
-      $('#cadran').classList.remove('secoue'); void $('#cadran').offsetWidth; $('#cadran').classList.add('secoue');
+      const co = coffreActif(); co.classList.remove('secoue'); void co.offsetWidth; co.classList.add('secoue');
       if (COFFRES[J.coffre].rebloque && J.etape > 0) { J.etape = 0; J.reecoutes = 0; assurerEtape(); majAffichage(); message('Mauvais outil ! Le mécanisme se rebloque. Alarme +1', true); }
       else message('Mauvais outil ! Alarme +1', true);
       assurerEtape();
@@ -667,19 +672,37 @@ function monterAlarme(n) {
   if (J.alarme >= ALARME_MAX) setTimeout(() => finPartie(false, 'L\'alarme hurle dans tout le bâtiment. Tout le monde au poste !'), 900);
 }
 
+/* ---------------- Le coffre à l'écran ---------------- */
+function coffreActif() { return $('#coffre > .coffre'); }
+
+function installerCoffre(niveau) {
+  const scene = $('#scene');
+  scene.classList.add('sans-transition'); scene.classList.remove('zoom', 'final');
+  $('#coffre').innerHTML = dessinerCoffre(niveau);
+  void scene.offsetWidth; scene.classList.remove('sans-transition');
+}
+
+// Séquence d'ouverture : la porte pivote, puis la caméra avance vers le coffre suivant
 function coffreOuvert() {
   Son.ouverture();
-  $('#cadran').classList.add('ouvert');
-  message('Le coffre est ouvert !');
-  if (J.coffre >= COFFRES.length - 1) return setTimeout(() => finPartie(true, ''), 1500);
   J.enPause = true;
+  message('Le coffre est ouvert !');
+  const co = coffreActif(), scene = $('#scene');
+  setTimeout(() => co.classList.add('ouvert'), 700);              // les barres ont fini de rentrer
+  if (J.coffre >= COFFRES.length - 1) {
+    setTimeout(() => scene.classList.add('final'), 2200);          // on s'approche du butin
+    return setTimeout(() => finPartie(true, ''), 4200);
+  }
+  setTimeout(() => { scene.classList.add('zoom'); Son.pas(0.25, 0); }, 2200);   // la caméra avance
   setTimeout(() => {
-    $('#entracte-titre').textContent = `Coffre ${J.coffre + 1} ouvert !`;
-    $('#entracte-texte').textContent = `Prochain : ${COFFRES[J.coffre + 1].nom}. Nouveau plan à écouter. ${J.coffre + 1 === 1 ? 'Attention, un chien rôde.' : 'Une seule erreur rebloque tout.'}`;
-    ecran('entracte');
-  }, 1500);
+    const suivant = J.coffre + 1;
+    $('#entracte-num').textContent = `Coffre ${suivant + 1} / 3`;
+    $('#entracte-titre').textContent = COFFRES[suivant].nom;
+    $('#entracte-texte').textContent = `Nouveau plan à écouter. ${suivant === 1 ? 'Attention, un chien rôde.' : 'Une seule erreur rebloque tout le mécanisme.'}`;
+    $('#entracte').classList.add('visible');
+  }, 4200);
 }
-$('#btn-suivant').addEventListener('click', () => { J.coffre++; J.enPause = false; demarrerCoffre(); });
+$('#btn-suivant').addEventListener('click', () => { $('#entracte').classList.remove('visible'); J.coffre++; J.enPause = false; demarrerCoffre(); });
 
 function finPartie(gagne, texte) {
   if (J.fini) return;
@@ -694,7 +717,11 @@ function finPartie(gagne, texte) {
 }
 
 function majAffichage() {
-  document.querySelectorAll('#cadran .voyant').forEach((v, i) => v.classList.toggle('on', i < J.etape));
+  const co = coffreActif();
+  if (co) {
+    co.querySelectorAll(':scope > .porte .barre').forEach((b) => b.classList.toggle('ouverte', +b.dataset.i < J.etape));
+    co.querySelectorAll(':scope > .porte .voyant').forEach((v) => v.classList.toggle('on', +v.dataset.i < J.etape));
+  }
   document.querySelectorAll('#segments .seg').forEach((s, i) => s.classList.toggle('on', i < J.alarme));
 }
 

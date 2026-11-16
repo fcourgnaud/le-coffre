@@ -8,6 +8,7 @@ Jeu coopératif en temps réel (2 à 4 joueurs) : le téléphone posé au centre
 |---|---|---|
 | `index.html` | Les écrans et toute la logique du jeu | Oui, avec prudence |
 | `theme.css` | Tout le visuel (couleurs, polices, cadran…) | **Oui, c'est fait pour** |
+| `coffres.js` | Les dessins des 3 coffres (SVG) | Oui, si tu veux redessiner les coffres |
 | `version.js` | Numéro de version + notes affichées dans le bandeau | Claude s'en occupe |
 | `sw.js` | Garde l'app hors ligne et gère les mises à jour | Non |
 | `manifest.webmanifest`, `icon-*.png` | Installation sur l'écran d'accueil | Les icônes, oui |
@@ -32,6 +33,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **2.0.0** — Nouveau design : grand coffre central, barres de verrouillage, porte qui s'ouvre, caméra qui avance vers le coffre suivant, 3 coffres de plus en plus complexes, butin final.
 - **1.6.3** — Le tour de parole commence par le joueur qui suit le dernier à avoir pioché.
 - **1.6.2** — Tour de parole sans cartes de rôle, sens horaire, en commençant par celui qui a scanné la dernière carte (« J'ai pas » pour passer).
 - **1.6.1** — Plus de cartes de rôle ni de tour de parole : celui qui pense avoir l'outil le scanne.
