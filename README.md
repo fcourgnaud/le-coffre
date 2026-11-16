@@ -34,6 +34,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **2.2.1** — Correction : plus de rechargement automatique à la première ouverture.
 - **2.2.0** — Pictos des 16 outils (pictos-outils.js), utilisés sur les cartes outils et sur les cartes Plan.
 - **2.1.1** — Lampe du vigile à droite, faisceau plus fort qui balaie la pièce et éclaire le coffre ; empreintes du chien à gauche.
 - **2.1.0** — Nouvelle direction artistique (aplats bleu-vert et orange, mur à moulures, projecteur, sol en damier), écran en paysage, jauge d'alarme verticale, décor dessiné dans coffres.js.

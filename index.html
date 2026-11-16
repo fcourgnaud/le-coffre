@@ -868,8 +868,10 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((reg) => {
     enregistrementSW = reg; surveiller(reg); reg.update().catch(() => {});
   }).catch(() => {});
+  // On ne recharge que lors d'une vraie mise à jour (pas à la toute première installation)
+  const avaitUneVersion = !!navigator.serviceWorker.controller;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (rechargement) return; rechargement = true; location.reload();
+    if (rechargement || !avaitUneVersion) return; rechargement = true; location.reload();
   });
   // Vérifie aussi quand on revient sur l'app
   document.addEventListener('visibilitychange', () => {
