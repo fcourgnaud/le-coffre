@@ -1,155 +1,184 @@
 /* =========================================================
-   LE CASSE DU SIÈCLE — DESSINS DES COFFRES
+   LE CASSE DU SIÈCLE — DESSINS (coffres + décor)
    ---------------------------------------------------------
-   Chaque coffre est dessiné en SVG (grille de 300 × 300 pour
-   la porte, avec 40 de marge autour pour les barres).
-   Les couleurs viennent de theme.css (variables --metal-…).
-   Classes utiles pour le style :
+   Style : illustration en aplats, bleu-vert + orange.
+   Chaque porte de coffre est dessinée sur une grille de
+   300 × 300 (avec 40 de marge autour pour les barres).
+   Toutes les couleurs viennent de theme.css (--teal-…,
+   --orange-…, --mur-…, --sol-…).
+   Classes utiles :
      .barre      une barre de verrouillage (4 par coffre)
      .voyant     le voyant lié à chaque barre
-     .molette    la molette centrale (elle tourne)
-     .rivet, .laiton, .acier, .gravure
+     .molette    la pièce qui tourne (molette ou volant)
    ========================================================= */
 
 let compteurCoffre = 0;
 
-// Petits outils de dessin
-const _cercle = (cx, cy, r, cls, extra = '') => `<circle cx="${cx}" cy="${cy}" r="${r}" class="${cls}" ${extra}/>`;
-const _rivets = (cx, cy, r, n, taille) => Array.from({ length: n }, (_, i) => {
-  const a = (i / n) * Math.PI * 2;
-  return _cercle((cx + Math.cos(a) * r).toFixed(1), (cy + Math.sin(a) * r).toFixed(1), taille, 'rivet');
-}).join('');
-const _graduations = (cx, cy, r1, r2, n) => Array.from({ length: n }, (_, i) => {
-  const a = (i / n) * Math.PI * 2, long = i % 5 === 0 ? 7 : 0;
-  return `<line x1="${(cx + Math.cos(a) * (r1 - long)).toFixed(1)}" y1="${(cy + Math.sin(a) * (r1 - long)).toFixed(1)}" x2="${(cx + Math.cos(a) * r2).toFixed(1)}" y2="${(cy + Math.sin(a) * r2).toFixed(1)}" class="gravure"/>`;
-}).join('');
+const _c = (cx, cy, r, attrs = '') => `<circle cx="${(+cx).toFixed(1)}" cy="${(+cy).toFixed(1)}" r="${r}" ${attrs}/>`;
+const _pol = (cx, cy, r, a) => [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
 
-// Molette (cadran à combinaison) : anneau gradué fixe + bouton qui tourne
+// Rivet bombé (un disque + un reflet)
+const _rivet = (u, x, y, r) => _c(x, y, r, `fill="url(#${u}-rivet)" stroke="var(--teal-nuit)" stroke-opacity=".35" stroke-width="1"`)
+  + _c(x - r * 0.3, y - r * 0.3, r * 0.3, 'fill="#fff" opacity=".55"');
+
+// Reflets de lumière en éventail (style illustration), découpés à la forme de la porte
+function _reflets(u, clip) {
+  const rayons = [[-0.95, -0.8], [-0.62, -0.5], [-0.3, -0.18]].map(([a1, a2]) => {
+    const [x1, y1] = _pol(60, 40, 600, a1 - 0.6), [x2, y2] = _pol(60, 40, 600, a2 - 0.6);
+    return `<path d="M60 40 L${x1.toFixed(0)} ${y1.toFixed(0)} L${x2.toFixed(0)} ${y2.toFixed(0)} Z" fill="#fff" opacity=".10"/>`;
+  }).join('');
+  return `<g clip-path="url(#${u}-${clip})">${rayons}${_c(70, 60, 90, `fill="url(#${u}-eclat)"`)}</g>`;
+}
+
+// Barre de verrouillage en acier. sens = 'droite' | 'gauche' | 'haut' | 'bas'
+function _barre(u, i, sens, pos, e = 24) {
+  const L = 92;
+  let x, y, w, h;
+  if (sens === 'droite') { x = 300 - L + 36; y = pos - e / 2; w = L; h = e; }
+  if (sens === 'gauche') { x = -36; y = pos - e / 2; w = L; h = e; }
+  if (sens === 'haut')   { x = pos - e / 2; y = -36; w = e; h = L; }
+  if (sens === 'bas')    { x = pos - e / 2; y = 300 - L + 36; w = e; h = L; }
+  const vert = sens === 'haut' || sens === 'bas';
+  return `<g class="barre b-${sens}" data-i="${i}">
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${e * 0.3}" fill="url(#${u}-acier${vert ? 'v' : ''})"/>
+    ${vert ? `<rect x="${x + e * 0.18}" y="${y}" width="${e * 0.18}" height="${h}" fill="#fff" opacity=".35"/>`
+           : `<rect x="${x}" y="${y + e * 0.18}" width="${w}" height="${e * 0.18}" fill="#fff" opacity=".35"/>`}
+  </g>`;
+}
+
+// Charnière cylindrique
+const _charniere = (u, x, y, h) => `<rect x="${x}" y="${y}" width="30" height="${h}" rx="8" fill="url(#${u}-acier)"/>
+  <rect x="${x}" y="${y + h * 0.3}" width="30" height="5" fill="var(--teal-nuit)" opacity=".5"/>
+  <rect x="${x}" y="${y + h * 0.65}" width="30" height="5" fill="var(--teal-nuit)" opacity=".5"/>
+  <rect x="${x + 6}" y="${y}" width="6" height="${h}" fill="#fff" opacity=".35"/>`;
+
+// Molette à combinaison orange
 function _molette(u, r) {
-  return `<circle cx="150" cy="150" r="${r + 16}" fill="url(#${u}-sombre)" class="contour"/>
-    ${_graduations(150, 150, r + 12, r + 4, 60)}
-    <g class="molette">
-      <circle cx="150" cy="150" r="${r}" fill="url(#${u}-laiton)" class="contour"/>
-      ${_graduations(150, 150, r - 2, r - 8, 30)}
-      <circle cx="150" cy="150" r="${r * 0.45}" fill="url(#${u}-sombre)"/>
-      <rect x="147" y="${150 - r + 4}" width="6" height="${r * 0.5}" rx="3" class="aiguille"/>
+  const crans = Array.from({ length: 24 }, (_, i) => {
+    const a = (i / 24) * 360;
+    return `<rect x="${150 - 3}" y="${150 - r - 5}" width="6" height="9" rx="2" fill="var(--orange-fonce)" transform="rotate(${a} 150 150)"/>`;
+  }).join('');
+  const graduations = Array.from({ length: 40 }, (_, i) => {
+    const a = (i / 40) * Math.PI * 2, [x1, y1] = _pol(150, 150, r + 12, a), [x2, y2] = _pol(150, 150, r + (i % 5 ? 17 : 21), a);
+    return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="var(--teal-clair)" stroke-width="2" stroke-linecap="round"/>`;
+  }).join('');
+  return `${_c(150, 150, r + 26, 'fill="var(--teal-nuit)"')}${graduations}
+    <g class="molette">${crans}
+      ${_c(150, 150, r, `fill="url(#${u}-orange)"`)}
+      ${_c(150, 150, r * 0.62, 'fill="var(--orange-fonce)" opacity=".35"')}
+      ${_c(150, 150, r * 0.5, `fill="url(#${u}-orange)"`)}
+      <rect x="146" y="${150 - r + 6}" width="8" height="${r * 0.42}" rx="4" fill="var(--teal-nuit)"/>
+      ${_c(150 - r * 0.3, 150 - r * 0.35, r * 0.22, 'fill="#fff" opacity=".35"')}
     </g>`;
 }
 
-// Volant à rayons (coffres 2 et 3)
-function _volant(u, r, n) {
-  let s = `<circle cx="150" cy="150" r="${r}" fill="none" class="volant" stroke-width="10"/>`;
+// Volant orange à n branches (le « gouvernail »)
+function _volant(u, r, n, epaisseur = 12) {
+  let br = '';
   for (let i = 0; i < n; i++) {
-    const a = (i / n) * Math.PI * 2 - Math.PI / 2;
-    const x = 150 + Math.cos(a) * (r + 14), y = 150 + Math.sin(a) * (r + 14);
-    s += `<line x1="150" y1="150" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" class="volant" stroke-width="9" stroke-linecap="round"/>`;
-    s += _cercle(x.toFixed(1), y.toFixed(1), 11, 'contour', `fill="url(#${u}-laiton)"`);
+    const a = (i / n) * 360;
+    br += `<g transform="rotate(${a} 150 150)">
+      <rect x="146" y="${150 - r - 30}" width="8" height="${r + 30}" fill="url(#${u}-orange)"/>
+      <path d="M143 ${150 - r - 6} h14 l-2 -32 h-10 z" fill="url(#${u}-orange)"/>
+      <rect x="147" y="${150 - r - 36}" width="4" height="28" fill="#fff" opacity=".3"/>
+    </g>`;
   }
-  return `<g class="volant-g">${s}</g>`;
-}
-
-// Une barre de verrouillage. sens = 'droite' | 'gauche' | 'haut' | 'bas'
-function _barre(i, sens, pos, u, epaisseur = 20) {
-  const L = 90, e = epaisseur;
-  let x, y, w, h;
-  if (sens === 'droite') { x = 300 - L + 34; y = pos - e / 2; w = L; h = e; }
-  if (sens === 'gauche') { x = -34; y = pos - e / 2; w = L; h = e; }
-  if (sens === 'haut')   { x = pos - e / 2; y = -34; w = e; h = L; }
-  if (sens === 'bas')    { x = pos - e / 2; y = 300 - L + 34; w = e; h = L; }
-  return `<g class="barre b-${sens}" data-i="${i}">
-    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${e / 2}" fill="url(#${u}-acier${sens === 'haut' || sens === 'bas' ? 'v' : ''})" class="contour"/>
+  return `<g class="molette">
+    ${_c(153, 155, r + 4, `fill="none" stroke="var(--teal-nuit)" stroke-opacity=".35" stroke-width="${epaisseur}"`)}
+    ${br}
+    ${_c(150, 150, r, `fill="none" stroke="url(#${u}-orange)" stroke-width="${epaisseur}"`)}
+    ${_c(150, 150, r - epaisseur / 2 - 1, 'fill="none" stroke="var(--orange-fonce)" stroke-opacity=".4" stroke-width="2"')}
+    ${_c(150, 150, 18, `fill="url(#${u}-orange)"`)}${_c(150, 150, 7, 'fill="var(--orange-clair)"')}
   </g>`;
 }
 
 function _defs(u) {
+  const st = (o, v) => `<stop offset="${o}" style="stop-color:var(${v})"/>`;
   return `<defs>
-    <linearGradient id="${u}-porte" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" style="stop-color:var(--metal-clair)"/><stop offset=".55" style="stop-color:var(--metal)"/><stop offset="1" style="stop-color:var(--metal-fonce)"/>
-    </linearGradient>
-    <radialGradient id="${u}-laiton" cx=".35" cy=".3" r=".9">
-      <stop offset="0" style="stop-color:var(--laiton-clair)"/><stop offset=".6" style="stop-color:var(--laiton)"/><stop offset="1" style="stop-color:var(--laiton-fonce)"/>
-    </radialGradient>
-    <radialGradient id="${u}-sombre" cx=".5" cy=".4" r=".7">
-      <stop offset="0" style="stop-color:var(--metal)"/><stop offset="1" style="stop-color:var(--metal-noir)"/>
-    </radialGradient>
-    <linearGradient id="${u}-acier" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" style="stop-color:var(--acier-clair)"/><stop offset=".5" style="stop-color:var(--acier)"/><stop offset="1" style="stop-color:var(--metal-fonce)"/>
-    </linearGradient>
-    <linearGradient id="${u}-acierv" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" style="stop-color:var(--acier-clair)"/><stop offset=".5" style="stop-color:var(--acier)"/><stop offset="1" style="stop-color:var(--metal-fonce)"/>
-    </linearGradient>
+    <radialGradient id="${u}-porte" cx=".3" cy=".25" r="1">${st(0, '--teal-clair')}${st(0.45, '--teal')}${st(1, '--teal-fonce')}</radialGradient>
+    <linearGradient id="${u}-anneau" x1="0" y1="0" x2="1" y2="1">${st(0, '--teal')}${st(1, '--teal-fonce')}</linearGradient>
+    <radialGradient id="${u}-creux" cx=".4" cy=".35" r=".8">${st(0, '--teal')}${st(1, '--teal-nuit')}</radialGradient>
+    <linearGradient id="${u}-orange" x1="0" y1="0" x2="1" y2="1">${st(0, '--orange-clair')}${st(0.5, '--orange')}${st(1, '--orange-fonce')}</linearGradient>
+    <linearGradient id="${u}-acier" x1="0" y1="0" x2="0" y2="1">${st(0, '--teal-clair')}${st(0.55, '--teal')}${st(1, '--teal-fonce')}</linearGradient>
+    <linearGradient id="${u}-acierv" x1="0" y1="0" x2="1" y2="0">${st(0, '--teal-clair')}${st(0.55, '--teal')}${st(1, '--teal-fonce')}</linearGradient>
+    <radialGradient id="${u}-rivet" cx=".35" cy=".3" r=".8">${st(0, '--teal-clair')}${st(1, '--teal-fonce')}</radialGradient>
+    <radialGradient id="${u}-eclat"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <clipPath id="${u}-carre"><rect x="0" y="0" width="300" height="300" rx="22"/></clipPath>
+    <clipPath id="${u}-rond"><circle cx="150" cy="150" r="150"/></clipPath>
   </defs>`;
 }
 
-/* ---------- Coffre 1 : le coffre du directeur (simple) ---------- */
+/* ---------- Coffre 1 : le coffre du directeur ---------- */
 function _porte1(u) {
   const ys = [55, 115, 185, 245];
   return `
-    ${ys.map((y, i) => _barre(i, 'droite', y, u)).join('')}
-    <rect x="-16" y="45" width="24" height="60" rx="6" fill="url(#${u}-laiton)" class="contour"/>
-    <rect x="-16" y="195" width="24" height="60" rx="6" fill="url(#${u}-laiton)" class="contour"/>
-    <rect x="0" y="0" width="300" height="300" rx="10" fill="url(#${u}-porte)" class="contour"/>
-    <rect x="22" y="22" width="256" height="256" rx="6" fill="none" class="gravure" stroke-width="3"/>
-    ${ys.map((y, i) => _cercle(272, y, 6, 'voyant', `data-i="${i}"`)).join('')}
-    ${_molette(u, 52)}
-    <rect x="105" y="250" width="90" height="22" rx="3" fill="url(#${u}-laiton)" class="contour"/>
-    <text x="150" y="266" class="plaque">N° 1</text>`;
+    ${ys.map((y, i) => _barre(u, i, 'droite', y)).join('')}
+    ${_charniere(u, -22, 40, 70)}${_charniere(u, -22, 190, 70)}
+    <rect x="0" y="0" width="300" height="300" rx="22" fill="url(#${u}-porte)"/>
+    ${_reflets(u, 'carre')}
+    <rect x="26" y="26" width="248" height="248" rx="14" fill="none" stroke="var(--teal-fonce)" stroke-width="6"/>
+    <rect x="32" y="32" width="236" height="236" rx="10" fill="none" stroke="var(--teal-clair)" stroke-opacity=".6" stroke-width="2"/>
+    ${[[46, 46], [254, 46], [46, 254], [254, 254]].map(([x, y]) => _rivet(u, x, y, 9)).join('')}
+    ${ys.map((y, i) => _c(278, y, 7, `class="voyant" data-i="${i}"`)).join('')}
+    ${_molette(u, 50)}
+    <rect x="108" y="236" width="84" height="24" rx="5" fill="url(#${u}-orange)"/>
+    <text x="150" y="253" class="plaque">N° 1</text>`;
 }
 
-/* ---------- Coffre 2 : la salle des archives (rivets, volant) ---------- */
+/* ---------- Coffre 2 : la salle des archives ---------- */
 function _porte2(u) {
-  const rivetsCadre = [];
-  for (let i = 0; i <= 10; i++) { const p = 18 + i * 26.4; rivetsCadre.push([p, 14], [p, 286], [14, p], [286, p]); }
+  const rivets = [];
+  for (let i = 0; i < 7; i++) { const p = 40 + i * 36.6; rivets.push([p, 20], [p, 280], [20, p], [280, p]); }
   return `
-    ${_barre(0, 'gauche', 85, u)}${_barre(1, 'droite', 85, u)}${_barre(2, 'gauche', 215, u)}${_barre(3, 'droite', 215, u)}
-    <rect x="0" y="0" width="300" height="300" rx="26" fill="url(#${u}-porte)" class="contour"/>
-    ${rivetsCadre.map(([x, y]) => _cercle(x, y, 3.2, 'rivet')).join('')}
-    <rect x="28" y="28" width="244" height="244" rx="18" fill="none" class="gravure" stroke-width="4"/>
-    <rect x="40" y="40" width="220" height="220" rx="12" fill="none" class="gravure" stroke-width="1.5"/>
-    ${[[56, 85], [244, 85], [56, 215], [244, 215]].map(([x, y], i) => _cercle(x, y, 6, 'voyant', `data-i="${i}"`)).join('')}
-    ${_volant(u, 74, 3)}
-    ${_molette(u, 36)}
-    <rect x="100" y="44" width="100" height="20" rx="3" fill="url(#${u}-laiton)" class="contour"/>
-    <text x="150" y="59" class="plaque">ARCHIVES</text>`;
+    ${_barre(u, 0, 'gauche', 85)}${_barre(u, 1, 'droite', 85)}${_barre(u, 2, 'gauche', 215)}${_barre(u, 3, 'droite', 215)}
+    <rect x="0" y="0" width="300" height="300" rx="34" fill="url(#${u}-porte)"/>
+    ${_reflets(u, 'carre')}
+    ${rivets.map(([x, y]) => _rivet(u, x, y, 6.5)).join('')}
+    <rect x="38" y="38" width="224" height="224" rx="26" fill="url(#${u}-anneau)"/>
+    <rect x="50" y="50" width="200" height="200" rx="20" fill="url(#${u}-porte)"/>
+    ${_c(150, 150, 96, `fill="url(#${u}-creux)"`)}
+    ${[[66, 85], [234, 85], [66, 215], [234, 215]].map(([x, y], i) => _c(x, y, 7, `class="voyant" data-i="${i}"`)).join('')}
+    ${_volant(u, 64, 4, 11)}
+    ${_c(150, 150, 30, `fill="url(#${u}-orange)" stroke="var(--teal-nuit)" stroke-opacity=".4" stroke-width="3"`)}
+    <rect x="102" y="58" width="96" height="22" rx="5" fill="url(#${u}-orange)"/>
+    <text x="150" y="74" class="plaque">ARCHIVES</text>`;
 }
 
-/* ---------- Coffre 3 : la chambre forte (ronde, engrenages, 4 barres radiales) ---------- */
+/* ---------- Coffre 3 : la chambre forte (porte ronde, volant à 8 branches) ---------- */
 function _porte3(u) {
-  const dents = Array.from({ length: 56 }, (_, i) => {
-    const a = (i / 56) * 360;
-    return `<rect x="146" y="-6" width="8" height="12" rx="2" class="dent" transform="rotate(${a} 150 150)"/>`;
+  const segments = Array.from({ length: 24 }, (_, i) => {
+    const a1 = (i / 24) * Math.PI * 2, a2 = ((i + 1) / 24) * Math.PI * 2;
+    const [x1, y1] = _pol(150, 150, 150, a1), [x2, y2] = _pol(150, 150, 150, a2);
+    const [x3, y3] = _pol(150, 150, 112, a2), [x4, y4] = _pol(150, 150, 112, a1);
+    const clair = i % 3 === 0;
+    return `<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} A150 150 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)} L${x3.toFixed(1)} ${y3.toFixed(1)} A112 112 0 0 0 ${x4.toFixed(1)} ${y4.toFixed(1)} Z" fill="${clair ? '#fff' : 'var(--teal-nuit)'}" opacity="${clair ? 0.12 : 0.08}"/>`;
   }).join('');
-  const leds = Array.from({ length: 16 }, (_, i) => {
-    const a = (i / 16) * Math.PI * 2;
-    return _cercle((150 + Math.cos(a) * 104).toFixed(1), (150 + Math.sin(a) * 104).toFixed(1), 2.6, 'led', `style="animation-delay:${(i * 0.12).toFixed(2)}s"`);
-  }).join('');
+  const rivets = Array.from({ length: 8 }, (_, i) => _pol(150, 150, 131, (i / 8) * Math.PI * 2 - Math.PI / 2));
   return `
-    ${_barre(0, 'haut', 150, u, 24)}${_barre(1, 'droite', 150, u, 24)}${_barre(2, 'bas', 150, u, 24)}${_barre(3, 'gauche', 150, u, 24)}
-    <g class="engrenage">${dents}</g>
-    <circle cx="150" cy="150" r="150" fill="url(#${u}-porte)" class="contour"/>
-    <circle cx="150" cy="150" r="138" fill="none" class="gravure" stroke-width="4"/>
-    ${_rivets(150, 150, 128, 40, 3)}
-    <circle cx="150" cy="150" r="116" fill="url(#${u}-sombre)" class="contour"/>
-    ${leds}
-    ${[[150, 30], [270, 150], [150, 270], [30, 150]].map(([x, y], i) => _cercle(x, y, 7, 'voyant', `data-i="${i}"`)).join('')}
-    ${_volant(u, 70, 6)}
-    ${_molette(u, 34)}
-    <path d="M110 214 A70 70 0 0 0 190 214" fill="none" class="gravure" stroke-width="1.5"/>
-    <text x="150" y="232" class="plaque plaque-gravee">CHAMBRE FORTE</text>`;
+    ${_barre(u, 0, 'haut', 150, 28)}${_barre(u, 1, 'droite', 150, 28)}${_barre(u, 2, 'bas', 150, 28)}${_barre(u, 3, 'gauche', 150, 28)}
+    ${_c(150, 150, 150, `fill="url(#${u}-porte)"`)}
+    ${segments}
+    ${_reflets(u, 'rond')}
+    ${_c(150, 150, 150, 'fill="none" stroke="var(--teal-clair)" stroke-opacity=".7" stroke-width="3"')}
+    ${rivets.map(([x, y]) => _rivet(u, x, y, 13)).join('')}
+    ${_c(150, 150, 112, `fill="url(#${u}-anneau)"`)}
+    ${_c(150, 150, 104, `fill="url(#${u}-porte)"`)}
+    ${_c(150, 150, 72, `fill="url(#${u}-creux)" opacity=".7"`)}
+    ${[[150, 58], [242, 150], [150, 242], [58, 150]].map(([x, y], i) => _c(x, y, 7, `class="voyant" data-i="${i}"`)).join('')}
+    ${_volant(u, 52, 8, 12)}`;
 }
 
 const PORTES = [_porte1, _porte2, _porte3];
 
-/* Ce qu'on voit derrière la porte ouverte : le coffre suivant au loin, ou le butin */
+/* Derrière la porte ouverte : le coffre suivant au loin, ou le butin */
 function _derriere(niveau) {
   if (niveau < 2) return `<div class="loin">${dessinerCoffre(niveau + 1, { mini: true })}</div>`;
-  return `<div class="butin">
-    <svg viewBox="0 0 200 120">
-      ${[0, 1, 2, 3].map((r) => [0, 1, 2, 3, 4].slice(0, 5 - r).map((c) => {
-        const x = 20 + c * 34 + r * 17, y = 96 - r * 20;
-        return `<path d="M${x} ${y} l6 -14 h22 l6 14 z" class="lingot"/>`;
-      }).join('')).join('')}
-    </svg></div>`;
+  const lingots = [];
+  for (let r = 0; r < 4; r++) for (let c = 0; c < 5 - r; c++) {
+    const x = 20 + c * 34 + r * 17, y = 96 - r * 20;
+    lingots.push(`<path d="M${x} ${y} l6 -14 h22 l6 14 z" class="lingot"/><path d="M${x + 7} ${y - 12} h20 l1 3 h-22 z" fill="#fff" opacity=".35"/>`);
+  }
+  return `<div class="butin"><svg viewBox="0 0 200 120">${lingots.join('')}</svg></div>`;
 }
 
 /* Construit un coffre complet (cadre + intérieur + porte). niveau = 0, 1 ou 2 */
@@ -163,4 +192,50 @@ function dessinerCoffre(niveau, { mini = false } = {}) {
       ${mini ? '' : '<div id="picto"></div>'}
     </div>
   </div>`;
+}
+
+/* =========================================================
+   DÉCOR : mur à moulures sous un projecteur, sol en damier
+   (format 1600 × 900, recadré pour remplir l'écran)
+   ========================================================= */
+function dessinerDecor() {
+  const st = (o, v) => `<stop offset="${o}" style="stop-color:var(${v})"/>`;
+  const trait = 'fill="none" stroke="var(--mur-ligne)" stroke-linejoin="round"';
+  // Panneau à coins arrondis vers l'intérieur
+  const panneau = (x, y, w, h, r) => `M${x + r} ${y} H${x + w - r} A${r} ${r} 0 0 0 ${x + w} ${y + r} V${y + h - r} A${r} ${r} 0 0 0 ${x + w - r} ${y + h} H${x + r} A${r} ${r} 0 0 0 ${x} ${y + h - r} V${y + r} A${r} ${r} 0 0 0 ${x + r} ${y} Z`;
+  // Grand encadrement autour du coffre (arche à pans coupés)
+  const arche = (m) => `M${560 - m} ${80 - m} H${1040 + m} L${1180 + m} 220 V${740 + m} H${420 - m} V220 Z`;
+  // Sol en damier en perspective (point de fuite au centre)
+  const fuite = [800, 420], solHaut = 770, solBas = 900, cases = [];
+  const xs = Array.from({ length: 17 }, (_, i) => -400 + i * 150);
+  const lignes = [770, 795, 830, 900];
+  const proj = (x, y) => fuite[0] + (x - fuite[0]) * ((y - fuite[1]) / (solBas - fuite[1]));
+  for (let r = 0; r < lignes.length - 1; r++) for (let i = 0; i < xs.length - 1; i++) {
+    if ((i + r) % 2) continue;
+    const y1 = lignes[r], y2 = lignes[r + 1];
+    cases.push(`<path d="M${proj(xs[i], y1).toFixed(0)} ${y1} L${proj(xs[i + 1], y1).toFixed(0)} ${y1} L${proj(xs[i + 1], y2).toFixed(0)} ${y2} L${proj(xs[i], y2).toFixed(0)} ${y2} Z" fill="var(--sol-fonce)" opacity=".35"/>`);
+  }
+  return `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
+    <defs>
+      <radialGradient id="d-mur" cx="800" cy="400" r="900" gradientUnits="userSpaceOnUse">${st(0, '--mur-lumiere')}${st(0.32, '--mur')}${st(0.7, '--mur-ombre')}${st(1, '--mur-nuit')}</radialGradient>
+      <linearGradient id="d-sol" x1="0" y1="0" x2="0" y2="1">${st(0, '--sol-clair')}${st(1, '--sol-fonce')}</linearGradient>
+      <radialGradient id="d-solspot" cx="800" cy="790" r="700" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+      <linearGradient id="d-rideau" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
+    </defs>
+    <rect width="1600" height="900" fill="url(#d-mur)"/>
+    <rect width="1600" height="34" fill="var(--mur-nuit)" opacity=".6"/>
+    <path d="${arche(0)}" ${trait} stroke-width="10"/>
+    <path d="${arche(-26)}" ${trait} stroke-width="4"/>
+    <path d="${panneau(120, 120, 300, 600, 34)}" ${trait} stroke-width="8"/>
+    <path d="${panneau(140, 140, 260, 560, 26)}" ${trait} stroke-width="3"/>
+    <path d="${panneau(1180, 120, 300, 600, 34)}" ${trait} stroke-width="8"/>
+    <path d="${panneau(1200, 140, 260, 560, 26)}" ${trait} stroke-width="3"/>
+    <rect x="0" y="742" width="1600" height="28" fill="var(--teal-fonce)"/>
+    <rect x="0" y="742" width="1600" height="6" fill="var(--teal-clair)" opacity=".35"/>
+    <rect x="0" y="${solHaut}" width="1600" height="${solBas - solHaut}" fill="url(#d-sol)"/>
+    ${cases.join('')}
+    <rect x="0" y="${solHaut}" width="1600" height="${solBas - solHaut}" fill="url(#d-solspot)"/>
+    <rect x="0" y="0" width="260" height="900" fill="url(#d-rideau)"/>
+    <rect x="1340" y="0" width="260" height="900" fill="url(#d-rideau)" transform="rotate(180 1470 450)"/>
+  </svg>`;
 }

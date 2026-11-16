@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>Le Casse du siècle</title>
-<meta name="theme-color" content="#0d0b09">
+<meta name="theme-color" content="#123230">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Le Coffre">
@@ -27,15 +27,18 @@
   </div>
 </div>
 
+<!-- Décor commun à tous les écrans : mur à moulures, projecteur, sol en damier (dessiné par coffres.js) -->
+<div id="decor"></div>
+
 <!-- ============ ACCUEIL ============ -->
 <section id="accueil" class="ecran actif">
-  <div id="hero"></div>
   <div class="titre">
-    <div class="sur-titre">Une nuit, trois coffres</div>
-    <h1>Le Casse<br>du siècle</h1>
-    <p>Taisez-vous. Écoutez. Ouvrez.</p>
+    <h1>Le Casse<br><span>du siècle</span></h1>
+    <p>Une nuit, trois coffres. Taisez-vous. Écoutez. Ouvrez.</p>
   </div>
+  <div id="hero"></div>
 
+  <div class="panneau">
   <div class="reglage">
     <div class="etiquette">Nombre de joueurs</div>
     <div class="choix" id="choix-joueurs">
@@ -72,6 +75,7 @@
       <span id="version-affichee">v—</span>
       <button class="discret" id="btn-verifier">Vérifier les mises à jour</button>
     </div>
+  </div>
   </div>
 </section>
 
@@ -427,7 +431,8 @@ document.addEventListener('keydown', (e) => {
   if (k && J && !J.fini) { e.preventDefault(); quandCarte(codeBouton(k[1])); }
 });
 
-// Coffre décoratif de l'accueil
+// Décor et coffre de l'accueil
+$('#decor').innerHTML = dessinerDecor();
 $('#hero').innerHTML = dessinerCoffre(2, { mini: true });
 
 // Jauge d'alarme
