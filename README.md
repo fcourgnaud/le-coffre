@@ -33,6 +33,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **2.1.1** — Lampe du vigile à droite, faisceau plus fort qui balaie la pièce et éclaire le coffre ; empreintes du chien à gauche.
 - **2.1.0** — Nouvelle direction artistique (aplats bleu-vert et orange, mur à moulures, projecteur, sol en damier), écran en paysage, jauge d'alarme verticale, décor dessiné dans coffres.js.
 - **2.0.0** — Nouveau design : grand coffre central, barres de verrouillage, porte qui s'ouvre, caméra qui avance vers le coffre suivant, 3 coffres de plus en plus complexes, butin final.
 - **1.6.3** — Le tour de parole commence par le joueur qui suit le dernier à avoir pioché.
