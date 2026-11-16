@@ -35,6 +35,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.0.1** — Phrase d'aide de nouveau visible (aussi en mode sans scan) et plus lisible.
 - **3.0.0** — Illustrations cuivre → argent → or → salle forte : porte qui glisse, caméra qui avance, verrous sur la plaque, interface à gauche, écran « Tourne ton téléphone ».
 - **2.2.1** — Correction : plus de rechargement automatique à la première ouverture.
 - **2.2.0** — Pictos des 16 outils (pictos-outils.js), utilisés sur les cartes outils et sur les cartes Plan.
