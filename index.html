@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="stylesheet" href="theme.css">
 <script src="version.js"></script>
-<script src="coffres.js"></script>
+<script src="scene.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 </head>
 <body>
@@ -27,18 +27,38 @@
   </div>
 </div>
 
-<!-- Décor commun à tous les écrans : mur à moulures, projecteur, sol en damier (dessiné par coffres.js) -->
-<div id="decor"></div>
+<!-- La scène (tes illustrations) : commune à tous les écrans, voir scene.js -->
+<div id="sc-stage"><div id="sc-cadrage"><div id="sc-camera"></div></div></div>
+
+<!-- Téléphone à la verticale : on demande de le tourner -->
+<div id="tourner"><div class="icone-tel"></div><p>Tourne ton téléphone<br>à l'horizontale</p></div>
 
 <!-- ============ ACCUEIL ============ -->
 <section id="accueil" class="ecran actif">
-  <div class="titre">
-    <h1>Le Casse<br><span>du siècle</span></h1>
-    <p>Une nuit, trois coffres. Taisez-vous. Écoutez. Ouvrez.</p>
+  <div class="colonne">
+    <div class="titre">
+      <h1>Le Casse <span>du siècle</span></h1>
+      <p>Une nuit, trois coffres. Taisez-vous. Écoutez. Ouvrez.</p>
+    </div>
+    <div class="actions">
+      <button class="principal" id="btn-lancer">Commencer le casse</button>
+      <div class="ligne-boutons">
+        <button id="btn-reglages">Réglages</button>
+        <button id="btn-serrures">Les serrures</button>
+        <button id="btn-regles">Règles</button>
+      </div>
+      <div id="info-maj"></div>
+      <div class="pied">
+        <span id="version-affichee">v—</span>
+        <button class="discret" id="btn-verifier">Vérifier les mises à jour</button>
+      </div>
+    </div>
   </div>
-  <div id="hero"></div>
 
-  <div class="panneau">
+  <!-- Réglages : fenêtre par-dessus la scène -->
+  <div id="reglages" class="modale">
+    <div class="panneau">
+      <h2>Réglages</h2>
   <div class="reglage">
     <div class="etiquette">Nombre de joueurs</div>
     <div class="choix" id="choix-joueurs">
@@ -66,16 +86,8 @@
     <label class="case"><input type="checkbox" id="opt-aide"> Aide visuelle (garde, chien, bonne réponse)</label>
   </div>
 
-  <div class="actions">
-    <button class="principal" id="btn-lancer">Commencer le casse</button>
-    <button id="btn-serrures">Écouter les serrures</button>
-    <button id="btn-regles">Règles rapides</button>
-    <div id="info-maj"></div>
-    <div class="pied">
-      <span id="version-affichee">v—</span>
-      <button class="discret" id="btn-verifier">Vérifier les mises à jour</button>
+      <button class="principal" id="btn-fermer-reglages">OK</button>
     </div>
-  </div>
   </div>
 </section>
 
@@ -124,6 +136,10 @@
 
 <!-- ============ JEU ============ -->
 <section id="jeu" class="ecran">
+  <!-- Zone du coffre : la toucher fait réécouter la serrure -->
+  <div id="scene"></div>
+
+  <div class="hud">
   <div class="haut">
     <div>
       <div class="coffre-num" id="coffre-num">Coffre 1 / 3</div>
@@ -139,15 +155,14 @@
     <div class="etiquette">Alarme</div>
     <div class="segments" id="segments"></div>
   </div>
+  <div id="message">Écoutez la serrure…</div>
+  <div id="indice-ecoute">Touchez le coffre pour réentendre la serrure</div>
+  <div id="aide"></div>
+  </div>
 
   <div id="lampe"><div class="halo"></div><div class="faisceau"></div><div class="ampoule"></div></div>
   <div id="pattes"></div>
   <div id="annonce"><div class="titre-plan">Plan <span id="annonce-lettre"></span></div><div id="annonce-coups"></div></div>
-  <div id="scene"><div id="coffre"></div></div>
-
-  <div id="message">Écoutez la serrure…</div>
-  <div id="indice-ecoute">Touchez le coffre pour réentendre la serrure</div>
-  <div id="aide"></div>
   <div id="test"></div>
 
   <div class="bas">
@@ -175,10 +190,12 @@
 
 <!-- ============ FIN ============ -->
 <section id="fin" class="ecran">
-  <h2 id="fin-titre">—</h2>
-  <p id="fin-texte"></p>
-  <button class="principal" id="btn-rejouer">Nouvelle nuit</button>
-  <button id="btn-accueil">Accueil</button>
+  <div class="carte-fin">
+    <h2 id="fin-titre">—</h2>
+    <p id="fin-texte"></p>
+    <button class="principal" id="btn-rejouer">Nouvelle nuit</button>
+    <button id="btn-accueil">Accueil</button>
+  </div>
 </section>
 
 <div id="toast"></div>
@@ -431,9 +448,13 @@ document.addEventListener('keydown', (e) => {
   if (k && J && !J.fini) { e.preventDefault(); quandCarte(codeBouton(k[1])); }
 });
 
-// Décor et coffre de l'accueil
-$('#decor').innerHTML = dessinerDecor();
-$('#hero').innerHTML = dessinerCoffre(2, { mini: true });
+// La scène illustrée (le coffre en cuivre fermé dès l'accueil)
+Scene.init();
+
+// Fenêtre des réglages
+$('#btn-reglages').addEventListener('click', () => $('#reglages').classList.add('visible'));
+$('#btn-fermer-reglages').addEventListener('click', () => $('#reglages').classList.remove('visible'));
+$('#reglages').addEventListener('click', (e) => { if (e.target.id === 'reglages') $('#reglages').classList.remove('visible'); });
 
 // Jauge d'alarme
 for (let i = 0; i < ALARME_MAX; i++) { const s = document.createElement('div'); s.className = 'seg'; $('#segments').appendChild(s); }
@@ -451,6 +472,9 @@ function nouvelleCombinaison() {
 function lancerPartie() {
   Son.init();
   $('#entracte').classList.remove('visible');
+  document.body.classList.remove('camera');
+  Scene.afficher(0);
+  bloquerHorizontal();
   J = {
     horloge: 0,                         // temps de jeu en secondes (s'arrête en pause)
     nuit: reglages.duree * 60,
@@ -476,7 +500,7 @@ function demarrerCoffre() {
   J.combinaison = nouvelleCombinaison();
   J.etape = 0;
   assurerEtape(); majBoutons();
-  installerCoffre(J.coffre);
+  Scene.afficher(J.coffre);
   J.planques = false; document.body.classList.remove('planques');
   document.documentElement.style.setProperty('--garde', 0);
   document.querySelectorAll('#pattes .patte').forEach((pa) => pa.classList.remove('on'));
@@ -577,8 +601,7 @@ function jouerSerrure() {
   Son.serrure(SONS[J.combinaison[J.etape]].sig, COFFRES[J.coffre].volumeSerrure);
   // Le picto apparaît le temps du son (1,6 s), puis s'efface
   const pi = $('#picto'); if (pi) { pi.innerHTML = svgPicto(J.combinaison[J.etape]); pi.classList.remove('on'); void pi.offsetWidth; pi.classList.add('on'); }
-  const mol = coffreActif().querySelector(':scope > .porte .molette');
-  if (mol) mol.style.transform = `rotate(${Math.floor(Math.random() * 300) - 150}deg)`;
+  Scene.tourner();
 }
 
 $('#scene').addEventListener('click', () => {
@@ -641,7 +664,7 @@ function quandCarte(code) {
     } else {
       J.stats.erreurs++;
       Son.erreur();
-      const co = coffreActif(); co.classList.remove('secoue'); void co.offsetWidth; co.classList.add('secoue');
+      Scene.secouer();
       if (COFFRES[J.coffre].rebloque && J.etape > 0) { J.etape = 0; J.reecoutes = 0; assurerEtape(); majAffichage(); message('Mauvais outil ! Le mécanisme se rebloque. Alarme +1', true); }
       else message('Mauvais outil ! Alarme +1', true);
       assurerEtape();
@@ -677,35 +700,29 @@ function monterAlarme(n) {
   if (J.alarme >= ALARME_MAX) setTimeout(() => finPartie(false, 'L\'alarme hurle dans tout le bâtiment. Tout le monde au poste !'), 900);
 }
 
-/* ---------------- Le coffre à l'écran ---------------- */
-function coffreActif() { return $('#coffre > .coffre'); }
-
-function installerCoffre(niveau) {
-  const scene = $('#scene');
-  scene.classList.add('sans-transition'); scene.classList.remove('zoom', 'final');
-  $('#coffre').innerHTML = dessinerCoffre(niveau);
-  void scene.offsetWidth; scene.classList.remove('sans-transition');
-}
-
-// Séquence d'ouverture : la porte pivote, puis la caméra avance vers le coffre suivant
+/* ---------------- Ouverture d'un coffre ---------------- */
+// La porte glisse vers la gauche, puis la caméra avance jusqu'au coffre suivant (scene.js)
 function coffreOuvert() {
   Son.ouverture();
   J.enPause = true;
   message('Le coffre est ouvert !');
-  const co = coffreActif(), scene = $('#scene');
-  setTimeout(() => co.classList.add('ouvert'), 700);              // les barres ont fini de rentrer
-  if (J.coffre >= COFFRES.length - 1) {
-    setTimeout(() => scene.classList.add('final'), 2200);          // on s'approche du butin
-    return setTimeout(() => finPartie(true, ''), 4200);
-  }
-  setTimeout(() => { scene.classList.add('zoom'); Son.pas(0.25, 0); }, 2200);   // la caméra avance
-  setTimeout(() => {
+  const dernier = J.coffre >= COFFRES.length - 1;
+  setTimeout(async () => {
+    await Scene.ouvrir();
+    document.body.classList.add('camera');          // l'interface s'efface pendant que la caméra avance
+    Son.pas(0.25, 0);
+    await Scene.avancer();
+    if (dernier) {
+      Scene.butin();
+      return setTimeout(() => finPartie(true, ''), 3200);
+    }
+    document.body.classList.remove('camera');
     const suivant = J.coffre + 1;
     $('#entracte-num').textContent = `Coffre ${suivant + 1} / 3`;
     $('#entracte-titre').textContent = COFFRES[suivant].nom;
     $('#entracte-texte').textContent = `Nouveau plan à écouter. ${suivant === 1 ? 'Attention, un chien rôde.' : 'Une seule erreur rebloque tout le mécanisme.'}`;
     $('#entracte').classList.add('visible');
-  }, 4200);
+  }, 700);
 }
 $('#btn-suivant').addEventListener('click', () => { $('#entracte').classList.remove('visible'); J.coffre++; J.enPause = false; demarrerCoffre(); });
 
@@ -722,11 +739,7 @@ function finPartie(gagne, texte) {
 }
 
 function majAffichage() {
-  const co = coffreActif();
-  if (co) {
-    co.querySelectorAll(':scope > .porte .barre').forEach((b) => b.classList.toggle('ouverte', +b.dataset.i < J.etape));
-    co.querySelectorAll(':scope > .porte .voyant').forEach((v) => v.classList.toggle('on', +v.dataset.i < J.etape));
-  }
+  Scene.verrous(J.etape);
   document.querySelectorAll('#segments .seg').forEach((s, i) => s.classList.toggle('on', i < J.alarme));
 }
 
@@ -745,8 +758,26 @@ $('#btn-pause').addEventListener('click', () => { J.enPause = true; ecran('pause
 $('#btn-reprendre').addEventListener('click', () => { J.enPause = false; ecran('jeu'); });
 $('#btn-abandon').addEventListener('click', () => { J.enPause = false; finPartie(false, 'Vous avez abandonné le casse.'); });
 $('#btn-lancer').addEventListener('click', lancerPartie);
-$('#btn-rejouer').addEventListener('click', lancerPartie);
-$('#btn-accueil').addEventListener('click', () => ecran('accueil'));
+$('#btn-rejouer').addEventListener('click', () => { lancerPartie(); });
+$('#btn-accueil').addEventListener('click', () => { document.body.classList.remove('camera'); Scene.afficher(0); ecran('accueil'); });
+
+/* ---------------- Téléphone à l'horizontale ---------------- */
+// Android (app installée ou plein écran) : on verrouille l'orientation.
+// iPhone : impossible pour une page web, l'écran « Tourne ton téléphone » prend le relais.
+async function bloquerHorizontal() {
+  try {
+    if (document.documentElement.requestFullscreen && !document.fullscreenElement && matchMedia('(pointer: coarse)').matches) await document.documentElement.requestFullscreen();
+    if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape');
+  } catch (e) {}
+}
+const verticale = matchMedia('(orientation: portrait)');
+let pauseOrientation = false;
+function surOrientation() {
+  if (!J || J.fini) return;
+  if (verticale.matches && !J.enPause) { J.enPause = true; pauseOrientation = true; }
+  else if (!verticale.matches && pauseOrientation) { J.enPause = false; pauseOrientation = false; }
+}
+verticale.addEventListener ? verticale.addEventListener('change', surOrientation) : verticale.addListener(surOrientation);
 
 /* ---------------- Caméra et lecture des QR ---------------- */
 let flux = null, scanActif = false, dernierCode = '', dernierCodeA = 0, dernierScanA = 0;

@@ -8,7 +8,8 @@ Jeu coopératif en temps réel (2 à 4 joueurs) : le téléphone posé au centre
 |---|---|---|
 | `index.html` | Les écrans et toute la logique du jeu | Oui, avec prudence |
 | `theme.css` | Tout le visuel (couleurs, polices, cadran…) | **Oui, c'est fait pour** |
-| `coffres.js` | Les dessins des 3 coffres et du décor (SVG) | Oui, si tu veux redessiner les coffres |
+| `scene.js` | Place tes illustrations et règle les animations (porte, caméra, verrous) | Les réglages en haut du fichier, oui |
+| `img/` | Tes illustrations : cuivre1/2, argent1/2, or1/2, fond1 (format WebP) | Oui, remplace-les par tes nouvelles versions |
 | `pictos-outils.js` | Les pictos des 16 outils (SVG) | Oui, remplace-les par tes dessins |
 | `version.js` | Numéro de version + notes affichées dans le bandeau | Claude s'en occupe |
 | `sw.js` | Garde l'app hors ligne et gère les mises à jour | Non |
@@ -34,6 +35,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.0.0** — Illustrations cuivre → argent → or → salle forte : porte qui glisse, caméra qui avance, verrous sur la plaque, interface à gauche, écran « Tourne ton téléphone ».
 - **2.2.1** — Correction : plus de rechargement automatique à la première ouverture.
 - **2.2.0** — Pictos des 16 outils (pictos-outils.js), utilisés sur les cartes outils et sur les cartes Plan.
 - **2.1.1** — Lampe du vigile à droite, faisceau plus fort qui balaie la pièce et éclaire le coffre ; empreintes du chien à gauche.

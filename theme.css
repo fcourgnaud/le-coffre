@@ -2,336 +2,273 @@
    LE CASSE DU SIÈCLE — THEME.CSS
    ---------------------------------------------------------
    Tout le visuel de l'app est ici. Tu peux tout modifier.
-   1) Les VARIABLES juste en dessous : couleurs, polices,
-      tailles. C'est le plus simple à changer.
-   2) Ensuite, chaque écran a sa section, avec un titre.
-   Ambiance : illustration en aplats, mur bleu-vert sous un
-   projecteur, coffres turquoise et volant orange.
-   L'app est pensée pour le téléphone À L'HORIZONTALE.
+   1) Les VARIABLES juste en dessous : couleurs, polices.
+   2) Ensuite, chaque partie a sa section, avec un titre.
+   Les illustrations (coffres, décor) sont dans img/ et leur
+   placement dans scene.js.
+   L'app se joue téléphone À L'HORIZONTALE.
    ========================================================= */
 
 :root {
-  /* --- Le décor (mur, sol) --- */
-  --mur-lumiere: #e6efc4;    /* centre du mur, sous le projecteur */
-  --mur: #9dbf96;            /* mur éclairé */
-  --mur-ombre: #2e5b52;      /* mur dans l'ombre */
-  --mur-nuit: #102725;       /* bords de l'écran */
-  --mur-ligne: rgba(31, 84, 80, .55);  /* moulures */
-  --sol-clair: #d69a5c;      /* sol en damier */
-  --sol-fonce: #6b3b1a;
-
-  /* --- Les coffres --- */
-  --teal-clair: #c9eee4;
-  --teal: #7db8ad;
-  --teal-fonce: #3e7f7b;
-  --teal-nuit: #1b4645;
-  --orange-clair: #ffd08a;
-  --orange: #f2922f;
-  --orange-fonce: #b7561a;
-  --voyant-on: #ff4a3d;      /* voyant d'une barre encore fermée */
-  --voyant-ok: #7dff9a;      /* voyant d'une barre débloquée */
-
-  /* --- Interface --- */
-  --texte: #ffffff;
-  --texte-doux: #bfd8cf;
-  --panneau: rgba(10, 34, 33, .82);   /* fond des panneaux */
-  --panneau-bord: rgba(201, 238, 228, .18);
-  --accent: var(--orange);
-  --accent-texte: #2a1405;
+  /* --- Couleurs de l'interface --- */
+  --texte: #f3ead6;
+  --texte-doux: #b8b09d;
+  --accent: #d9a35b;            /* cuivre doré : titres, boutons */
+  --accent-clair: #f3cf8f;
+  --accent-texte: #2a1608;
+  --panneau: rgba(14, 22, 19, .82);
+  --panneau-bord: rgba(217, 163, 91, .35);
   --danger: #e2392d;
-  --alarme-eteinte: #6f2324;  /* crans de la jauge d'alarme */
+  --alarme-eteinte: #2a2e2c;
   --alarme-allumee: #ff3b2f;
-  --lumiere: 255, 236, 170;   /* lampe du veilleur (rouge, vert, bleu) */
-  --picto: #ffffff;           /* pictos des serrures */
-  --patte: #3a1f0c;           /* empreintes du chien */
+  --lumiere: 255, 236, 190;     /* lampe du vigile (rouge, vert, bleu) */
+  --picto: #ffffff;
+  --patte: #c9a06a;
+
+  /* --- Verrous sur la plaque de la porte --- */
+  --verrou-ferme: #d10f0f;
+  --verrou-ouvert: #2fb51b;
 
   /* --- Polices --- */
   --police-titre: Georgia, 'Times New Roman', serif;
   --police-texte: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --police-chiffres: 'Courier New', Courier, monospace;
 
-  /* --- Formes et tailles --- */
-  --rayon: 14px;
-  --taille-coffre: min(70vh, 46vw);   /* taille du grand coffre */
-  --garde: 0;                         /* 0 = veilleur loin, 1 = arrivé (mis à jour par l'app) */
+  --rayon: 12px;
+  --colonne: 29vw;              /* largeur de la colonne d'infos, sur le mur vert à gauche */
+  --garde: 0;
 }
 
 /* ---------- Base ---------- */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; height: 100%; }
-body { background: var(--mur-nuit); color: var(--texte); font-family: var(--police-texte); font-size: 16px; overflow: hidden; user-select: none; -webkit-user-select: none; }
+body { background: #0d1210; color: var(--texte); font-family: var(--police-texte); font-size: 15px; overflow: hidden; user-select: none; -webkit-user-select: none; }
 h1, h2, h3 { font-family: var(--police-titre); font-weight: normal; margin: 0; }
 
-#decor { position: fixed; inset: 0; z-index: 0; }
-#decor svg { width: 100%; height: 100%; display: block; }
-
-.ecran { display: none; position: fixed; inset: 0; z-index: 1; overflow-y: auto; flex-direction: column;
-  padding: max(16px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); }
+.ecran { display: none; position: fixed; inset: 0; z-index: 1; overflow: hidden; flex-direction: column;
+  padding: max(10px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
 .ecran.actif { display: flex; }
 
-button { font: inherit; color: var(--texte); background: rgba(201, 238, 228, .12); border: 1px solid var(--panneau-bord); border-radius: var(--rayon); padding: 12px 16px; cursor: pointer; }
+button { font: inherit; color: var(--texte); background: rgba(255,255,255,.07); border: 1px solid var(--panneau-bord); border-radius: var(--rayon); padding: 10px 14px; cursor: pointer; }
 button:active { transform: scale(.97); }
 button:disabled { opacity: .35; }
-button.principal { background: linear-gradient(180deg, var(--orange-clair), var(--orange) 55%, var(--orange-fonce)); color: var(--accent-texte); border: none; font-weight: 700; font-size: 1.1rem; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
-button.discret { background: transparent; border-color: transparent; color: var(--texte-doux); padding: 8px; }
-
-/* ---------- Bandeau de mise à jour ---------- */
-#maj { display: none; position: fixed; left: 50%; transform: translateX(-50%); width: min(520px, 92vw); top: max(12px, env(safe-area-inset-top)); z-index: 50;
-  background: var(--orange); color: var(--accent-texte); border-radius: var(--rayon); padding: 14px 16px; box-shadow: 0 8px 30px rgba(0,0,0,.6); }
-#maj.visible { display: block; }
-body.en-jeu #maj { display: none; }
-#maj strong { display: block; font-size: 1.05rem; }
-#maj ul { margin: 6px 0 10px; padding-left: 18px; font-size: .9rem; }
-#maj .boutons { display: flex; gap: 8px; }
-#maj button { background: var(--accent-texte); color: var(--orange-clair); border: none; padding: 10px 14px; }
-#maj button.plus-tard { background: transparent; color: var(--accent-texte); }
-
-/* ---------- Panneaux et réglages ---------- */
-.reglage { background: rgba(255,255,255,.05); border: 1px solid var(--panneau-bord); border-radius: var(--rayon); padding: 10px 12px; }
-.reglage .etiquette { color: var(--texte-doux); font-size: .8rem; margin-bottom: 6px; }
-.choix { display: flex; gap: 6px; }
-.choix button { flex: 1; padding: 9px 6px; font-size: .9rem; }
-.choix button.on { background: var(--orange); color: var(--accent-texte); border-color: var(--orange); font-weight: 700; }
-.case { display: flex; align-items: center; gap: 10px; padding: 5px 0; font-size: .88rem; }
-.case input { width: 20px; height: 20px; accent-color: var(--orange); flex-shrink: 0; }
-
-/* ---------- Accueil : titre en haut à gauche, coffre au centre, réglages à droite ---------- */
-#accueil.actif { display: grid; grid-template-columns: 1fr minmax(270px, 32vw); grid-template-rows: auto 1fr; gap: 0 3vw; overflow: hidden; }
-#accueil .titre { grid-column: 1; grid-row: 1; padding: 2vh 0 0 2vw; }
-#accueil .titre h1 { font-size: clamp(2.4rem, 13vh, 5.5rem); line-height: .9; text-shadow: 0 4px 20px rgba(0,0,0,.35); }
-#accueil .titre h1 span { font-size: .62em; }
-#accueil .titre p { color: var(--texte); text-shadow: 0 1px 8px rgba(0,0,0,.5); font-weight: 600; margin: 10px 0 0; font-size: .95rem; }
-#hero { grid-column: 1; grid-row: 2; align-self: center; justify-self: center; width: min(54vh, 36vw); height: min(54vh, 36vw); filter: drop-shadow(0 20px 30px rgba(0,0,0,.45)); }
-#accueil .panneau { grid-column: 2; grid-row: 1 / 3; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
-  background: var(--panneau); border: 1px solid var(--panneau-bord); border-radius: 20px; padding: 14px; backdrop-filter: blur(6px); }
-#accueil .actions { display: contents; }
-#btn-lancer { order: -1; padding: 14px; }   /* le bouton Commencer reste en haut du panneau */
-#accueil .pied { display: flex; justify-content: space-between; align-items: center; color: var(--texte-doux); font-size: .8rem; }
-#info-maj { color: var(--texte-doux); font-size: .8rem; text-align: center; min-height: 1.1em; }
-
-/* ---------- Écrans secondaires (serrures, règles, pause, fin) ---------- */
-#serrures, #regles, #pause, #fin { background: rgba(10, 30, 29, .88); backdrop-filter: blur(4px); }
-#serrures, #regles { gap: 10px; align-items: center; }
-#serrures > *, #regles > * { width: min(640px, 100%); }
-#serrures h2, #regles h2 { font-size: 2rem; }
-.ligne-son { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: rgba(255,255,255,.06); border: 1px solid var(--panneau-bord); border-radius: var(--rayon); padding: 10px 14px; margin-bottom: 8px; }
-.ligne-son .nom { font-size: 1.1rem; }
-.ligne-son .desc { color: var(--texte-doux); font-size: .85rem; }
-.ligne-son button { background: var(--orange); color: var(--accent-texte); border: none; min-width: 60px; }
-#regles .texte { line-height: 1.5; }
-#regles .texte h3 { color: var(--orange-clair); margin: 14px 0 4px; font-size: 1.15rem; }
+button.principal { background: linear-gradient(180deg, var(--accent-clair), var(--accent) 55%, #8f5a26); color: var(--accent-texte); border: none; font-weight: 700; font-size: 1.05rem; box-shadow: 0 6px 18px rgba(0,0,0,.45); }
+button.discret { background: transparent; border-color: transparent; color: var(--texte-doux); padding: 6px; font-size: .8rem; }
 
 /* =========================================================
-   ÉCRAN DE JEU (paysage)
+   LA SCÈNE (tes illustrations, voir scene.js)
    ========================================================= */
-#jeu { padding: 0; overflow: hidden; }
-#jeu .haut { position: absolute; z-index: 4; top: max(2.5vh, env(safe-area-inset-top)); left: max(3vw, env(safe-area-inset-left)); right: max(3vw, env(safe-area-inset-right));
-  display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none; }
-#jeu .coffre-num { color: var(--orange-clair); text-shadow: 0 1px 6px rgba(0,0,0,.6); font-size: .8rem; font-weight: 700; letter-spacing: .25em; text-transform: uppercase; }
-#jeu .coffre-nom { font-family: var(--police-titre); font-size: clamp(1.5rem, 8vh, 3.4rem); line-height: 1; text-shadow: 0 3px 14px rgba(0,0,0,.35); }
-#jeu .droite { text-align: right; }
-#chrono { font-family: var(--police-chiffres); font-weight: 700; font-size: clamp(1.4rem, 7vh, 2.6rem); text-shadow: 0 3px 12px rgba(0,0,0,.4); }
-#chrono.presse { color: var(--alarme-allumee); }
-#plan { font-family: var(--police-titre); font-size: 1.1rem; color: var(--texte); text-shadow: 0 1px 6px rgba(0,0,0,.6); }
-#plan-lettre { font-size: 2rem; color: var(--orange); vertical-align: middle; }
-
-/* Jauge d'alarme : crans rouges empilés à droite (le bas s'allume en premier) */
-#alarme { position: absolute; z-index: 4; right: max(4vw, env(safe-area-inset-right)); top: 50%; transform: translateY(-50%); text-align: center; }
-#alarme .etiquette { color: var(--texte); font-size: .7rem; letter-spacing: .25em; text-transform: uppercase; margin-bottom: 8px; text-shadow: 0 1px 6px rgba(0,0,0,.6); }
-#alarme .segments { display: flex; flex-direction: column-reverse; gap: 7px; }
-#alarme .seg { width: min(9vw, 92px); height: min(5vh, 30px); border-radius: 7px; background: var(--alarme-eteinte); border: 2px solid rgba(255,255,255,.85); transition: background .3s, box-shadow .3s; }
-#alarme .seg.on { background: var(--alarme-allumee); box-shadow: 0 0 18px var(--alarme-allumee), inset 0 0 8px rgba(255,255,255,.5); }
-
-/* ---------- Le grand coffre ---------- */
-#scene { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center; padding-bottom: 8vh; cursor: pointer; }
-#coffre { width: var(--taille-coffre); height: var(--taille-coffre); position: relative; }
-
-.coffre { position: relative; width: 100%; height: 100%; transition: transform 2s cubic-bezier(.55, 0, .25, 1); }
-.coffre .cadre { position: absolute; inset: 3%; border-radius: 9%;
-  background: linear-gradient(150deg, var(--teal) , var(--teal-fonce) 70%);
-  box-shadow: 0 24px 40px rgba(0,0,0,.35), inset 0 0 0 6px rgba(255,255,255,.12); }
-.coffre.niveau-2 .cadre { border-radius: 12%; }
-.coffre.niveau-3 .cadre { inset: 1%; border-radius: 50%; background: radial-gradient(circle, var(--teal-fonce) 60%, var(--teal) 61%, var(--teal-fonce)); }
-.coffre .trou { position: absolute; inset: 10%; border-radius: 6%; overflow: hidden;
-  background: radial-gradient(circle at 50% 45%, #2e5a55 0%, #0b1c1b 75%); box-shadow: inset 0 0 40px #000; }
-.coffre.niveau-2 .trou { border-radius: 9%; }
-.coffre.niveau-3 .trou { border-radius: 50%; inset: 9.5%; }
-.trou .loin { position: absolute; left: 50%; top: 50%; width: 38%; height: 38%; transform: translate(-50%, -50%); filter: brightness(.55); }
-.trou .loin .coffre { transition: none; }
-.trou .butin { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 18%;
-  background: radial-gradient(circle at 50% 70%, rgba(255, 210, 110, .6), transparent 62%); }
-.trou .butin svg { width: 70%; }
-.lingot { fill: var(--orange); stroke: var(--orange-fonce); stroke-width: 1.2; }
-
-.coffre .porte { position: absolute; inset: 0; transform-origin: 10.5% 50%; transition: transform 1.5s cubic-bezier(.5, 0, .2, 1), filter 1.5s; }
-.coffre.ouvert > .porte { transform: perspective(1200px) rotateY(-108deg); filter: brightness(.6); }
-.porte-svg { width: 100%; height: 100%; display: block; overflow: visible; }
-.plaque { font-family: var(--police-titre); font-size: 13px; text-anchor: middle; fill: var(--accent-texte); letter-spacing: 2px; font-weight: bold; }
-
-/* Barres de verrouillage : elles rentrent dans la porte quand la serrure est ouverte */
-.barre { transition: transform .7s cubic-bezier(.6, 0, .3, 1.35); }
-.barre.ouverte.b-droite { transform: translateX(-46px); }
-.barre.ouverte.b-gauche { transform: translateX(46px); }
-.barre.ouverte.b-haut   { transform: translateY(46px); }
-.barre.ouverte.b-bas    { transform: translateY(-46px); }
-
-/* Voyants : rouge = fermé, vert = débloqué */
-.voyant { fill: var(--voyant-on); stroke: var(--teal-nuit); stroke-width: 2; filter: drop-shadow(0 0 5px var(--voyant-on)); transition: fill .3s; }
-.voyant.on { fill: var(--voyant-ok); filter: drop-shadow(0 0 7px var(--voyant-ok)); }
-.coffre.mini .voyant { filter: none; }
-
-/* Molette / volant qui tourne */
-.molette { transform-box: fill-box; transform-origin: center; transition: transform .7s cubic-bezier(.3, 1.4, .5, 1); }
-#hero .molette { animation: tourne 18s linear infinite; }
-@keyframes tourne { to { transform: rotate(360deg); } }
-
+#sc-stage { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: #0d1210; }
+#sc-cadrage { position: absolute; left: 0; top: 0; width: 2378px; height: 1179px; transform-origin: 0 0; }
+#sc-camera { position: absolute; inset: 0; transform-origin: 0 0; transition: transform 2.5s cubic-bezier(.55, 0, .25, 1); }
+#sc-camera.sans-transition, #sc-camera.sans-transition * { transition: none !important; }
+.sc-niveau { position: absolute; left: 0; top: 0; width: 2378px; height: 1179px; }
+.sc-derriere { position: absolute; transform-origin: 0 0; }
+.sc-cadre, .sc-fond { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+/* La porte glisse vers la gauche (durée réglable ici) */
+.sc-porte { position: absolute; transition: transform 1.8s cubic-bezier(.45, 0, .2, 1); }
+.sc-porte > img { width: 100%; height: 100%; display: block; }
+/* Pendant l'avancée de la caméra, l'encadrement et la porte de devant s'effacent */
+#sc-camera.avance > .sc-niveau > .sc-cadre, #sc-camera.avance > .sc-niveau > .sc-porte { opacity: 0; transition: opacity 1.1s 1.2s, transform 1.8s cubic-bezier(.45, 0, .2, 1); }
+/* Le volant tourne quand la serrure rejoue */
+.sc-volant { position: absolute; border-radius: 50%; transition: transform .8s cubic-bezier(.3, 1.3, .5, 1); }
 /* Erreur : la porte tremble */
-.coffre.secoue > .porte { animation: secoue .4s; }
-@keyframes secoue { 0%,100% { translate: 0; } 25% { translate: -12px 0; } 75% { translate: 12px 0; } }
+.sc-porte.secoue { animation: secoue .4s; }
+@keyframes secoue { 25% { translate: -14px 0; } 75% { translate: 14px 0; } }
 
-/* Caméra : on avance vers le coffre suivant */
-#scene.zoom .coffre:not(.mini) { transform: scale(3.33); }
-#scene.zoom .coffre:not(.mini) > .cadre, #scene.zoom .coffre:not(.mini) > .porte { opacity: 0; transition: opacity 1.2s .6s, transform 1.5s; }
-#scene.zoom .trou { overflow: visible; background: transparent; box-shadow: none; transition: background 1s .8s; }
-#scene.zoom .trou .loin { filter: none; transition: filter 1.6s; }
-#scene.final .coffre:not(.mini) { transform: scale(1.5); }
-#scene.sans-transition *, #scene.sans-transition .coffre { transition: none !important; }
-#jeu:has(#scene.zoom) .haut, #jeu:has(#scene.zoom) #alarme { opacity: 0; transition: opacity .6s; }
+/* Les 4 verrous sur la plaque de la porte (exemple 8) */
+.sc-plaque { position: absolute; display: flex; flex-direction: column; justify-content: space-evenly; align-items: center; padding: 0; }
+.sc-plaque::before, .sc-plaque::after { content: ''; height: 4%; }   /* un peu d'air en haut et en bas (sous les vis) */
+.verrou { width: 74%; height: 13.5%; border-radius: 999px; border: 3px solid #2a0b06;
+  background: linear-gradient(#ff6a5a, var(--verrou-ferme) 60%, #8e0000);
+  box-shadow: 0 3px 4px rgba(0,0,0,.5), inset 0 3px 2px rgba(255,255,255,.35);
+  transition: background .4s, transform .5s cubic-bezier(.4, 1.6, .5, 1), box-shadow .4s; }
+.verrou.ouvert { background: linear-gradient(#9cff7a, var(--verrou-ouvert) 60%, #146e07); border-color: #082a04; transform: translateX(-10%);
+  box-shadow: 0 3px 4px rgba(0,0,0,.5), inset 0 3px 2px rgba(255,255,255,.4), 0 0 18px #63ff4a; }
 
-/* Message sur le sol */
-#message { position: absolute; z-index: 4; left: 0; right: 0; bottom: 6.5vh; text-align: center; font-size: clamp(1rem, 4.2vh, 1.4rem); font-weight: 600; text-shadow: 0 2px 10px rgba(0,0,0,.7); padding: 0 20vw; }
-#message.alerte { color: #ffd7d2; }
-#indice-ecoute { position: absolute; z-index: 4; left: 0; right: 0; bottom: 2vh; text-align: center; color: rgba(255,255,255,.7); font-size: .75rem; }
-
-#jeu .bas { position: absolute; z-index: 4; left: max(2vw, env(safe-area-inset-left)); right: max(2vw, env(safe-area-inset-right)); bottom: 2vh; display: flex; justify-content: space-between; align-items: flex-end; pointer-events: none; }
-#jeu .bas > * { pointer-events: auto; }
-#apercu { width: 72px; height: 54px; border-radius: 10px; object-fit: cover; transform: scaleX(-1); border: 2px solid rgba(255,255,255,.4); background: #000; }
-#apercu.lu { border-color: var(--orange); }
-#btn-pause { background: var(--panneau); border: 1px solid var(--panneau-bord); color: var(--texte); padding: 8px 14px; }
+/* Le butin qui se pose sur les étagères de la chambre finale */
+.sc-butin { position: absolute; inset: 0; }
+.lingots { position: absolute; width: 120px; height: 46px; opacity: 0; transform: translateY(-40px); animation: pose .6s forwards;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 46'%3E%3Cg fill='%23e7b84a' stroke='%236b4a12' stroke-width='2'%3E%3Cpath d='M4 44 l6 -16 h28 l6 16 z'/%3E%3Cpath d='M42 44 l6 -16 h28 l6 16 z'/%3E%3Cpath d='M80 44 l6 -16 h28 l6 16 z'/%3E%3Cpath d='M23 28 l6 -16 h28 l6 16 z'/%3E%3Cpath d='M61 28 l6 -16 h28 l6 16 z'/%3E%3C/g%3E%3C/svg%3E") no-repeat; }
+@keyframes pose { to { opacity: 1; transform: none; } }
 
 /* Planqués : la scène s'assombrit */
-body.planques #scene { opacity: .3; transition: opacity .4s; }
-body.planques #decor { filter: brightness(.35); transition: filter .4s; }
+body.planques #sc-stage { filter: brightness(.3); transition: filter .4s; }
+/* Pendant que la caméra avance, l'interface s'efface */
+body.camera #jeu .hud, body.camera #jeu .bas, body.camera #pattes { opacity: 0; transition: opacity .5s; }
+
+/* ---------- Bandeau de mise à jour ---------- */
+#maj { display: none; position: fixed; left: 50%; transform: translateX(-50%); width: min(520px, 92vw); top: max(10px, env(safe-area-inset-top)); z-index: 50;
+  background: var(--accent); color: var(--accent-texte); border-radius: var(--rayon); padding: 12px 16px; box-shadow: 0 8px 30px rgba(0,0,0,.6); }
+#maj.visible { display: block; }
+body.en-jeu #maj { display: none; }
+#maj strong { display: block; }
+#maj ul { margin: 6px 0 10px; padding-left: 18px; font-size: .85rem; }
+#maj .boutons { display: flex; gap: 8px; }
+#maj button { background: var(--accent-texte); color: var(--accent-clair); border: none; padding: 8px 14px; }
+#maj button.plus-tard { background: transparent; color: var(--accent-texte); }
+
+/* =========================================================
+   ACCUEIL : titre et boutons sur le mur vert, coffre en cuivre à droite
+   ========================================================= */
+#accueil .colonne { width: var(--colonne); min-width: 230px; height: 100%; display: flex; flex-direction: column; gap: 10px; padding-top: 2vh; }
+#accueil .titre h1 { font-size: clamp(1.8rem, 9vh, 3.6rem); line-height: .95; color: var(--texte); text-shadow: 0 4px 20px rgba(0,0,0,.6); }
+#accueil .titre h1 span { display: block; font-size: .6em; color: var(--accent-clair); margin-top: 4px; }
+#accueil .titre p { color: var(--texte-doux); margin: 8px 0 0; font-size: .82rem; }
+#accueil .actions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+.ligne-boutons { display: flex; gap: 6px; }
+.ligne-boutons button { flex: 1; padding: 9px 4px; font-size: .82rem; background: var(--panneau); }
+#accueil .pied { display: flex; justify-content: space-between; align-items: center; color: var(--texte-doux); font-size: .75rem; }
+#info-maj { color: var(--texte-doux); font-size: .78rem; min-height: 1em; }
+
+/* Fenêtre des réglages */
+.modale { display: none; position: fixed; inset: 0; z-index: 20; background: rgba(0,0,0,.55); align-items: center; justify-content: center; }
+.modale.visible { display: flex; }
+.modale .panneau { width: min(560px, 92vw); max-height: 92vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;
+  background: var(--panneau); border: 1px solid var(--panneau-bord); border-radius: 18px; padding: 14px; backdrop-filter: blur(8px); }
+.modale h2 { color: var(--accent-clair); font-size: 1.5rem; }
+.reglage { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: var(--rayon); padding: 8px 10px; }
+.reglage .etiquette { color: var(--texte-doux); font-size: .78rem; margin-bottom: 5px; }
+.choix { display: flex; gap: 6px; }
+.choix button { flex: 1; padding: 7px 6px; font-size: .85rem; }
+.choix button.on { background: var(--accent); color: var(--accent-texte); border-color: var(--accent); font-weight: 700; }
+.case { display: flex; align-items: center; gap: 10px; padding: 3px 0; font-size: .85rem; }
+.case input { width: 18px; height: 18px; accent-color: var(--accent); flex-shrink: 0; }
+
+/* ---------- Écrans secondaires (serrures, règles, pause) ---------- */
+#serrures, #regles, #pause { background: rgba(8, 12, 10, .9); backdrop-filter: blur(4px); overflow-y: auto; }
+#serrures, #regles { gap: 10px; align-items: center; }
+#serrures > *, #regles > * { width: min(680px, 100%); }
+#serrures h2, #regles h2 { font-size: 1.8rem; color: var(--accent-clair); }
+.ligne-son { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); border-radius: var(--rayon); padding: 8px 12px; margin-bottom: 6px; }
+.ligne-son .nom { font-size: 1.05rem; }
+.ligne-son .desc { color: var(--texte-doux); font-size: .82rem; }
+.ligne-son button { background: var(--accent); color: var(--accent-texte); border: none; min-width: 56px; }
+#regles .texte { line-height: 1.5; }
+#regles .texte h3 { color: var(--accent-clair); margin: 12px 0 4px; font-size: 1.1rem; }
+#pause { align-items: center; justify-content: center; gap: 12px; }
+#pause h2 { font-size: 2.2rem; color: var(--accent-clair); }
+
+/* =========================================================
+   ÉCRAN DE JEU : toutes les infos dans la colonne de gauche (mur vert)
+   ========================================================= */
+#jeu { padding: 0; }
+#scene { position: absolute; left: var(--colonne); right: 0; top: 0; bottom: 0; z-index: 2; cursor: pointer; }   /* zone à toucher pour réécouter */
+#jeu .hud { position: absolute; z-index: 4; left: max(16px, env(safe-area-inset-left)); top: max(10px, env(safe-area-inset-top)); width: calc(var(--colonne) - 20px); min-width: 210px;
+  display: flex; flex-direction: column; gap: 10px; }
+#jeu .haut { display: flex; flex-direction: column; gap: 6px; }
+#jeu .coffre-num { color: var(--accent); font-size: .72rem; font-weight: 700; letter-spacing: .3em; text-transform: uppercase; }
+#jeu .coffre-nom { font-family: var(--police-titre); font-size: clamp(1.2rem, 6.5vh, 2rem); line-height: 1.05; text-shadow: 0 2px 12px rgba(0,0,0,.6); }
+#jeu .droite { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+#chrono { font-family: var(--police-chiffres); font-weight: 700; font-size: clamp(1.4rem, 8vh, 2.4rem); }
+#chrono.presse { color: var(--alarme-allumee); }
+#plan { font-family: var(--police-titre); color: var(--texte-doux); }
+#plan-lettre { font-size: 2rem; color: var(--accent-clair); }
+
+/* Jauge d'alarme : 5 crans côte à côte */
+#alarme .etiquette { color: var(--accent); font-size: .65rem; letter-spacing: .3em; text-transform: uppercase; margin-bottom: 5px; }
+#alarme .segments { display: flex; gap: 5px; }
+#alarme .seg { flex: 1; height: 14px; border-radius: 4px; background: var(--alarme-eteinte); border: 1.5px solid rgba(217,163,91,.5); transition: background .3s, box-shadow .3s; }
+#alarme .seg.on { background: linear-gradient(#ff6a55, #b4281b); border-color: var(--accent-clair); box-shadow: 0 0 12px var(--alarme-allumee); }
+
+#message { font-size: .95rem; font-weight: 600; min-height: 2.4em; text-shadow: 0 2px 8px #000; }
+#message.alerte { color: #ffb4aa; }
+#indice-ecoute { color: var(--texte-doux); font-size: .7rem; }
+
+#jeu .bas { position: absolute; z-index: 4; right: max(10px, env(safe-area-inset-right)); top: max(8px, env(safe-area-inset-top)); display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+#btn-pause { background: var(--panneau); border: 1px solid var(--panneau-bord); color: var(--accent-clair); padding: 6px 12px; font-size: .85rem; }
+#apercu { width: 64px; height: 48px; border-radius: 8px; object-fit: cover; transform: scaleX(-1); border: 2px solid rgba(255,255,255,.3); background: #000; }
+#apercu.lu { border-color: var(--accent); }
 
 /* Aide visuelle (pour tester) */
-#aide { display: none; position: absolute; z-index: 3; left: max(3vw, env(safe-area-inset-left)); top: 24vh; max-width: 26vw; font-family: var(--police-chiffres); font-size: .75rem; background: var(--panneau); border-radius: 10px; padding: 8px 10px; }
+#aide { display: none; font-family: var(--police-chiffres); font-size: .7rem; background: var(--panneau); border-radius: 8px; padding: 6px 8px; }
 body.aide-visuelle #aide { display: block; }
 
-/* Mode « Sans scan » : boutons dans un panneau à gauche, coffre décalé */
-#test { display: none; position: absolute; z-index: 4; left: max(2vw, env(safe-area-inset-left)); top: 20vh; bottom: 3vh; width: 27vw; overflow-y: auto;
-  flex-wrap: wrap; align-content: flex-start; gap: 5px; background: var(--panneau); border-radius: 16px; padding: 8px; }
+/* Mode « Sans scan » : les boutons sous les infos, dans la colonne de gauche */
+#test { display: none; position: absolute; z-index: 5; left: max(12px, env(safe-area-inset-left)); bottom: max(8px, env(safe-area-inset-bottom)); width: calc(var(--colonne) - 12px); min-width: 210px; max-height: 44vh; overflow-y: auto;
+  flex-wrap: wrap; align-content: flex-start; gap: 4px; background: var(--panneau); border-radius: 12px; padding: 6px; }
 body.mode-test #test { display: flex; }
-body.mode-test #scene { padding-left: 20vw; padding-right: 10vw; }
-body.mode-test { --taille-coffre: min(62vh, 36vw); }
-body.mode-test #aide { top: auto; bottom: 1vh; left: 31vw; max-width: 40vw; }
-#test button { flex: 1 1 45%; padding: 7px 4px; font-size: .72rem; border-radius: 9px; }
-body.mode-test #apercu { visibility: hidden; }   /* pas de caméra en mode sans scan */
-#test .btn-planque { order: -2; flex: 1 1 100%; background: var(--danger); border-color: var(--danger); font-weight: 700; padding: 10px; }
-#test .btn-action { order: -1; flex: 1 1 45%; background: rgba(242,146,47,.25); }
+body.mode-test #apercu { visibility: hidden; }
+body.mode-test #indice-ecoute { display: none; }
+#test button { flex: 1 1 30%; padding: 5px 3px; font-size: .62rem; border-radius: 7px; }
+#test .btn-planque { order: -2; flex: 1 1 100%; background: var(--danger); border-color: var(--danger); font-weight: 700; padding: 8px; font-size: .8rem; }
+#test .btn-action { order: -1; flex: 1 1 45%; background: rgba(217,163,91,.25); }
 
 /* Carte entre deux coffres */
-#entracte { position: absolute; inset: 0; z-index: 25; display: flex; align-items: flex-end; justify-content: center; padding: 4vh;
-  background: linear-gradient(transparent 40%, rgba(10, 30, 29, .85)); opacity: 0; pointer-events: none; transition: opacity .6s; }
+#entracte { position: absolute; inset: 0; z-index: 25; display: flex; align-items: center; justify-content: flex-start; padding: 4vh max(16px, env(safe-area-inset-left));
+  opacity: 0; pointer-events: none; transition: opacity .6s; }
 #entracte.visible { opacity: 1; pointer-events: auto; }
-.carte-entracte { width: min(520px, 90vw); text-align: center; display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 20px; background: var(--panneau); border: 1px solid var(--panneau-bord); }
-.carte-entracte .sur-titre { color: var(--orange-clair); letter-spacing: .3em; text-transform: uppercase; font-size: .75rem; }
-.carte-entracte h2 { font-size: 1.9rem; }
-.carte-entracte p { color: var(--texte-doux); margin: 0; }
+.carte-entracte, .carte-fin { width: min(var(--colonne), 360px); min-width: 230px; display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 16px; background: var(--panneau); border: 1px solid var(--panneau-bord); backdrop-filter: blur(6px); }
+.carte-entracte .sur-titre { color: var(--accent); letter-spacing: .3em; text-transform: uppercase; font-size: .7rem; }
+.carte-entracte h2 { font-size: 1.6rem; }
+.carte-entracte p, .carte-fin p { color: var(--texte-doux); margin: 0; font-size: .85rem; }
 
-/* ---------- Pause et fin ---------- */
-#pause { align-items: center; justify-content: center; gap: 14px; }
-#pause h2 { font-size: 2.4rem; }
-#fin { align-items: center; justify-content: center; text-align: center; gap: 16px; }
-#fin h2 { font-size: 3rem; }
-#fin p { color: var(--texte-doux); margin: 0; max-width: 600px; }
-#fin.gagne h2 { color: var(--orange-clair); }
-#fin.perdu h2 { color: var(--alarme-allumee); }
+/* Fin de partie : carte posée sur la scène */
+#fin { align-items: flex-start; justify-content: center; }
+.carte-fin h2 { font-size: 2rem; }
+#fin.gagne .carte-fin h2 { color: var(--accent-clair); }
+#fin.perdu .carte-fin h2 { color: var(--alarme-allumee); }
 
 /* Petit message temporaire */
-#toast { position: fixed; left: 50%; bottom: 14vh; transform: translateX(-50%); background: var(--panneau); border: 1px solid var(--orange); color: var(--texte); padding: 9px 16px; border-radius: 999px; font-size: .9rem; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 40; white-space: nowrap; }
+#toast { position: fixed; left: calc(var(--colonne) + (100vw - var(--colonne)) / 2); bottom: 6vh; transform: translateX(-50%); background: var(--panneau); border: 1px solid var(--accent); color: var(--texte); padding: 8px 14px; border-radius: 999px; font-size: .85rem; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 40; white-space: nowrap; }
 #toast.visible { opacity: 1; }
+
+/* Téléphone à la verticale : on demande de le tourner */
+#tourner { display: none; position: fixed; inset: 0; z-index: 100; background: #0d1210; color: var(--texte); flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; font-family: var(--police-titre); font-size: 1.3rem; }
+#tourner .icone-tel { width: 56px; height: 96px; border: 4px solid var(--accent); border-radius: 12px; animation: tourne-tel 2s ease-in-out infinite; }
+@keyframes tourne-tel { 0%, 20% { transform: rotate(0); } 50%, 80% { transform: rotate(-90deg); } 100% { transform: rotate(0); } }
+@media (orientation: portrait) { #tourner { display: flex; } }
 
 /* =========================================================
    INDICES VISUELS (pour jouer dans le bruit)
    ========================================================= */
 body:not(.visuels) #picto, body:not(.visuels) #lampe, body:not(.visuels) #pattes { display: none; }
 
-/* Picto de la serrure : au centre de la porte, le temps du son */
-#picto { position: absolute; inset: 37%; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  background: radial-gradient(circle, var(--teal-nuit) 58%, transparent 72%); opacity: 0; pointer-events: none; }
+/* Picto de la serrure : sur le moyeu du volant, le temps du son */
+#picto { position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle, rgba(10,14,12,.92) 60%, transparent 72%); opacity: 0; pointer-events: none; }
 #picto.on { animation: picto 1.7s ease-out; }
 .picto-svg { width: 70%; height: 70%; fill: none; stroke: var(--picto); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 @keyframes picto { 0% { opacity: 0; transform: scale(.7); } 12% { opacity: 1; transform: scale(1.05); } 30% { transform: scale(1); } 80% { opacity: 1; } 100% { opacity: 0; } }
-.picto-ligne { width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-.picto-ligne .picto-svg { width: 100%; height: 100%; stroke: var(--orange-clair); }
+.picto-ligne { width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.picto-ligne .picto-svg { width: 100%; height: 100%; stroke: var(--accent-clair); }
 .picto-ligne.flash { animation: picto-ligne 1.6s; }
-@keyframes picto-ligne { 0%, 80% { filter: drop-shadow(0 0 6px var(--orange)); transform: scale(1.15); } 100% { filter: none; transform: none; } }
+@keyframes picto-ligne { 0%, 80% { filter: drop-shadow(0 0 6px var(--accent)); transform: scale(1.15); } 100% { filter: none; transform: none; } }
 
-/* Lampe du vigile : elle arrive par la DROITE, avec un faisceau de lampe torche
-   qui balaie la pièce. Tout dépend de --garde (0 = loin, 1 = arrivé). */
+/* Lampe du vigile : un faisceau entre par la DROITE et balaie la pièce */
 #lampe { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
-/* Lueur générale : toute la pièce s'éclaire un peu */
 #lampe .halo { position: absolute; inset: 0; opacity: calc(var(--garde) * .55);
   background: radial-gradient(ellipse 60% 90% at 100% 50%, rgba(var(--lumiere), .7), transparent 70%); mix-blend-mode: screen; }
-/* Le faisceau : un cône de lumière forte qui part de la lampe */
 #lampe .faisceau { position: absolute; inset: -10% 0; opacity: var(--garde); transform-origin: 100% 50%;
   clip-path: polygon(100% 46%, 100% 54%, 0% 100%, 0% 0%);
-  background: linear-gradient(270deg, rgba(var(--lumiere), 1) 0%, rgba(var(--lumiere), .75) 25%, rgba(var(--lumiere), .3) 65%, transparent 100%);
+  background: linear-gradient(270deg, rgba(var(--lumiere), 1) 0%, rgba(var(--lumiere), .7) 25%, rgba(var(--lumiere), .25) 65%, transparent 100%);
   mix-blend-mode: screen; animation: balaye 3.2s ease-in-out infinite alternate; }
 @keyframes balaye { from { transform: rotate(-7deg); } to { transform: rotate(7deg); } }
-/* La lampe elle-même, sur le bord droit */
-#lampe .ampoule { position: absolute; right: -24px; top: 50%; width: 48px; height: 48px; margin-top: -24px; border-radius: 50%;
-  background: #fff; opacity: var(--garde);
+#lampe .ampoule { position: absolute; right: -24px; top: 50%; width: 48px; height: 48px; margin-top: -24px; border-radius: 50%; background: #fff; opacity: var(--garde);
   box-shadow: 0 0 calc(var(--garde) * 40px) calc(var(--garde) * 20px) rgba(var(--lumiere), 1), 0 0 calc(var(--garde) * 140px) calc(var(--garde) * 60px) rgba(var(--lumiere), .7); }
 
-/* Empreintes du chien : elles avancent sur le sol depuis la droite */
-#pattes { position: absolute; z-index: 3; left: 18vw; bottom: 11vh; display: flex; flex-direction: row; gap: 2.2vw; }
-#pattes .patte { width: 4.2vh; height: 4.2vh; opacity: 0; transform: scale(.4); transition: opacity .3s, transform .3s; }
-#pattes .patte:nth-child(odd) { margin-top: 1.6vh; rotate: 78deg; }
+/* Empreintes du chien : elles avancent sur le sol, devant le coffre */
+#pattes { position: absolute; z-index: 3; left: calc(var(--colonne) + 4vw); bottom: 2.5vh; display: flex; gap: 2.4vw; }
+#pattes .patte { width: 4.4vh; height: 4.4vh; opacity: 0; transform: scale(.4); transition: opacity .3s, transform .3s; }
+#pattes .patte:nth-child(odd) { margin-top: 1.4vh; rotate: 78deg; }
 #pattes .patte:nth-child(even) { rotate: 102deg; }
-#pattes .patte.on { opacity: .9; transform: scale(1); }
+#pattes .patte.on { opacity: .95; transform: scale(1); }
 #pattes .patte:nth-child(5).on { animation: patte .5s infinite alternate; }
-#pattes svg { width: 100%; height: 100%; fill: var(--patte); }
+#pattes svg { width: 100%; height: 100%; fill: var(--patte); filter: drop-shadow(0 0 4px rgba(0,0,0,.8)); }
 @keyframes patte { to { transform: scale(1.3); } }
 
 /* Annonce du plan au début de chaque coffre */
-#annonce { position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
-  background: rgba(10, 30, 29, .9); opacity: 0; pointer-events: none; transition: opacity .3s; }
+#annonce { position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  background: rgba(8, 12, 10, .88); opacity: 0; pointer-events: none; transition: opacity .3s; }
 #annonce.visible { opacity: 1; }
-#annonce .titre-plan { font-family: var(--police-titre); font-size: 2rem; }
-#annonce-lettre { font-size: 6rem; color: var(--orange); display: block; text-align: center; line-height: 1; }
+#annonce .titre-plan { font-family: var(--police-titre); font-size: 1.8rem; }
+#annonce-lettre { font-size: 5.5rem; color: var(--accent-clair); display: block; text-align: center; line-height: 1; }
 #annonce-coups { display: flex; gap: 12px; }
-#annonce-coups span { width: 18px; height: 18px; border-radius: 50%; background: rgba(255,255,255,.15); transition: background .15s, box-shadow .15s; }
-#annonce-coups span.on { background: var(--orange); box-shadow: 0 0 14px var(--orange); }
+#annonce-coups span { width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,.15); transition: background .15s, box-shadow .15s; }
+#annonce-coups span.on { background: var(--accent); box-shadow: 0 0 14px var(--accent); }
 
-/* Flashs : veilleur qui vous voit, chien qui aboie */
-#jeu.flash-garde::after, #jeu.flash-chien::after { content: ''; position: absolute; inset: 0; z-index: 20; pointer-events: none; }
-#jeu.flash-garde::after { animation: flash-garde .9s forwards; }
+/* Flashs : vigile qui vous voit, chien qui aboie */
+#jeu.flash-garde::after { content: ''; position: absolute; inset: 0; z-index: 20; pointer-events: none; animation: flash-garde .9s forwards; }
 #jeu.flash-chien { animation: flash-chien .9s; }
 @keyframes flash-garde { 0%, 30% { background: rgba(var(--lumiere), .85); } 100% { background: transparent; } }
 @keyframes flash-chien { 0%, 100% { transform: none; } 10%, 50% { transform: translateX(-10px); } 30%, 70% { transform: translateX(10px); } }
-
-/* =========================================================
-   TÉLÉPHONE À LA VERTICALE (mise en page de secours)
-   ========================================================= */
-@media (orientation: portrait) {
-  :root { --taille-coffre: min(80vw, 44vh); }
-  #accueil.actif { display: flex; overflow-y: auto; }
-  #accueil .titre { padding: 2vh 0 0; text-align: center; }
-  #accueil .titre h1 { font-size: 3rem; }
-  #hero { width: min(52vw, 26vh); height: min(52vw, 26vh); margin: 2vh auto; flex-shrink: 0; }
-  #accueil .panneau { overflow: visible; }
-  #jeu .coffre-nom { font-size: 1.5rem; }
-  #chrono { font-size: 1.6rem; }
-  #alarme { top: auto; bottom: 16vh; right: 0; left: 0; transform: none; }
-  #alarme .segments { flex-direction: row; justify-content: center; }
-  #alarme .seg { width: 14vw; height: 14px; }
-  #scene { padding-bottom: 14vh; }
-  #message { bottom: 9vh; padding: 0 6vw; }
-  #pattes { left: 10vw; bottom: 23vh; }
-  #test { left: 2vw; right: 2vw; width: auto; top: auto; bottom: 7vh; max-height: 34vh; }
-  body.mode-test #scene { padding: 0 0 40vh; }
-  body.mode-test { --taille-coffre: min(64vw, 30vh); }
-  body.mode-test #alarme { top: 15vh; bottom: auto; }
-  body.mode-test #aide { left: 2vw; right: 2vw; max-width: none; bottom: auto; top: 12vh; }
-}
