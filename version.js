@@ -5,8 +5,7 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.0.2';
+self.APP_VERSION = '3.0.3';
 self.APP_NOTES = [
-  'Aide pour les tests : en haut des Réglages, mémorisée sur le téléphone',
-  'Elle affiche l\'outil à utiliser, l\'arrivée du vigile et le chien, sur plusieurs lignes'
+  'Fin de partie : plus de lingots, la salle forte puis directement le panneau de victoire'
 ];

@@ -722,8 +722,7 @@ function coffreOuvert() {
     Son.pas(0.25, 0);
     await Scene.avancer();
     if (dernier) {
-      Scene.butin();
-      return setTimeout(() => finPartie(true, ''), 3200);
+      return setTimeout(() => finPartie(true, ''), 500);   // pas de butin : directement le panneau de victoire
     }
     document.body.classList.remove('camera');
     const suivant = J.coffre + 1;
