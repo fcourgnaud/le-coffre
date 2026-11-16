@@ -22,7 +22,6 @@ const REGLAGES_SCENE = {
   echelleSuivant: 0.668,   // taille de la scène suivante vue au fond (exemple 3)
   echelleFond: 0.64,       // taille de la chambre finale vue au fond (exemple 7)
   bandeVisible: 62,        // largeur de porte qui reste visible après glissement (pixels de l'image)
-  traversee: 3.6,          // de combien l'encadrement grossit quand on passe à travers (plus grand = sort plus vite de l'écran)
   // Zone de la plaque des verrous sur la porte (en % de la porte, exemple 8)
   plaque: { x: 83.4, y: 33.6, w: 15.6, h: 32.9 },
   // Centre et rayon du volant (en % de la largeur de la porte) : la partie qui tourne
@@ -110,13 +109,7 @@ const Scene = {
   avancer() {
     const r = _rectSuivant(this.niveau), k = 1 / r.s;
     const cam = document.getElementById('sc-camera');
-    // On traverse l'encadrement : il grossit autour du centre de l'ouverture et sort par les bords
-    const t = NIVEAUX_SCENE[this.niveau].trou, hx = t.x + t.w / 2, hy = t.y + t.h / 2, S = REGLAGES_SCENE.traversee;
-    const cadre = cam.querySelector(':scope > .sc-niveau > .sc-cadre'), p = this.porte(), rp = _rectPorte(this.niveau);
-    const dx = (t.x + REGLAGES_SCENE.bandeVisible) - (rp.x + rp.w);
-    cam.classList.add('avance');
-    if (cadre) cadre.style.transform = `translate(${hx}px, ${hy}px) scale(${S}) translate(${-hx}px, ${-hy}px)`;
-    if (p) p.style.transform = `translate(${hx - rp.x}px, ${hy - rp.y}px) scale(${S}) translate(${rp.x - hx}px, ${rp.y - hy}px) translateX(${dx}px)`;
+    cam.classList.add('avance');                       // l'encadrement et la porte de devant s'effacent pendant l'avancée
     cam.style.transform = `translate(${-r.x * k}px, ${-r.y * k}px) scale(${k})`;
     return new Promise((ok) => setTimeout(() => {
       if (this.niveau < 2) this.afficher(this.niveau + 1);
