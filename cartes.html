@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Le Casse du siècle — cartes à imprimer</title>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="pictos-outils.js"></script>
 <style>
   /* Planche de cartes prototype (63 × 88 mm, format poker).
      Imprimer en A4, échelle 100 %, sans marges ajoutées. */
@@ -24,6 +25,8 @@
   .carte.plan td { padding: 0.8mm 0.5mm; border-bottom: 0.2mm solid #ddd; }
   .carte.plan td:nth-child(2) { color: #aaa; text-align: center; }
   .pic { width: 4.5mm; height: 4.5mm; vertical-align: middle; fill: none; stroke: #8a6d2a; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .picto-outil { width: 16mm; height: 16mm; }
+  .mini-outil { width: 4mm; height: 4mm; vertical-align: middle; margin-right: 1mm; }
   @media print { .info { display: none; } body { background: #fff; } }
 </style>
 </head>
@@ -38,17 +41,18 @@
 const outils = ['Perceuse', 'Stéthoscope', 'Pied-de-biche', 'Crochet', 'Aimant', 'Chalumeau', 'Ventouse', 'Scie à métaux',
                 'Marteau', 'Tournevis', 'Lampe torche', 'Corde', 'Pince coupante', 'Loupe', 'Clé à molette', 'Dynamite'];
 const cartes = [];
-for (let i = 1; i <= 32; i++) cartes.push(['Outil', outils[Math.floor((i - 1) / 2)], 'CASSE:O' + String(i).padStart(2, '0')]);
+for (let i = 1; i <= 32; i++) cartes.push(['Outil', outils[Math.floor((i - 1) / 2)], 'CASSE:O' + String(i).padStart(2, '0'), Math.floor((i - 1) / 2)]);
 cartes.push(['Milieu de table', 'Planquez-vous !', 'CASSE:P01']);
 cartes.push(['Milieu de table', 'Os à moelle', 'CASSE:C01']);
 cartes.push(['Milieu de table', 'Court-circuit', 'CASSE:B01']);
 
 const planche = document.getElementById('planche');
-cartes.forEach(([famille, nom, code]) => {
+cartes.forEach(([famille, nom, code, outilIdx]) => {
   let svg = '<div style="width:38mm;height:38mm;border:1px solid #ccc;display:flex;align-items:center;justify-content:center;font:8pt system-ui">QR indisponible (connexion ?)</div>';
   if (window.qrcode) { const qr = qrcode(0, 'M'); qr.addData(code); qr.make(); svg = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); }
   const d = document.createElement('div'); d.className = 'carte';
-  d.innerHTML = `<div class="famille">${famille}</div><div class="nom">${nom}</div><div class="qr">${svg}</div><div class="code">${code}</div>`;
+  const pic = typeof outilIdx === 'number' ? `<svg viewBox="0 0 64 64" class="picto-outil">${PICTOS_OUTILS[outilIdx]}</svg>` : '';
+  d.innerHTML = `<div class="famille">${famille}</div>${pic}<div class="nom">${nom}</div><div class="qr">${svg}</div><div class="code">${code}</div>`;
   planche.appendChild(d);
 });
 
@@ -63,6 +67,7 @@ const pictos = [
   'M2 18 Q4 14 6 18 T10 15 T14 11 T18 7 T22 4',
   'M12 2 L10 8 L14 11 L9 16 L12 22 M10 8 L4 10 M14 11 L20 9 M9 16 L5 19'
 ];
+const mini = (o) => `<svg viewBox="0 0 64 64" class="mini-outil">${PICTOS_OUTILS[o]}</svg>`;
 const svgPicto = (i) => `<svg viewBox="0 0 24 24" class="pic"><path d="${pictos[i]}"/></svg>`;
 const PLANS = [
   [[12, 15], [4, 14], [5, 6], [3, 8], [0, 1], [7, 13]],
@@ -75,7 +80,7 @@ const PLANS = [
 PLANS.forEach((plan, p) => {
   const d = document.createElement('div'); d.className = 'carte plan';
   d.innerHTML = `<div class="famille">Plan de la banque</div><div class="lettre">${'ABCDEF'[p]}</div>
-    <table>${sons.map((son, i) => `<tr><td>${svgPicto(i)} ${son}</td><td>→</td><td><b>${outils[plan[i][0]]}</b><br><b>${outils[plan[i][1]]}</b></td></tr>`).join('')}</table>
+    <table>${sons.map((son, i) => `<tr><td>${svgPicto(i)} ${son}</td><td>→</td><td>${mini(plan[i][0])}<b>${outils[plan[i][0]]}</b><br>${mini(plan[i][1])}<b>${outils[plan[i][1]]}</b></td></tr>`).join('')}</table>
     <div class="code">${p + 1} coup${p ? 's' : ''} de cloche</div>`;
   planche.appendChild(d);
 });

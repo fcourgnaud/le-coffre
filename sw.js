@@ -4,7 +4,7 @@
    ⚠️ Changer VERSION à chaque nouvelle version (même valeur
    que dans version.js), sinon le téléphone ne voit rien.
    ========================================================= */
-const VERSION = '2.1.1';
+const VERSION = '2.2.0';
 importScripts('version.js');
 
 const CACHE = 'le-coffre-' + VERSION;
@@ -14,6 +14,7 @@ const FICHIERS = [
   'theme.css',
   'version.js',
   'coffres.js',
+  'pictos-outils.js',
   'manifest.webmanifest',
   'icon-192.png',
   'icon-512.png',
