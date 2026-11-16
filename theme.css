@@ -62,6 +62,20 @@ button.discret { background: transparent; border-color: transparent; color: var(
 #sc-cadrage { position: absolute; left: 0; top: 0; width: 2378px; height: 1179px; transform-origin: 0 0; }
 #sc-camera { position: absolute; inset: 0; transform-origin: 0 0; transition: transform 2.5s cubic-bezier(.55, 0, .25, 1); }
 #sc-camera.sans-transition, #sc-camera.sans-transition * { transition: none !important; }
+/* Sticker « YOU WIN » qui jaillit de la porte du dernier coffre */
+.sc-sticker { position: absolute; z-index: 5; pointer-events: none; filter: drop-shadow(0 30px 40px rgba(0,0,0,.6));
+  animation: sticker 1s cubic-bezier(.2, 1.6, .4, 1) both; }
+.sc-sticker svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sc-sticker-texte { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: .82;
+  font-family: 'Arial Black', Impact, 'DejaVu Sans', sans-serif; font-weight: 900; color: #2a1606; font-size: 150px; letter-spacing: 4px;
+  text-shadow: 0 6px 0 rgba(255,255,255,.55); }
+.sc-sticker-texte span:last-child { font-size: 190px; color: #8a1e10; }
+@keyframes sticker {
+  0%   { transform: scale(.05) rotate(-30deg); opacity: 0; }
+  15%  { opacity: 1; }
+  70%  { transform: scale(1.12) rotate(-4deg); }
+  100% { transform: scale(1) rotate(-8deg); }
+}
 .sc-niveau { position: absolute; left: 0; top: 0; width: 2378px; height: 1179px; }
 .sc-derriere { position: absolute; transform-origin: 0 0; }
 .sc-cadre, .sc-fond { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }

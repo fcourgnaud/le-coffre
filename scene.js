@@ -116,6 +116,24 @@ const Scene = {
       ok();
     }, 2600));
   },
+  // Fin de partie : un sticker « YOU WIN » sort de la porte ouverte (on reste devant le coffre en or)
+  sticker() {
+    const t = NIVEAUX_SCENE[this.niveau].trou, w = t.w * 0.92, h = w * 0.62;
+    const niv = document.querySelector('#sc-camera > .sc-niveau'); if (!niv) return;
+    const pts = Array.from({ length: 28 }, (_, i) => {
+      const a = (i / 28) * Math.PI * 2, r = i % 2 ? 0.86 : 1;
+      return `${(50 + Math.cos(a) * 49 * r).toFixed(2)},${(50 + Math.sin(a) * 49 * r).toFixed(2)}`;
+    }).join(' ');
+    niv.insertAdjacentHTML('beforeend', `<div class="sc-sticker" style="left:${t.x + t.w / 2 - w / 2}px;top:${t.y + t.h / 2 - h / 2}px;width:${w}px;height:${h}px">
+      <svg viewBox="0 0 100 62" preserveAspectRatio="none">
+        <defs><linearGradient id="st-or" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1b8"/><stop offset=".45" stop-color="#f4c445"/><stop offset="1" stop-color="#c47a12"/></linearGradient></defs>
+        <g transform="scale(1 .62)"><polygon points="${pts}" fill="#fff" stroke="#1a1208" stroke-width="1.2" stroke-linejoin="round"/>
+        <polygon points="${pts}" fill="url(#st-or)" transform="translate(50 50) scale(.9) translate(-50 -50)"/></g>
+      </svg>
+      <div class="sc-sticker-texte"><span>YOU</span><span>WIN!</span></div>
+    </div>`);
+  },
+
   // Le butin se pose sur les étagères de la chambre finale
   butin() {
     const b = document.querySelector('.sc-butin'); if (!b) return;

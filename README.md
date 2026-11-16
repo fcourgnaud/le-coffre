@@ -35,6 +35,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.2.0** — Fin : pas de zoom dans le dernier coffre, sticker « YOU WIN! » qui sort de la porte, puis le panneau de résultat.
 - **3.1.2** — Retour au zoom caméra avec fondu (annule la traversée de la 3.1.1).
 - **3.1.0** — Pictos des sons en formes simples : Tic-tac = cercle, Grincement = triangle, Bips = carré, Cliquetis = losange, Bourdon = hexagone, Craquement = croix.
 - **3.0.3** — Plus de lingots à la fin : directement le panneau de victoire.

@@ -5,7 +5,8 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.1.2';
+self.APP_VERSION = '3.2.0';
 self.APP_NOTES = [
-  'Retour au zoom caméra avec fondu (comme en 3.1.0)'
+  'Fin de partie : plus de zoom dans le dernier coffre',
+  'Un sticker « YOU WIN! » jaillit de la porte en or, puis le panneau de résultat s\'affiche'
 ];
