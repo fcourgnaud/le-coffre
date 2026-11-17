@@ -35,6 +35,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.3.1** — Sticker retiré : la salle forte puis le panneau de résultat.
 - **3.3.0** — Zoom final rétabli ; salle forte tirée au hasard parmi fond1 à fond7 (jamais la même deux fois de suite) ; sticker au centre après le zoom.
 - **3.2.0** — Fin : pas de zoom dans le dernier coffre, sticker « YOU WIN! » qui sort de la porte, puis le panneau de résultat.
 - **3.1.2** — Retour au zoom caméra avec fondu (annule la traversée de la 3.1.1).

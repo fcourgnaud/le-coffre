@@ -724,9 +724,9 @@ function coffreOuvert() {
     Son.pas(0.25, 0);
     await Scene.avancer();
     if (dernier) {
-      // Dernier coffre : la caméra entre dans la salle forte (tirée au hasard), le sticker apparaît, puis le résultat
-      Scene.sticker(); Son.reussite();
-      return setTimeout(() => finPartie(true, ''), 1300);
+      // Dernier coffre : la caméra entre dans la salle forte (tirée au hasard), puis le panneau de résultat
+      Son.reussite();
+      return setTimeout(() => finPartie(true, ''), 800);
     }
     document.body.classList.remove('camera');
     const suivant = J.coffre + 1;
