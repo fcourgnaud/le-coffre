@@ -85,6 +85,7 @@ button.discret { background: transparent; border-color: transparent; color: var(
 /* Pendant l'avancée de la caméra, l'encadrement et la porte de devant s'effacent */
 /* L'écran d'avant reste net pendant que la caméra avance, puis disparaît d'un coup à la fin (pas de fondu) */
 #sc-camera.avance > .sc-niveau > .sc-cadre, #sc-camera.avance > .sc-niveau > .sc-porte { opacity: 0; transition: opacity 0s 2.4s, transform 1.8s cubic-bezier(.45, 0, .2, 1); }
+#sc-camera.avance > .sc-niveau > .sc-cadre { transform-origin: 0 0; transition: opacity 0s 2.4s, transform 2.5s cubic-bezier(.55, 0, .25, 1); }
 /* La porte part vite sur la gauche dès que la caméra avance (avant le fondu) */
 #sc-camera.avance > .sc-niveau > .sc-porte { transition: opacity 0s 2.4s, transform .7s cubic-bezier(.55, 0, .75, .4); }
 /* Le volant tourne quand la serrure rejoue */

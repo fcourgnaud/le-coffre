@@ -4,7 +4,7 @@
    ⚠️ Changer VERSION à chaque nouvelle version (même valeur
    que dans version.js), sinon le téléphone ne voit rien.
    ========================================================= */
-const VERSION = '3.4.1';
+const VERSION = '3.4.2';
 importScripts('version.js');
 
 const CACHE = 'le-coffre-' + VERSION;
