@@ -47,6 +47,7 @@ const REGLAGES_SCENE = {
   bandeVisible: 62,        // largeur de porte qui reste visible après glissement (pixels de l'image)
   traversee: 4,          // de combien l'écran d'avant grossit en plus pendant le zoom (plus grand = il sort plus vite)
   sortiePorte: 1.1,
+  dureeZoom: 1.4,          // durée du zoom caméra vers l'écran suivant (secondes) — avant : 2,5
   dureeAllumage: 1.4,      // durée du clignotement des néons quand la lumière s'allume (secondes)        // quand la caméra avance, la porte glisse encore vers la gauche (en largeurs de porte)
   // Zone de la plaque des verrous sur la porte (en % de la porte, exemple 8)
   plaque: { x: 83.4, y: 33.6, w: 15.6, h: 32.9 },
@@ -101,6 +102,7 @@ function _htmlNiveau(niveau, actif) {
 const Scene = {
   niveau: 0,
   init() {
+    document.documentElement.style.setProperty('--zoom', REGLAGES_SCENE.dureeZoom + 's');
     [...NIVEAUX_SCENE.flatMap((n) => [n.cadre, n.porte])].forEach((s) => { const i = new Image(); i.src = s; });
     this.cadrer(); window.addEventListener('resize', () => this.cadrer());
     this.afficher(0);
@@ -161,7 +163,7 @@ const Scene = {
       }
       if (this.onAllumage) this.onAllumage();
       setTimeout(ok, REGLAGES_SCENE.dureeAllumage * 1000);
-    }, 2600));
+    }, REGLAGES_SCENE.dureeZoom * 1000 + 100));
   },
   // Fin de partie : un sticker « YOU WIN » sort de la porte ouverte (on reste devant le coffre en or)
   sticker() {

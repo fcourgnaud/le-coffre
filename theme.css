@@ -60,7 +60,7 @@ button.discret { background: transparent; border-color: transparent; color: var(
    ========================================================= */
 #sc-stage { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: #0d1210; }
 #sc-cadrage { position: absolute; left: 0; top: 0; width: 2378px; height: 1179px; transform-origin: 0 0; }
-#sc-camera { position: absolute; inset: 0; transform-origin: 0 0; transition: transform 2.5s cubic-bezier(.55, 0, .25, 1); }
+#sc-camera { position: absolute; inset: 0; transform-origin: 0 0; transition: transform var(--zoom) cubic-bezier(.55, 0, .25, 1); }
 #sc-camera.sans-transition, #sc-camera.sans-transition * { transition: none !important; }
 /* Sticker « YOU WIN » qui jaillit de la porte du dernier coffre */
 .sc-sticker { position: absolute; z-index: 5; pointer-events: none; filter: drop-shadow(0 30px 40px rgba(0,0,0,.6));
@@ -78,7 +78,7 @@ button.discret { background: transparent; border-color: transparent; color: var(
 }
 .sc-niveau { position: absolute; left: 0; top: 0; width: 2378px; height: 1179px; }
 .sc-derriere { position: absolute; transform-origin: 0 0; filter: brightness(var(--penombre)); }   /* derrière la porte : presque dans le noir */
-:root { --penombre: .14; }   /* luminosité de ce qu'on voit derrière une porte (0 = noir, 1 = allumé) */
+:root { --penombre: .14; --zoom: 1.4s; }   /* --zoom : durée du zoom caméra (le réglage dureeZoom de scene.js la remplace) */   /* luminosité de ce qu'on voit derrière une porte (0 = noir, 1 = allumé) */
 /* Prolongement flou et sombre de l'image, tout autour : évite les bords noirs pendant le zoom */
 .sc-prolonge { position: absolute; left: -100%; top: -100%; width: 300%; height: 300%; filter: blur(60px) brightness(.7); pointer-events: none; }
 /* La lumière s'allume comme des néons qui clignotent */
@@ -100,10 +100,10 @@ button.discret { background: transparent; border-color: transparent; color: var(
 .sc-porte > img { width: 100%; height: 100%; display: block; }
 /* Pendant l'avancée de la caméra, l'encadrement et la porte de devant s'effacent */
 /* L'écran d'avant reste net pendant que la caméra avance, puis disparaît d'un coup à la fin (pas de fondu) */
-#sc-camera.avance > .sc-niveau > .sc-cadre, #sc-camera.avance > .sc-niveau > .sc-porte { opacity: 0; transition: opacity 0s 2.4s, transform 1.8s cubic-bezier(.45, 0, .2, 1); }
-#sc-camera.avance > .sc-niveau > .sc-cadre { transform-origin: 0 0; transition: opacity 0s 2.4s, transform 2.5s cubic-bezier(.55, 0, .25, 1); }
+#sc-camera.avance > .sc-niveau > .sc-cadre, #sc-camera.avance > .sc-niveau > .sc-porte { opacity: 0; transition: opacity 0s calc(var(--zoom) - .1s), transform 1.8s cubic-bezier(.45, 0, .2, 1); }
+#sc-camera.avance > .sc-niveau > .sc-cadre { transform-origin: 0 0; transition: opacity 0s calc(var(--zoom) - .1s), transform var(--zoom) cubic-bezier(.55, 0, .25, 1); }
 /* La porte part vite sur la gauche dès que la caméra avance (avant le fondu) */
-#sc-camera.avance > .sc-niveau > .sc-porte { transition: opacity 0s 2.4s, transform .7s cubic-bezier(.55, 0, .75, .4); }
+#sc-camera.avance > .sc-niveau > .sc-porte { transition: opacity 0s calc(var(--zoom) - .1s), transform .5s cubic-bezier(.55, 0, .75, .4); }
 /* Le volant tourne quand la serrure rejoue */
 .sc-volant { position: absolute; border-radius: 50%; transition: transform .8s cubic-bezier(.3, 1.3, .5, 1); }
 /* Erreur : la porte tremble */
