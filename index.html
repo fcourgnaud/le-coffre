@@ -483,6 +483,7 @@ function lancerPartie() {
   Son.init();
   $('#entracte').classList.remove('visible');
   document.body.classList.remove('camera');
+  choisirFondFinal();                               // la salle forte de cette partie (jamais la même que la précédente)
   Scene.afficher(0);
   bloquerHorizontal();
   J = {
@@ -719,14 +720,14 @@ function coffreOuvert() {
   const dernier = J.coffre >= COFFRES.length - 1;
   setTimeout(async () => {
     await Scene.ouvrir();
-    if (dernier) {
-      // Dernier coffre : pas de zoom. Un sticker « YOU WIN » jaillit de la porte, puis le panneau de résultat.
-      Scene.sticker(); Son.reussite();
-      return setTimeout(() => finPartie(true, ''), 1300);
-    }
     document.body.classList.add('camera');          // l'interface s'efface pendant que la caméra avance
     Son.pas(0.25, 0);
     await Scene.avancer();
+    if (dernier) {
+      // Dernier coffre : la caméra entre dans la salle forte (tirée au hasard), le sticker apparaît, puis le résultat
+      Scene.sticker(); Son.reussite();
+      return setTimeout(() => finPartie(true, ''), 1300);
+    }
     document.body.classList.remove('camera');
     const suivant = J.coffre + 1;
     $('#entracte-num').textContent = `Coffre ${suivant + 1} / 3`;

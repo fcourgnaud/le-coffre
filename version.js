@@ -5,8 +5,9 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.2.0';
+self.APP_VERSION = '3.3.0';
 self.APP_NOTES = [
-  'Fin de partie : plus de zoom dans le dernier coffre',
-  'Un sticker « YOU WIN! » jaillit de la porte en or, puis le panneau de résultat s\'affiche'
+  'La caméra entre de nouveau dans la salle forte à la fin',
+  'La salle forte finale est tirée au hasard parmi 7, jamais la même deux parties de suite',
+  'Le sticker « YOU WIN! » apparaît au milieu de l\'écran une fois dans la salle'
 ];

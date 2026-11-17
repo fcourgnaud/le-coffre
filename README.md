@@ -9,7 +9,7 @@ Jeu coopératif en temps réel (2 à 4 joueurs) : le téléphone posé au centre
 | `index.html` | Les écrans et toute la logique du jeu | Oui, avec prudence |
 | `theme.css` | Tout le visuel (couleurs, polices, cadran…) | **Oui, c'est fait pour** |
 | `scene.js` | Place tes illustrations et règle les animations (porte, caméra, verrous) | Les réglages en haut du fichier, oui |
-| `img/` | Tes illustrations : cuivre1/2, argent1/2, or1/2, fond1 (format WebP) | Oui, remplace-les par tes nouvelles versions |
+| `img/` | Tes illustrations : cuivre1/2, argent1/2, or1/2, fond1 à fond7 (l'app utilise les .webp ; tes .png d'origine restent à côté) | Oui, remplace-les par tes nouvelles versions |
 | `pictos-outils.js` | Les pictos des 16 outils (SVG) | Oui, remplace-les par tes dessins |
 | `version.js` | Numéro de version + notes affichées dans le bandeau | Claude s'en occupe |
 | `sw.js` | Garde l'app hors ligne et gère les mises à jour | Non |
@@ -35,6 +35,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.3.0** — Zoom final rétabli ; salle forte tirée au hasard parmi fond1 à fond7 (jamais la même deux fois de suite) ; sticker au centre après le zoom.
 - **3.2.0** — Fin : pas de zoom dans le dernier coffre, sticker « YOU WIN! » qui sort de la porte, puis le panneau de résultat.
 - **3.1.2** — Retour au zoom caméra avec fondu (annule la traversée de la 3.1.1).
 - **3.1.0** — Pictos des sons en formes simples : Tic-tac = cercle, Grincement = triangle, Bips = carré, Cliquetis = losange, Bourdon = hexagone, Craquement = croix.

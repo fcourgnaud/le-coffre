@@ -15,7 +15,30 @@ const NIVEAUX_SCENE = [
   { cadre: 'img/argent1.webp', porte: 'img/argent2.webp', trou: { x: 1105, y: 227, w: 964, h: 765 }, porteRatio: 967 / 798 },
   { cadre: 'img/or1.webp',     porte: 'img/or2.webp',     trou: { x: 1099, y: 227, w: 962, h: 769 }, porteRatio: 966 / 801 }
 ];
-const FOND_FINAL = 'img/fond1.webp';
+// Les salles fortes finales : une est tirée au hasard à chaque partie,
+// jamais la même que la partie précédente. Ajoute ou retire des noms ici.
+// (Si un fichier .webp n'existe pas, l'app essaie le même nom en .png puis en .jpg.)
+const FONDS_FINAUX = ['img/fond1', 'img/fond2', 'img/fond3', 'img/fond4', 'img/fond5', 'img/fond6', 'img/fond7'];
+let FOND_FINAL = 'img/fond1.webp';
+
+// Tire une salle forte différente de la dernière
+function choisirFondFinal() {
+  let dernier = -1;
+  try { dernier = parseInt(localStorage.getItem('casse-dernier-fond'), 10); } catch (e) {}
+  const choix = FONDS_FINAUX.map((_, i) => i).filter((i) => i !== dernier || FONDS_FINAUX.length === 1);
+  const n = choix[Math.floor(Math.random() * choix.length)];
+  try { localStorage.setItem('casse-dernier-fond', n); } catch (e) {}
+  FOND_FINAL = FONDS_FINAUX[n] + '.webp';
+  const pre = new Image(); pre.src = FOND_FINAL;
+  return FOND_FINAL;
+}
+// Si l'image n'existe pas en .webp : on essaie .png, puis .jpg, puis la salle n° 1
+function secoursFond(img) {
+  const s = img.getAttribute('src');
+  if (s.endsWith('.webp')) img.src = s.replace(/\.webp$/, '.png');
+  else if (s.endsWith('.png')) img.src = s.replace(/\.png$/, '.jpg');
+  else if (s !== 'img/fond1.webp') img.src = 'img/fond1.webp';
+}
 
 // Réglages (tu peux les ajuster)
 const REGLAGES_SCENE = {
@@ -63,7 +86,7 @@ function _htmlNiveau(niveau, actif) {
   if (actif) {
     const r = _rectSuivant(niveau);
     const contenu = niveau < 2 ? _htmlNiveau(niveau + 1, false)
-      : `<img class="sc-fond" src="${FOND_FINAL}" alt=""><div class="sc-butin"></div>`;
+      : `<img class="sc-fond" src="${FOND_FINAL}" alt="" onerror="secoursFond(this)">`;
     derriere = `<div class="sc-derriere" style="left:${r.x}px;top:${r.y}px;width:${SCENE_W}px;height:${SCENE_H}px;transform:scale(${r.s})">${contenu}</div>`;
   }
   return `<div class="sc-niveau" data-niveau="${niveau}">${derriere}${_htmlPorte(niveau, actif)}<img class="sc-cadre" src="${n.cadre}" alt=""></div>`;
@@ -72,7 +95,7 @@ function _htmlNiveau(niveau, actif) {
 const Scene = {
   niveau: 0,
   init() {
-    [...NIVEAUX_SCENE.flatMap((n) => [n.cadre, n.porte]), FOND_FINAL].forEach((s) => { const i = new Image(); i.src = s; });
+    [...NIVEAUX_SCENE.flatMap((n) => [n.cadre, n.porte])].forEach((s) => { const i = new Image(); i.src = s; });
     this.cadrer(); window.addEventListener('resize', () => this.cadrer());
     this.afficher(0);
   },
@@ -84,10 +107,13 @@ const Scene = {
     let x = (vw - largeur) / 2;
     if (largeur > vw) x = Math.min(0, Math.max(vw - largeur, vw * 0.62 - 1585 * c));   // garde le coffre à droite du centre
     const el = document.getElementById('sc-cadrage');
-    el.style.transform = `translate(${x}px, ${(vh - SCENE_H * c) / 2}px) scale(${c})`;
+    const y = (vh - SCENE_H * c) / 2;
+    this.vue = { x, y, c, vw, vh };
+    el.style.transform = `translate(${x}px, ${y}px) scale(${c})`;
   },
   afficher(niveau) {
     this.niveau = niveau;
+    document.querySelectorAll('#sc-cadrage > .sc-sticker').forEach((s) => s.remove());
     const cam = document.getElementById('sc-camera');
     cam.classList.add('sans-transition'); cam.classList.remove('avance'); cam.style.transform = '';
     cam.innerHTML = _htmlNiveau(niveau, true);
@@ -118,13 +144,17 @@ const Scene = {
   },
   // Fin de partie : un sticker « YOU WIN » sort de la porte ouverte (on reste devant le coffre en or)
   sticker() {
-    const t = NIVEAUX_SCENE[this.niveau].trou, w = t.w * 0.92, h = w * 0.62;
-    const niv = document.querySelector('#sc-camera > .sc-niveau'); if (!niv) return;
+    // Après le zoom final, le sticker se pose au milieu de l'écran
+    const v = this.vue, w = Math.min(v.vw * 0.5, v.vh * 1.05) / v.c, h = w * 0.62;
+    const cx = (v.vw * 0.56 - v.x) / v.c, cy = (v.vh * 0.5 - v.y) / v.c;
+    const t = { x: cx - w / 2 / 0.92, y: cy - h / 2, w: w / 0.92, h };
+    const niv = document.getElementById('sc-cadrage'); if (!niv) return;
+    niv.querySelectorAll('.sc-sticker').forEach((s) => s.remove());
     const pts = Array.from({ length: 28 }, (_, i) => {
       const a = (i / 28) * Math.PI * 2, r = i % 2 ? 0.86 : 1;
       return `${(50 + Math.cos(a) * 49 * r).toFixed(2)},${(50 + Math.sin(a) * 49 * r).toFixed(2)}`;
     }).join(' ');
-    niv.insertAdjacentHTML('beforeend', `<div class="sc-sticker" style="left:${t.x + t.w / 2 - w / 2}px;top:${t.y + t.h / 2 - h / 2}px;width:${w}px;height:${h}px">
+    niv.insertAdjacentHTML('beforeend', `<div class="sc-sticker" style="left:${cx - w / 2}px;top:${cy - h / 2}px;width:${w}px;height:${h}px">
       <svg viewBox="0 0 100 62" preserveAspectRatio="none">
         <defs><linearGradient id="st-or" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1b8"/><stop offset=".45" stop-color="#f4c445"/><stop offset="1" stop-color="#c47a12"/></linearGradient></defs>
         <g transform="scale(1 .62)"><polygon points="${pts}" fill="#fff" stroke="#1a1208" stroke-width="1.2" stroke-linejoin="round"/>
