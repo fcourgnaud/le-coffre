@@ -46,6 +46,7 @@ cartes.push(['Milieu de table', 'Planquez-vous !', 'CASSE:P01']);
 cartes.push(['Milieu de table', 'Os à moelle', 'CASSE:C01']);
 cartes.push(['Milieu de table', 'Court-circuit', 'CASSE:B01']);
 
+document.body.insertAdjacentHTML('afterbegin', PICTOS_DEFS);   // dégradés métal des pictos
 const planche = document.getElementById('planche');
 cartes.forEach(([famille, nom, code, outilIdx]) => {
   let svg = '<div style="width:38mm;height:38mm;border:1px solid #ccc;display:flex;align-items:center;justify-content:center;font:8pt system-ui">QR indisponible (connexion ?)</div>';

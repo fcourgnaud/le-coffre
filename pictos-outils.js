@@ -4,13 +4,19 @@
    Un picto par outil, dans l'ordre de la liste des outils
    (Perceuse = O01-O02, Stéthoscope = O03-O04, etc.).
    Chaque picto est dessiné sur une grille de 64 × 64.
-   Couleurs : orange #f2922f, orange foncé #b7561a,
-   turquoise #7db8ad, turquoise foncé #3e7f7b,
-   clair #c9eee4, contour bleu nuit #1b4645.
+   Style de l'app : métal (cuivre et acier brossé), contour
+   presque noir, reflets clairs. Les dégradés sont définis
+   une seule fois dans PICTOS_DEFS (à placer une fois dans la page).
    Tu peux remplacer un tracé par ton propre dessin SVG
    (garde juste le viewBox 0 0 64 64).
    ========================================================= */
-const _N = '#1b4645', _O = '#f2922f', _OF = '#b7561a', _T = '#7db8ad', _TF = '#3e7f7b', _L = '#c9eee4', _J = '#ffd36b';
+const _N = '#141110', _O = 'url(#pi-cuivre)', _OF = '#6e3518', _T = 'url(#pi-acier)', _TF = '#7f888c', _L = 'url(#pi-chrome)', _J = '#ffd98a';
+// Dégradés métalliques (lumière venant d'en haut à gauche, comme les spots de l'app)
+const PICTOS_DEFS = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="pi-cuivre" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="64" y2="64"><stop offset="0" stop-color="#ffd2a3"/><stop offset=".3" stop-color="#e08a4e"/><stop offset=".6" stop-color="#b8622f"/><stop offset=".8" stop-color="#e3925a"/><stop offset="1" stop-color="#7a3a19"/></linearGradient>
+  <linearGradient id="pi-acier" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="64" y2="64"><stop offset="0" stop-color="#f2f4f4"/><stop offset=".35" stop-color="#a9b1b4"/><stop offset=".6" stop-color="#6f777a"/><stop offset=".8" stop-color="#b7bec0"/><stop offset="1" stop-color="#4a5154"/></linearGradient>
+  <linearGradient id="pi-chrome" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="64" y2="64"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#d4d9db"/><stop offset="1" stop-color="#8d9599"/></linearGradient>
+</defs></svg>`;
 const _s = `stroke="${_N}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"`;
 // Trait épais avec contour : dessine d'abord le contour foncé, puis la couleur par-dessus
 const _trait = (d, couleur, ep) => `<path d="${d}" fill="none" stroke="${_N}" stroke-width="${ep + 5}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${couleur}" stroke-width="${ep}" stroke-linecap="round" stroke-linejoin="round"/>`;
