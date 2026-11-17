@@ -5,7 +5,9 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.4.2';
+self.APP_VERSION = '3.5.0';
 self.APP_NOTES = [
-  'Zoom caméra : l\'écran d\'avant continue de grossir jusqu\'à sortir de l\'écran'
+  'Ce qu\'on voit derrière une porte ouverte est presque dans le noir',
+  'Une fois le zoom fini, la lumière s\'allume en clignotant comme des néons (avec grésillement)',
+  'Plus de bords noirs pendant le zoom'
 ];

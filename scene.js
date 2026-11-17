@@ -46,7 +46,8 @@ const REGLAGES_SCENE = {
   echelleFond: 0.64,       // taille de la chambre finale vue au fond (exemple 7)
   bandeVisible: 62,        // largeur de porte qui reste visible après glissement (pixels de l'image)
   traversee: 4,          // de combien l'écran d'avant grossit en plus pendant le zoom (plus grand = il sort plus vite)
-  sortiePorte: 1.1,        // quand la caméra avance, la porte glisse encore vers la gauche (en largeurs de porte)
+  sortiePorte: 1.1,
+  dureeAllumage: 1.4,      // durée du clignotement des néons quand la lumière s'allume (secondes)        // quand la caméra avance, la porte glisse encore vers la gauche (en largeurs de porte)
   // Zone de la plaque des verrous sur la porte (en % de la porte, exemple 8)
   plaque: { x: 83.4, y: 33.6, w: 15.6, h: 32.9 },
   // Centre et rayon du volant (en % de la largeur de la porte) : la partie qui tourne
@@ -87,9 +88,12 @@ function _htmlNiveau(niveau, actif) {
   let derriere = '';
   if (actif) {
     const r = _rectSuivant(niveau);
+    const image = niveau < 2 ? NIVEAUX_SCENE[niveau + 1].cadre : FOND_FINAL;
     const contenu = niveau < 2 ? _htmlNiveau(niveau + 1, false)
       : `<img class="sc-fond" src="${FOND_FINAL}" alt="" onerror="secoursFond(this)">`;
-    derriere = `<div class="sc-derriere" style="left:${r.x}px;top:${r.y}px;width:${SCENE_W}px;height:${SCENE_H}px;transform:scale(${r.s})">${contenu}</div>`;
+    // Prolongement flou de l'image tout autour : pas de bord noir pendant le zoom
+    const prolongement = `<img class="sc-prolonge" src="${image}" alt="" ${niveau < 2 ? '' : 'onerror="secoursFond(this)"'}>`;
+    derriere = `<div class="sc-derriere" style="left:${r.x}px;top:${r.y}px;width:${SCENE_W}px;height:${SCENE_H}px;transform:scale(${r.s})">${prolongement}${contenu}</div>`;
   }
   return `<div class="sc-niveau" data-niveau="${niveau}">${derriere}${_htmlPorte(niveau, actif)}<img class="sc-cadre" src="${n.cadre}" alt=""></div>`;
 }
@@ -149,8 +153,14 @@ const Scene = {
     if (cadre) cadre.style.transform = `translate(${hx}px, ${hy}px) scale(${S}) translate(${-hx}px, ${-hy}px)`;
     cam.style.transform = `translate(${-r.x * k}px, ${-r.y * k}px) scale(${k})`;
     return new Promise((ok) => setTimeout(() => {
-      if (this.niveau < 2) this.afficher(this.niveau + 1);
-      ok();
+      if (this.niveau < 2) {
+        this.afficher(this.niveau + 1);
+        document.querySelector('#sc-camera > .sc-niveau')?.classList.add('neon');     // la lumière s'allume
+      } else {
+        document.querySelector('#sc-camera .sc-derriere')?.classList.add('neon');     // la salle forte s'allume
+      }
+      if (this.onAllumage) this.onAllumage();
+      setTimeout(ok, REGLAGES_SCENE.dureeAllumage * 1000);
     }, 2600));
   },
   // Fin de partie : un sticker « YOU WIN » sort de la porte ouverte (on reste devant le coffre en or)

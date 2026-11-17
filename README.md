@@ -35,6 +35,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.5.0** — Pénombre derrière les portes, allumage façon néons après le zoom, plus de bords noirs (réglages `--penombre` dans theme.css, `dureeAllumage` dans scene.js).
 - **3.4.2** — Pendant le zoom, l'écran d'avant grossit jusqu'à sortir de l'écran (réglage `traversee`).
 - **3.4.1** — Plus de fondu pendant le zoom : l'écran d'avant disparaît d'un coup à la fin.
 - **3.4.0** — Bouton de test « Ouvrir la serrure » ; la porte file vers la gauche au début du zoom (réglage `sortiePorte`).
