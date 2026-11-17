@@ -171,6 +171,7 @@
   <div class="bas">
     <video id="apercu" playsinline muted></video>
     <button class="discret" id="btn-pause">Pause</button>
+    <button id="btn-test-serrure" title="Pour les tests : ouvre la serrure en cours">🔓 Ouvrir la serrure</button>
   </div>
 
   <!-- Entre deux coffres : carte posée par-dessus la scène -->
@@ -770,6 +771,13 @@ function majAide() {
 function toastAide(t) { if (document.body.classList.contains('aide-visuelle')) toast(t); }
 
 // Pause / abandon
+// Bouton de test (visible avec « Aide pour les tests ») : valide la serrure en cours avec le bon outil
+$('#btn-test-serrure').addEventListener('click', () => {
+  if (!J || J.fini || J.enPause || J.planques || J.etape >= 4) return;
+  Son.init();
+  const t = outilsAcceptes().find((o) => restants(o) > 0) ?? outilsAcceptes()[0];
+  quandCarte(codeBouton('CASSE:O' + String(t * COPIES + 1).padStart(2, '0')));
+});
 $('#btn-pause').addEventListener('click', () => { J.enPause = true; ecran('pause'); });
 $('#btn-reprendre').addEventListener('click', () => { J.enPause = false; ecran('jeu'); });
 $('#btn-abandon').addEventListener('click', () => { J.enPause = false; finPartie(false, 'Vous avez abandonné le casse.'); });

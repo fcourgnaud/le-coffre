@@ -45,6 +45,7 @@ const REGLAGES_SCENE = {
   echelleSuivant: 0.668,   // taille de la scène suivante vue au fond (exemple 3)
   echelleFond: 0.64,       // taille de la chambre finale vue au fond (exemple 7)
   bandeVisible: 62,        // largeur de porte qui reste visible après glissement (pixels de l'image)
+  sortiePorte: 1.1,        // quand la caméra avance, la porte glisse encore vers la gauche (en largeurs de porte)
   // Zone de la plaque des verrous sur la porte (en % de la porte, exemple 8)
   plaque: { x: 83.4, y: 33.6, w: 15.6, h: 32.9 },
   // Centre et rayon du volant (en % de la largeur de la porte) : la partie qui tourne
@@ -136,6 +137,9 @@ const Scene = {
     const r = _rectSuivant(this.niveau), k = 1 / r.s;
     const cam = document.getElementById('sc-camera');
     cam.classList.add('avance');                       // l'encadrement et la porte de devant s'effacent pendant l'avancée
+    // L'ancienne porte file rapidement vers la gauche, hors de l'ouverture, avant le fondu
+    const p = this.porte(), rp = _rectPorte(this.niveau), t = NIVEAUX_SCENE[this.niveau].trou;
+    if (p) p.style.transform = `translateX(${(t.x + REGLAGES_SCENE.bandeVisible) - (rp.x + rp.w) - rp.w * REGLAGES_SCENE.sortiePorte}px)`;
     cam.style.transform = `translate(${-r.x * k}px, ${-r.y * k}px) scale(${k})`;
     return new Promise((ok) => setTimeout(() => {
       if (this.niveau < 2) this.afficher(this.niveau + 1);

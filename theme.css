@@ -84,6 +84,8 @@ button.discret { background: transparent; border-color: transparent; color: var(
 .sc-porte > img { width: 100%; height: 100%; display: block; }
 /* Pendant l'avancée de la caméra, l'encadrement et la porte de devant s'effacent */
 #sc-camera.avance > .sc-niveau > .sc-cadre, #sc-camera.avance > .sc-niveau > .sc-porte { opacity: 0; transition: opacity 1.1s 1.2s, transform 1.8s cubic-bezier(.45, 0, .2, 1); }
+/* La porte part vite sur la gauche dès que la caméra avance (avant le fondu) */
+#sc-camera.avance > .sc-niveau > .sc-porte { transition: opacity 1.1s 1.2s, transform .7s cubic-bezier(.55, 0, .75, .4); }
 /* Le volant tourne quand la serrure rejoue */
 .sc-volant { position: absolute; border-radius: 50%; transition: transform .8s cubic-bezier(.3, 1.3, .5, 1); }
 /* Erreur : la porte tremble */
@@ -191,6 +193,8 @@ body.en-jeu #maj { display: none; }
 #indice-ecoute::before { content: '👆 '; }
 
 #jeu .bas { position: absolute; z-index: 4; right: max(10px, env(safe-area-inset-right)); top: max(8px, env(safe-area-inset-top)); display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+#btn-test-serrure { display: none; background: var(--danger); border: 1px solid #ff9a8a; color: #fff; padding: 6px 10px; font-size: .78rem; font-weight: 700; }
+body.aide-visuelle #btn-test-serrure { display: block; }
 #btn-pause { background: var(--panneau); border: 1px solid var(--panneau-bord); color: var(--accent-clair); padding: 6px 12px; font-size: .85rem; }
 #apercu { width: 64px; height: 48px; border-radius: 8px; object-fit: cover; transform: scaleX(-1); border: 2px solid rgba(255,255,255,.3); background: #000; }
 #apercu.lu { border-color: var(--accent); }
