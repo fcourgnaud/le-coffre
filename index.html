@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>Le Casse du siècle</title>
+<title>Break Protocol — Le Casse du siècle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
 <meta name="theme-color" content="#123230">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -31,15 +34,17 @@
 <div id="sc-stage"><div id="sc-cadrage"><div id="sc-camera"></div></div></div>
 
 <!-- Téléphone à la verticale : on demande de le tourner -->
-<div id="tourner"><div class="icone-tel"></div><p>Tourne ton téléphone<br>à l'horizontale</p></div>
+<!-- C'est aussi la page d'introduction, avec le logo -->
+<div id="tourner">
+  <img class="logo-intro" src="img/logo.webp" alt="Break Protocol">
+  <div class="consigne"><div class="icone-tel"></div><p>Tourne ton téléphone<br>à l'horizontale</p></div>
+</div>
 
 <!-- ============ ACCUEIL ============ -->
 <section id="accueil" class="ecran actif">
   <div class="colonne">
-    <div class="titre">
-      <h1>Le Casse <span>du siècle</span></h1>
-      <p>Une nuit, trois coffres. Taisez-vous. Écoutez. Ouvrez.</p>
-    </div>
+    <img class="logo" src="img/logo.webp" alt="Break Protocol">
+    <p class="accroche">Une nuit, trois coffres. Taisez-vous. Écoutez. Ouvrez.</p>
     <div class="actions">
       <button class="principal" id="btn-lancer">Commencer le casse</button>
       <div class="ligne-boutons">
@@ -50,7 +55,8 @@
       <div id="info-maj"></div>
       <div class="pied">
         <span id="version-affichee">v—</span>
-        <button class="discret" id="btn-verifier">Vérifier les mises à jour</button>
+        <button class="discret" id="btn-verifier">Mises à jour ?</button>
+        <button class="btn-son" title="Volume de la musique">🔊</button>
       </div>
     </div>
   </div>
@@ -142,26 +148,28 @@
   <!-- Zone du coffre : la toucher fait réécouter la serrure -->
   <div id="scene"></div>
 
-  <div class="hud">
-  <div class="haut">
-    <div>
-      <div class="coffre-num" id="coffre-num">Coffre 1 / 3</div>
-      <div class="coffre-nom" id="coffre-nom">—</div>
-    </div>
-    <div class="droite">
+  <!-- Grand écran du décor (à gauche) : textes et alarme -->
+  <div class="hud ecran-deco">
+    <div class="haut">
+      <div class="titres">
+        <div class="coffre-num" id="coffre-num">Coffre 1 / 3</div>
+        <div class="coffre-nom" id="coffre-nom">—</div>
+      </div>
       <div id="chrono">12:00</div>
+    </div>
+    <div class="milieu">
+      <div id="alarme">
+        <div class="etiquette">Alarme</div>
+        <div class="segments" id="segments"></div>
+      </div>
       <div id="plan">Plan <span id="plan-lettre">—</span></div>
     </div>
+    <div id="message">Écoutez la serrure…</div>
+    <div id="indice-ecoute">Touchez le coffre pour réécouter</div>
   </div>
-
-  <div id="alarme">
-    <div class="etiquette">Alarme</div>
-    <div class="segments" id="segments"></div>
-  </div>
-  <div id="message">Écoutez la serrure…</div>
-  <div id="indice-ecoute">Touchez le coffre pour réécouter</div>
+  <!-- Petit écran du décor (à droite de la porte) : le symbole de la serrure -->
+  <div id="ecran-symbole" class="ecran-deco"><canvas id="picto" width="24" height="24"></canvas><div class="veille"></div></div>
   <div id="aide"></div>
-  </div>
 
   <div id="lampe"><div class="halo"></div><div class="faisceau"></div><div class="ampoule"></div></div>
   <div id="pattes"></div>
@@ -170,7 +178,7 @@
 
   <div class="bas">
     <video id="apercu" playsinline muted></video>
-    <button class="discret" id="btn-pause">Pause</button>
+    <div class="ligne-haut"><button class="btn-son" title="Volume de la musique">🔊</button><button class="discret" id="btn-pause">Pause</button></div>
     <button id="btn-test-serrure" title="Pour les tests : ouvre la serrure en cours">🔓 Ouvrir la serrure</button>
   </div>
 
@@ -197,8 +205,10 @@
   <div class="carte-fin">
     <h2 id="fin-titre">—</h2>
     <p id="fin-texte"></p>
-    <button class="principal" id="btn-rejouer">Nouvelle nuit</button>
-    <button id="btn-accueil">Accueil</button>
+    <div class="boutons-fin">
+      <button class="principal" id="btn-rejouer">Nouvelle nuit</button>
+      <button id="btn-accueil">Accueil</button>
+    </div>
   </div>
 </section>
 
@@ -366,9 +376,90 @@ const Son = {
   }
 };
 
+/* ---------------- Le symbole dans le petit écran (en vrais pixels) ---------------- */
+// Le tracé du symbole est dessiné en tout petit (24 × 24 pixels), puis agrandi sans lissage : effet pixel art
+function afficherSymbole(i) {
+  const cv = $('#picto'), g = cv.getContext('2d');
+  g.clearRect(0, 0, 24, 24);
+  g.strokeStyle = getComputedStyle(document.body).getPropertyValue('--ecran').trim() || '#fff'; g.lineWidth = 2.6; g.lineCap = 'square'; g.lineJoin = 'miter';
+  g.save(); g.translate(12, 12); g.scale(0.82, 0.82); g.translate(-12, -12);
+  g.stroke(new Path2D(SONS[i].picto)); g.restore();
+  const d = g.getImageData(0, 0, 24, 24);          // pixels nets : allumé ou éteint, rien entre les deux
+  for (let k = 3; k < d.data.length; k += 4) d.data[k] = d.data[k] > 100 ? 255 : 0;
+  g.putImageData(d, 0, 0);
+  const e = $('#ecran-symbole'); e.classList.remove('on'); void e.offsetWidth; e.classList.add('on');
+}
+
+/* ---------------- Musiques ---------------- */
+// introfin : accueil et fin · musique1/2/3 : porte 1, 2, 3. Elles passent par le moteur audio pour que le volume marche aussi sur iPhone.
+const Musique = {
+  pistes: { intro: 'audio/introfin.mp3', p1: 'audio/musique1.mp3', p2: 'audio/musique2.mp3', p3: 'audio/musique3.mp3' },
+  niveaux: [{ v: 1, icone: '🔊', nom: 'Musique forte' }, { v: 0.45, icone: '🔉', nom: 'Musique moyenne' }, { v: 0.15, icone: '🔈', nom: 'Musique basse' }, { v: 0, icone: '🔇', nom: 'Musique coupée' }],
+  base: 0.55,                                     // volume max de la musique (les sons du jeu restent au-dessus)
+  niveau: 0, voulue: 'intro', courante: null, pret: false, lecteurs: [], actif: 0,
+  init() {
+    if (this.pret) return;
+    Son.init();
+    this.pret = true;
+    const ctx = Son.ctx;
+    this.general = ctx.createGain(); this.general.connect(ctx.destination);
+    this.lecteurs = [0, 1].map(() => {
+      const a = new Audio(); a.loop = true; a.preload = 'auto'; a.setAttribute('playsinline', '');
+      let g = null;
+      try { const src = ctx.createMediaElementSource(a); g = ctx.createGain(); g.gain.value = 0; src.connect(g); g.connect(this.general); } catch (e) { g = null; }
+      return { a, g };
+    });
+    this.majVolume();
+    this.courante = null;
+    this.jouer(this.voulue, true);
+    // Débloque aussi le 2e lecteur pendant ce geste (sinon l'iPhone refuse de le lancer plus tard)
+    const l2 = this.lecteurs[1 - this.actif];
+    if (!l2.a.src) { l2.a.src = this.pistes.intro; l2.a.muted = true; l2.a.play().then(() => { l2.a.pause(); l2.a.muted = false; }).catch(() => { l2.a.muted = false; }); }
+  },
+  jouer(nom, direct = false) {
+    this.voulue = nom;
+    if (!this.pret || nom === this.courante) return;
+    this.courante = nom;
+    const t = Son.ctx.currentTime, ancien = this.lecteurs[this.actif];
+    this.actif = direct && !ancien.a.src ? this.actif : 1 - this.actif;
+    const neuf = this.lecteurs[this.actif];
+    const fondu = direct ? 0.3 : 1.5;
+    if (neuf !== ancien && ancien.g) { ancien.g.gain.cancelScheduledValues(t); ancien.g.gain.setValueAtTime(ancien.g.gain.value, t); ancien.g.gain.linearRampToValueAtTime(0, t + fondu); }
+    if (neuf !== ancien) setTimeout(() => { if (this.lecteurs[this.actif] !== ancien) ancien.a.pause(); }, fondu * 1000 + 100);
+    neuf.a.src = this.pistes[nom]; neuf.a.currentTime = 0;
+    if (neuf.g) { neuf.g.gain.cancelScheduledValues(t); neuf.g.gain.setValueAtTime(0, t); neuf.g.gain.linearRampToValueAtTime(1, t + fondu); }
+    neuf.a.play().catch(() => {});
+  },
+  majVolume() {
+    const n = this.niveaux[this.niveau];
+    document.querySelectorAll('.btn-son').forEach((b) => { b.textContent = n.icone; b.title = n.nom; b.classList.toggle('coupe', n.v === 0); });
+    if (!this.pret) return;
+    const t = Son.ctx.currentTime;
+    this.general.gain.cancelScheduledValues(t); this.general.gain.setTargetAtTime(n.v * this.base, t, 0.08);
+    if (!this.lecteurs[0].g) this.lecteurs.forEach((l) => { l.a.volume = n.v * this.base; });   // secours sans moteur audio
+  },
+  changerVolume() {
+    this.niveau = (this.niveau + 1) % this.niveaux.length;
+    try { localStorage.setItem('casse-musique', this.niveau); } catch (e) {}
+    this.majVolume(); toast(this.niveaux[this.niveau].nom);
+  },
+  // Baisse la musique quelques secondes (pendant le son d'une serrure)
+  attenuer(duree) {
+    if (!this.pret) return;
+    const v = this.niveaux[this.niveau].v * this.base, t = Son.ctx.currentTime, g = this.general.gain;
+    g.cancelScheduledValues(t); g.setTargetAtTime(v * 0.3, t, 0.05); g.setTargetAtTime(v, t + duree, 0.4);
+  }
+};
+try { Musique.niveau = Math.min(3, parseInt(localStorage.getItem('casse-musique'), 10) || 0); } catch (e) {}
+Musique.majVolume();
+document.querySelectorAll('.btn-son').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); Musique.init(); Musique.changerVolume(); }));
+// Le navigateur n'autorise le son qu'après un premier toucher : la musique démarre à ce moment-là
+['pointerdown', 'keydown'].forEach((ev) => document.addEventListener(ev, () => Musique.init(), { once: true, capture: true }));
+
 /* ---------------- Outils d'interface ---------------- */
 const $ = (s) => document.querySelector(s);
 function ecran(id) {
+  if (id === 'accueil' || id === 'fin' || id === 'serrures' || id === 'regles') Musique.jouer('intro');
   document.querySelectorAll('.ecran').forEach((e) => e.classList.toggle('actif', e.id === id));
   document.body.classList.toggle('en-jeu', id === 'jeu' || id === 'pause' || id === 'entracte');
 }
@@ -523,6 +614,7 @@ function demarrerCoffre() {
   J.chien.etat = 'absent'; J.chien.prochain = J.horloge + hasard(20, 35);
   // Annonce du plan : la lettre s'affiche et la cloche sonne (3 coups = plan C)
   const plan = J.plans[J.coffre];
+  Musique.jouer('p' + (J.coffre + 1));
   $('#plan-lettre').textContent = LETTRES[plan];
   setTimeout(() => Son.coups(plan + 1), 400);
   annoncerPlan(plan);
@@ -615,7 +707,8 @@ function jouerSerrure() {
   if (J.etape >= 4) return;
   Son.serrure(SONS[J.combinaison[J.etape]].sig, COFFRES[J.coffre].volumeSerrure);
   // Le picto apparaît le temps du son (1,6 s), puis s'efface
-  const pi = $('#picto'); if (pi) { pi.innerHTML = svgPicto(J.combinaison[J.etape]); pi.classList.remove('on'); void pi.offsetWidth; pi.classList.add('on'); }
+  afficherSymbole(J.combinaison[J.etape]);
+  Musique.attenuer(2.2);                 // la musique baisse le temps du son de la serrure
   Scene.tourner();
 }
 
@@ -732,6 +825,7 @@ function coffreOuvert() {
       Son.reussite();
       return setTimeout(() => finPartie(true, ''), 800);
     }
+    Musique.jouer('p' + (J.coffre + 2));          // la musique de la porte suivante
     document.body.classList.remove('camera');
     const suivant = J.coffre + 1;
     $('#entracte-num').textContent = `Coffre ${suivant + 1} / 3`;
@@ -748,7 +842,7 @@ function finPartie(gagne, texte) {
   if (gagne) Son.ouverture(); else Son.cloche();
   const reste = Math.max(0, J.nuit - J.horloge);
   $('#fin').className = 'ecran ' + (gagne ? 'gagne' : 'perdu');
-  $('#fin-titre').textContent = gagne ? 'Le casse du siècle !' : 'Raté…';
+  $('#fin-titre').textContent = gagne ? 'Casse réussi !' : 'Raté…';
   $('#fin-texte').textContent = (gagne ? `Trois coffres vidés, ${Math.floor(reste / 60)} min ${Math.floor(reste % 60)} s avant l'aube. ` : texte + ' ')
     + `Coffres ouverts : ${gagne ? 3 : J.coffre}. Erreurs : ${J.stats.erreurs}. Vus par le garde : ${J.stats.vu}. Aboiements : ${J.stats.aboiements}.`;
   ecran('fin');

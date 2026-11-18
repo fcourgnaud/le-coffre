@@ -4,7 +4,7 @@
    ⚠️ Changer VERSION à chaque nouvelle version (même valeur
    que dans version.js), sinon le téléphone ne voit rien.
    ========================================================= */
-const VERSION = '3.6.0';
+const VERSION = '3.7.0';
 importScripts('version.js');
 
 const CACHE = 'le-coffre-' + VERSION;
@@ -17,6 +17,7 @@ const FICHIERS = [
   'img/cuivre1.webp', 'img/cuivre2.webp', 'img/argent1.webp', 'img/argent2.webp',
   'img/or1.webp', 'img/or2.webp',
   'img/fond1.webp', 'img/fond2.webp', 'img/fond3.webp', 'img/fond4.webp', 'img/fond5.webp', 'img/fond6.webp', 'img/fond7.webp',
+  'img/logo.webp',
   'pictos-outils.js',
   'manifest.webmanifest',
   'icon-192.png',
@@ -56,6 +57,8 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url);
   // La vérification de version passe toujours par le réseau
   if (url.searchParams.has('verif')) return;
+  // Les musiques sont lues par morceaux par le navigateur : on les laisse passer directement
+  if (url.pathname.includes('/audio/')) return;
   e.respondWith((async () => {
     const enCache = await caches.match(req, { ignoreSearch: req.mode === 'navigate' });
     if (enCache) return enCache;

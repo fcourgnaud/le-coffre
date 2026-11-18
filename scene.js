@@ -5,16 +5,29 @@
      cuivre1 / argent1 / or1 = le décor + l'encadrement (trou transparent)
      cuivre2 / argent2 / or2 = la porte
      fond1 = la chambre forte finale
-   Toutes les positions sont en pixels de l'image (2378 × 1179).
+   Toutes les positions sont en pixels de l'image (1783 × 882).
    ========================================================= */
 
-const SCENE_W = 2378, SCENE_H = 1179;
+const SCENE_W = 1783, SCENE_H = 882;
 
+// Chaque niveau : décor + encadrement (trou transparent), porte, et réglages de la porte
+//   volant : centre et rayon de la roue (en % de la largeur/hauteur de la porte) — la partie qui tourne
+//   plaque : rectangle de la plaque des verrous sur la porte (en %)
 const NIVEAUX_SCENE = [
-  { cadre: 'img/cuivre1.webp', porte: 'img/cuivre2.webp', trou: { x: 1109, y: 225, w: 944, h: 760 }, porteRatio: 947 / 793 },
-  { cadre: 'img/argent1.webp', porte: 'img/argent2.webp', trou: { x: 1105, y: 227, w: 964, h: 765 }, porteRatio: 967 / 798 },
-  { cadre: 'img/or1.webp',     porte: 'img/or2.webp',     trou: { x: 1099, y: 227, w: 962, h: 769 }, porteRatio: 966 / 801 }
+  { cadre: 'img/cuivre1.webp', porte: 'img/cuivre2.webp', trou: { x: 836, y: 151, w: 682, h: 567 }, porteRatio: 684 / 569,
+    volant: { x: 50.3, y: 49.6, r: 21 }, plaque: { x: 83.5, y: 36, w: 14, h: 26 } },
+  { cadre: 'img/argent1.webp', porte: 'img/argent2.webp', trou: { x: 845, y: 158, w: 665, h: 565 }, porteRatio: 667 / 567,
+    volant: { x: 51.3, y: 48.3, r: 21 }, plaque: { x: 83.5, y: 36, w: 14, h: 26 } },
+  { cadre: 'img/or1.webp',     porte: 'img/or2.webp',     trou: { x: 834, y: 146, w: 687, h: 569 }, porteRatio: 689 / 571,
+    volant: { x: 51.2, y: 49.2, r: 22 }, plaque: { x: 83, y: 37, w: 14, h: 24 } }
 ];
+// Les deux écrans du décor (en pixels de l'image) : textes + alarme dans le grand, symboles dans le petit
+const ECRANS = {
+  grand: { x: 84, y: 280, w: 568, h: 336 },
+  petit: { x: 1586, y: 312, w: 156, h: 104 }
+};
+const CENTRE_PORTE = 1177;   // milieu de l'encadrement de porte dans les images
+
 // Les salles fortes finales : une est tirée au hasard à chaque partie,
 // jamais la même que la partie précédente. Ajoute ou retire des noms ici.
 // (Si un fichier .webp n'existe pas, l'app essaie le même nom en .png puis en .jpg.)
@@ -42,24 +55,20 @@ function secoursFond(img) {
 
 // Réglages (tu peux les ajuster)
 const REGLAGES_SCENE = {
-  echelleSuivant: 0.668,   // taille de la scène suivante vue au fond (exemple 3)
-  echelleFond: 0.64,       // taille de la chambre finale vue au fond (exemple 7)
+  echelleSuivant: 0.648,   // taille de la scène suivante vue au fond
+  echelleFond: 0.648,      // taille de la chambre finale vue au fond (exemple 7)
   bandeVisible: 62,        // largeur de porte qui reste visible après glissement (pixels de l'image)
   traversee: 4,          // de combien l'écran d'avant grossit en plus pendant le zoom (plus grand = il sort plus vite)
   sortiePorte: 1.1,
   dureeZoom: 1.4,          // durée du zoom caméra vers l'écran suivant (secondes) — avant : 2,5
   dureeAllumage: 1.4,      // durée du clignotement des néons quand la lumière s'allume (secondes)        // quand la caméra avance, la porte glisse encore vers la gauche (en largeurs de porte)
-  // Zone de la plaque des verrous sur la porte (en % de la porte, exemple 8)
-  plaque: { x: 83.4, y: 33.6, w: 15.6, h: 32.9 },
-  // Centre et rayon du volant (en % de la largeur de la porte) : la partie qui tourne
-  volant: { x: 51.5, y: 50.2, r: 22.5 }
 };
 
 // Où se place la scène suivante (ou la chambre finale) au fond de l'ouverture
 function _rectSuivant(niveau) {
   const t = NIVEAUX_SCENE[niveau].trou;
   const s = niveau < 2 ? REGLAGES_SCENE.echelleSuivant : REGLAGES_SCENE.echelleFond;
-  const centreX = niveau < 2 ? 1585 : SCENE_W / 2;          // centre de l'encadrement (ou du fond) dans son image
+  const centreX = niveau < 2 ? CENTRE_PORTE : SCENE_W / 2;          // centre de l'encadrement (ou du fond) dans son image
   return { s, x: t.x + t.w / 2 - centreX * s, y: t.y + t.h - SCENE_H * s };
 }
 
@@ -71,7 +80,7 @@ function _rectPorte(niveau) {
 }
 
 function _htmlPorte(niveau, actif) {
-  const p = _rectPorte(niveau), R = REGLAGES_SCENE, src = NIVEAUX_SCENE[niveau].porte;
+  const p = _rectPorte(niveau), R = NIVEAUX_SCENE[niveau], src = R.porte;
   const rv = p.w * R.volant.r / 100, cx = p.w * R.volant.x / 100, cy = p.h * R.volant.y / 100;
   const pilules = [0, 1, 2, 3].map((i) => `<span class="verrou" data-i="${i}"></span>`).join('');
   return `<div class="sc-porte" style="left:${p.x}px;top:${p.y}px;width:${p.w}px;height:${p.h}px">
@@ -79,7 +88,6 @@ function _htmlPorte(niveau, actif) {
       <div class="sc-volant" style="left:${cx - rv}px;top:${cy - rv}px;width:${rv * 2}px;height:${rv * 2}px;
            background-image:url(${src});background-size:${p.w}px ${p.h}px;background-position:${-(cx - rv)}px ${-(cy - rv)}px"></div>
       <div class="sc-plaque" style="left:${R.plaque.x}%;top:${R.plaque.y}%;width:${R.plaque.w}%;height:${R.plaque.h}%">${pilules}</div>
-      ${actif ? `<div id="picto" style="left:${cx - rv * 0.42}px;top:${cy - rv * 0.42}px;width:${rv * 0.84}px;height:${rv * 0.84}px"></div>` : ''}
     </div>`;
 }
 
@@ -107,20 +115,31 @@ const Scene = {
     this.cadrer(); window.addEventListener('resize', () => this.cadrer());
     this.afficher(0);
   },
-  // Adapte l'image à l'écran (elle le remplit) en gardant le coffre bien visible
+  // Adapte l'image à l'écran : elle le remplit (on rogne au plus 8 %), sinon un flou complète les bords
   cadrer() {
     const vw = window.innerWidth, vh = window.innerHeight;
-    const c = Math.max(vw / SCENE_W, vh / SCENE_H);
-    const largeur = SCENE_W * c;
-    let x = (vw - largeur) / 2;
-    if (largeur > vw) x = Math.min(0, Math.max(vw - largeur, vw * 0.62 - 1585 * c));   // garde le coffre à droite du centre
-    const el = document.getElementById('sc-cadrage');
+    // On garde toujours visibles les deux écrans (de x 50 à 1772) et presque toute la hauteur
+    const c = Math.min(Math.max(vw / SCENE_W, vh / SCENE_H), vw / 1722, vh / 800);
+    let x = vw / 2 - 911 * c;
+    if (SCENE_W * c >= vw) x = Math.min(0, Math.max(vw - SCENE_W * c, x)); else x = (vw - SCENE_W * c) / 2;
     const y = (vh - SCENE_H * c) / 2;
     this.vue = { x, y, c, vw, vh };
-    el.style.transform = `translate(${x}px, ${y}px) scale(${c})`;
+    document.getElementById('sc-cadrage').style.transform = `translate(${x}px, ${y}px) scale(${c})`;
+    // Position des deux écrans du décor, pour l'interface (variables CSS en pixels)
+    const st = document.documentElement.style;
+    for (const [nom, e] of Object.entries(ECRANS)) {
+      st.setProperty(`--${nom}-x`, (x + e.x * c).toFixed(1) + 'px');
+      st.setProperty(`--${nom}-y`, (y + e.y * c).toFixed(1) + 'px');
+      st.setProperty(`--${nom}-w`, (e.w * c).toFixed(1) + 'px');
+      st.setProperty(`--${nom}-h`, (e.h * c).toFixed(1) + 'px');
+    }
+    st.setProperty('--u', (ECRANS.grand.h * c / 100).toFixed(3) + 'px');      // 1 unité = 1 % de la hauteur du grand écran
+    st.setProperty('--colonne', (x + 700 * c).toFixed(1) + 'px');           // bord droit du grand écran
   },
   afficher(niveau) {
     this.niveau = niveau;
+    document.body.dataset.niveau = niveau;                                   // couleur des écrans (bleu, vert, or)
+    document.getElementById('sc-stage').style.setProperty('--fond-flou', `url(${NIVEAUX_SCENE[niveau].cadre})`);
     document.querySelectorAll('#sc-cadrage > .sc-sticker').forEach((s) => s.remove());
     const cam = document.getElementById('sc-camera');
     cam.classList.add('sans-transition'); cam.classList.remove('avance'); cam.style.transform = '';
