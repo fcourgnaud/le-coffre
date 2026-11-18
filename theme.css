@@ -218,13 +218,15 @@ body[data-ecran="accueil"] #logo { display: block; }   /* ajoute , body[data-ecr
 .ecran-deco { position: absolute; z-index: 4; font-family: var(--police-pixel); color: var(--ecran); text-shadow: 0 0 calc(var(--u) * 2) color-mix(in srgb, var(--ecran) 70%, transparent); }
 .ecran-deco::after { content: ''; position: absolute; inset: 0; pointer-events: none;
   background: repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px); mix-blend-mode: multiply; }
-#jeu .hud { left: var(--grand-x); top: var(--grand-y); width: var(--grand-w); height: var(--grand-h); padding: calc(var(--u) * 4) calc(var(--u) * 5);
-  display: flex; flex-direction: column; gap: calc(var(--u) * 3); overflow: hidden; animation: allume-ecran .5s steps(4) both; }
+#jeu .hud { left: var(--grand-x); top: var(--grand-y); width: var(--grand-w); height: var(--grand-h); padding: calc(var(--u) * 4) calc(var(--u) * 5) calc(var(--u) * 3);
+  display: grid; grid-template-rows: calc(var(--u) * 26) calc(var(--u) * 17) minmax(0, 1fr) calc(var(--u) * 21); gap: calc(var(--u) * 3);
+  overflow: hidden; animation: allume-ecran .5s steps(4) both; }   /* 4 rangées de hauteur fixe : rien ne déborde, quelle que soit la taille du téléphone */
+#jeu .hud > * { min-height: 0; overflow: hidden; }
 @keyframes allume-ecran { 0% { opacity: 0; } 40% { opacity: .7; } 60% { opacity: .2; } 100% { opacity: 1; } }
 #jeu .haut { display: flex; justify-content: space-between; align-items: flex-start; gap: calc(var(--u) * 3); }
 #jeu .titres { min-width: 0; }
 #jeu .coffre-num { font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 5); letter-spacing: .05em; opacity: .75; }
-#jeu .coffre-nom { font-size: calc(var(--u) * 11); line-height: .95; margin-top: calc(var(--u) * 2); color: #fff; text-transform: uppercase; }
+#jeu .coffre-nom { font-size: calc(var(--u) * 10.5); line-height: .95; margin-top: calc(var(--u) * 2); color: #fff; text-transform: uppercase; }
 #chrono { font-family: var(--police-pixel); font-size: calc(var(--u) * 21); line-height: .8; color: #fff; }
 #chrono.presse { color: var(--alarme-allumee); text-shadow: 0 0 10px var(--alarme-allumee); animation: clignote 1s steps(2) infinite; }
 @keyframes clignote { 50% { opacity: .35; } }
@@ -255,7 +257,7 @@ body.danger #alarme .segments { border-color: #ff3b2f; }
 @keyframes prise { 0%, 100% { transform: none; } 20% { transform: translate(calc(var(--u) * -2), calc(var(--u) * 1)); } 40% { transform: translate(calc(var(--u) * 2), calc(var(--u) * -1)); } 60% { transform: translate(calc(var(--u) * -1), 0); } 80% { transform: translate(calc(var(--u) * 1), calc(var(--u) * 1)); } }
 @keyframes flash-alerte { 0% { opacity: 1; } 12% { opacity: .2; } 24%, 70% { opacity: 1; } 100% { opacity: 0; } }
 
-#message { font-size: calc(var(--u) * 10); line-height: .95; color: #fff; min-height: 2em; }
+#message { font-size: calc(var(--u) * 9.5); line-height: .95; color: #fff; }
 #message::before { content: '> '; color: var(--ecran); }
 #message::after { content: '_'; animation: clignote 1s steps(2) infinite; }
 #message.alerte { color: #ff8a7a; text-shadow: 0 0 calc(var(--u) * 2) #ff3b2f; }
@@ -506,8 +508,9 @@ body.camera #jeu .hud, body.camera #ecran-symbole { opacity: 0; transition: none
 /* =========================================================
    BAS DU GRAND ÉCRAN : indice, caméra, son, pause
    ========================================================= */
-#jeu .pied-ecran { margin-top: auto; display: flex; align-items: flex-end; gap: calc(var(--u) * 3); }
-#jeu .commandes { display: flex; align-items: stretch; gap: calc(var(--u) * 2.5); height: calc(var(--u) * 22); min-height: 30px; }
+#jeu .pied-ecran { display: flex; align-items: stretch; gap: calc(var(--u) * 3); }
+#jeu .pied-ecran #indice-ecoute { align-self: flex-end; }
+#jeu .commandes { display: flex; align-items: stretch; gap: calc(var(--u) * 2.5); height: 100%; }
 .camera-cadre { position: relative; height: 100%; aspect-ratio: 4 / 3; border: calc(var(--u) * .8) solid var(--ecran); background: #000;
   box-shadow: 0 0 calc(var(--u) * 3) color-mix(in srgb, var(--ecran) 50%, transparent); overflow: hidden; }
 .camera-cadre #apercu { width: 100%; height: 100%; border: none; border-radius: 0; display: block; object-fit: cover; transform: scaleX(-1); filter: saturate(.6) contrast(1.1); }

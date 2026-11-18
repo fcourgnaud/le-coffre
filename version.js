@@ -5,8 +5,7 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.10.0';
+self.APP_VERSION = '3.10.1';
 self.APP_NOTES = [
-  'Nouvelle jauge d\'alarme : barre de détection verte, orange, rouge',
-  'Effet « ALERTE » quand l\'alarme monte'
+  'Caméra, son et pause ne sont plus coupés en bas du grand écran'
 ];
