@@ -36,6 +36,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.7.2** — Logo plus petit (82 % de la largeur du grand écran, réglage `#logo` dans theme.css), affiché aussi pendant le jeu.
 - **3.7.1** — Bande noire côté caméra (largeur = zone réservée par le téléphone, réglage `BANDE_SECOURS` dans scene.js), décor recadré à côté ; menus (réglages, règles, serrures, pause, mise à jour, annonce du plan, aide) au style pixel ; textes des écrans qui s'éteignent avant le zoom ; roues recentrées et coupées dans le cercle sombre.
 - **3.7.0** — Décors pixel art (portes bleue, verte, or), logo Break Protocol (accueil + page d'intro quand le téléphone est vertical), textes et alarme dans le grand écran du décor, symboles en gros pixels dans le petit écran, musiques (dossier `audio/`) et bouton de volume 🔊.
 - **3.6.0** — Pictos des outils en cuivre et acier ; cartes à imprimer au design de l'app (mur sombre, spots, cadres cuivre / argent / or).

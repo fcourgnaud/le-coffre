@@ -165,10 +165,13 @@ body.en-jeu #maj { display: none; }
 #accueil { padding: 0; }
 #accueil .colonne { position: absolute; left: var(--grand-x); top: var(--grand-y); width: var(--grand-w); height: var(--grand-h);
   display: flex; flex-direction: column; gap: calc(var(--u) * 2); padding: calc(var(--u) * 3) calc(var(--u) * 4) calc(var(--u) * 2); }
-#accueil .logo { position: absolute; left: 50%; bottom: calc(100% - var(--u) * 14); width: 112%; transform: translateX(-50%);
-  filter: drop-shadow(0 calc(var(--u) * 3) calc(var(--u) * 4) rgba(0,0,0,.7)); animation: logo-flotte 4s ease-in-out infinite; pointer-events: none; }
-@keyframes logo-flotte { 50% { transform: translateX(-50%) translateY(calc(var(--u) * -1.5)); } }
-#accueil .accroche { margin: calc(var(--u) * 9) 0 0; text-align: center; font-family: var(--police-pixel); color: var(--ecran); font-size: max(13px, calc(var(--u) * 8)); line-height: 1; text-shadow: 0 0 8px var(--ecran); }
+/* Le logo : centré au-dessus du grand écran (réglage de taille : width) — visible sur l'accueil et pendant le jeu */
+#logo { display: none; position: fixed; z-index: 5; width: calc(var(--grand-w) * .82); left: calc(var(--grand-x) + var(--grand-w) / 2);
+  top: calc(var(--grand-y) + var(--u) * 3); transform: translate(-50%, -100%); pointer-events: none;
+  filter: drop-shadow(0 calc(var(--u) * 3) calc(var(--u) * 4) rgba(0,0,0,.7)); animation: logo-flotte 4s ease-in-out infinite; }
+body[data-ecran="accueil"] #logo, body[data-ecran="jeu"] #logo { display: block; }
+@keyframes logo-flotte { 50% { transform: translate(-50%, -100%) translateY(calc(var(--u) * -1.5)); } }
+#accueil .accroche { margin: calc(var(--u) * 2) 0 0; text-align: center; font-family: var(--police-pixel); color: var(--ecran); font-size: max(13px, calc(var(--u) * 8)); line-height: 1; text-shadow: 0 0 8px var(--ecran); }
 #accueil .actions { display: flex; flex-direction: column; gap: calc(var(--u) * 2); margin-top: auto; }
 #accueil .ligne-boutons button { padding: calc(var(--u) * 2) 4px; }
 #accueil .colonne button.principal { padding: calc(var(--u) * 3) 8px; }
