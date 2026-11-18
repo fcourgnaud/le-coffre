@@ -5,7 +5,7 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.8.2';
+self.APP_VERSION = '3.8.3';
 self.APP_NOTES = [
-  'Nouvelle icône Break Protocol (supprime puis rajoute l\'app sur l\'écran d\'accueil pour la voir)'
+  'Logo un peu plus haut sur l\'accueil'
 ];

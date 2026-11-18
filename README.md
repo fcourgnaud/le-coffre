@@ -36,6 +36,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.8.3** — Logo remonté sur l'accueil.
 - **3.8.2** — Nouvelle icône de l'app (icon-192 / icon-512), couleur de fond bleu nuit.
 - **3.8.1** — Logo retiré pendant la partie (seulement sur l'accueil).
 - **3.8.0** — 6 nouvelles salles fortes pixel art (fond1 à fond6, les anciennes supprimées) ; logo visible aussi pendant la partie ; pendant le zoom, l'image de derrière est prolongée en miroir (plus de halo flou ni de bords visibles).
