@@ -5,9 +5,9 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.7.0';
+self.APP_VERSION = '3.7.1';
 self.APP_NOTES = [
-  'Nouveaux décors pixel art et logo Break Protocol',
-  'Textes et alarme dans le grand écran, symboles dans le petit écran',
-  'Musiques (accueil, chaque porte, fin) et bouton de volume'
+  'Bande noire du côté de la caméra du téléphone',
+  'Menus au style pixel ; les écrans s\'éteignent avant le zoom',
+  'Roues des portes recoupées proprement'
 ];

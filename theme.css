@@ -164,15 +164,17 @@ body.en-jeu #maj { display: none; }
 /* Le logo au-dessus du grand écran, les boutons dans l'écran */
 #accueil { padding: 0; }
 #accueil .colonne { position: absolute; left: var(--grand-x); top: var(--grand-y); width: var(--grand-w); height: var(--grand-h);
-  display: flex; flex-direction: column; gap: calc(var(--u) * 3); padding: calc(var(--u) * 4); }
+  display: flex; flex-direction: column; gap: calc(var(--u) * 2); padding: calc(var(--u) * 3) calc(var(--u) * 4) calc(var(--u) * 2); }
 #accueil .logo { position: absolute; left: 50%; bottom: calc(100% - var(--u) * 14); width: 112%; transform: translateX(-50%);
   filter: drop-shadow(0 calc(var(--u) * 3) calc(var(--u) * 4) rgba(0,0,0,.7)); animation: logo-flotte 4s ease-in-out infinite; pointer-events: none; }
 @keyframes logo-flotte { 50% { transform: translateX(-50%) translateY(calc(var(--u) * -1.5)); } }
-#accueil .accroche { margin: calc(var(--u) * 12) 0 0; text-align: center; font-family: var(--police-pixel); color: var(--ecran); font-size: max(13px, calc(var(--u) * 8)); line-height: 1; text-shadow: 0 0 8px var(--ecran); }
-#accueil .actions { display: flex; flex-direction: column; gap: calc(var(--u) * 2.5); margin-top: auto; }
+#accueil .accroche { margin: calc(var(--u) * 9) 0 0; text-align: center; font-family: var(--police-pixel); color: var(--ecran); font-size: max(13px, calc(var(--u) * 8)); line-height: 1; text-shadow: 0 0 8px var(--ecran); }
+#accueil .actions { display: flex; flex-direction: column; gap: calc(var(--u) * 2); margin-top: auto; }
+#accueil .ligne-boutons button { padding: calc(var(--u) * 2) 4px; }
+#accueil .colonne button.principal { padding: calc(var(--u) * 3) 8px; }
 .ligne-boutons { display: flex; gap: 6px; }
 .ligne-boutons button { flex: 1; padding: 6px 4px; }
-#accueil .pied { display: flex; justify-content: space-between; align-items: center; gap: 6px; color: var(--texte-doux); font-family: var(--police-pixel); font-size: max(12px, calc(var(--u) * 6)); }
+#accueil .pied { display: flex; justify-content: space-between; align-items: center; gap: 6px; color: var(--texte-doux); font-family: var(--police-pixel); font-size: max(11px, calc(var(--u) * 5.5)); line-height: 1; }
 #info-maj { color: var(--texte-doux); font-family: var(--police-pixel); font-size: max(12px, calc(var(--u) * 6)); min-height: 1em; }
 
 /* Fenêtre des réglages */
@@ -273,7 +275,7 @@ body.aide-visuelle #btn-test-serrure { display: block; }
 #aide .danger { color: #ff8a7a; }
 #aide .petit { font-size: .65rem; opacity: .7; }
 /* En mode « Sans scan », l'aide passe en bas à droite pour ne pas être cachée par les boutons */
-#aide { position: absolute; z-index: 6; top: max(8px, env(safe-area-inset-top)); right: 120px; width: 240px; }
+#aide { position: absolute; z-index: 6; top: max(8px, env(safe-area-inset-top)); right: calc(var(--bande-d, 0px) + 180px); width: 240px; pointer-events: none; }
 .reglage-test { border-color: var(--accent); }
 .reglage-test small { color: var(--texte-doux); }
 body.aide-visuelle #aide { display: block; }
@@ -379,3 +381,95 @@ body:not(.visuels) #ecran-symbole canvas, body:not(.visuels) #lampe, body:not(.v
 /* Victoire : on est dans la salle forte (pas d'écran dans le décor), la carte a son propre cadre lumineux */
 #fin.gagne .carte-fin { left: 50%; top: 50%; transform: translate(-50%, -50%); height: auto; min-height: var(--grand-h);
   background: rgba(4, 6, 16, .86); border: calc(var(--u) * 1.2) solid var(--ecran); box-shadow: 0 0 24px color-mix(in srgb, var(--ecran) 60%, transparent), inset 0 0 18px rgba(0,0,0,.8); }
+
+/* =========================================================
+   BANDE NOIRE CÔTÉ CAMÉRA (largeur calculée dans scene.js)
+   ========================================================= */
+.bande-camera { position: fixed; top: 0; bottom: 0; z-index: 90; background: #000; pointer-events: none; }
+#bande-gauche { left: 0; width: var(--bande-g, 0px); }
+#bande-droite { right: 0; width: var(--bande-d, 0px); }
+
+/* =========================================================
+   LES ÉCRANS S'ÉTEIGNENT JUSTE AVANT LE ZOOM (comme une vieille télé)
+   ========================================================= */
+body.eteint #jeu .hud, body.eteint #ecran-symbole { animation: eteint .35s steps(5) forwards; transform-origin: 50% 50%; }
+@keyframes eteint {
+  0%   { opacity: 1; transform: none; filter: brightness(1); }
+  40%  { opacity: 1; transform: scaleY(.08); filter: brightness(3); }
+  80%  { opacity: 1; transform: scale(.4, .02); filter: brightness(4); }
+  100% { opacity: 0; transform: scale(0, 0); }
+}
+body.eteint #jeu .bas, body.eteint #test, body.eteint #aide, body.eteint #pattes { opacity: 0; transition: opacity .2s; }
+body.camera #jeu .hud, body.camera #ecran-symbole { opacity: 0; transition: none; }
+
+/* =========================================================
+   MENUS AU STYLE PIXEL / ÉCRAN RÉTRO
+   (réglages, serrures, règles, pause, mise à jour, annonce du plan, aide, boutons de test)
+   ========================================================= */
+:root { --menu-fond: rgba(4, 8, 18, .94); --menu-ligne: repeating-linear-gradient(0deg, rgba(0,0,0,.25) 0 1px, transparent 1px 3px); }
+
+/* Cadre d'écran commun */
+.modale .panneau, #serrures, #regles, #pause, #maj, .ecran-menu {
+  font-family: var(--police-pixel); color: var(--ecran);
+}
+.modale { background: rgba(0, 0, 0, .7); }
+.modale .panneau { border-radius: 0; background: var(--menu-ligne), var(--menu-fond); border: 3px solid var(--ecran);
+  box-shadow: 0 0 0 3px #000, 0 0 22px color-mix(in srgb, var(--ecran) 45%, transparent); backdrop-filter: none; font-size: 18px; }
+.modale h2, #serrures h2, #regles h2, #pause h2 { font-family: var(--police-pixel-titre); color: var(--ecran); font-size: 1.05rem; letter-spacing: .04em;
+  text-shadow: 0 0 10px var(--ecran); text-transform: uppercase; }
+.reglage { border-radius: 0; background: rgba(255,255,255,.03); border: 2px solid color-mix(in srgb, var(--ecran) 35%, transparent); }
+.reglage .etiquette { font-family: var(--police-pixel-titre); color: var(--ecran); font-size: .6rem; opacity: .85; margin-bottom: 8px; }
+.reglage-test { border-color: var(--alarme-allumee); }
+.reglage-test small, .case { color: #d9f2ff; font-size: 18px; line-height: 1; }
+.reglage-test b { color: #fff; font-weight: normal; }
+.case input { accent-color: var(--ecran); }
+
+/* Tous les boutons des menus */
+.modale button, #serrures button, #regles button, #pause button, #maj button, #jeu .bas button, #test button, .btn-son {
+  font-family: var(--police-pixel); font-size: 18px; line-height: 1; border-radius: 0; color: var(--ecran);
+  background: rgba(0, 0, 0, .55); border: 2px solid var(--ecran); box-shadow: inset 0 0 0 2px rgba(0,0,0,.45); }
+.modale button.principal, #pause button.principal { background: var(--ecran); color: #05121a; font-family: var(--police-pixel-titre); font-size: .7rem; padding: 12px; box-shadow: 0 4px 0 rgba(0,0,0,.6), 0 0 14px var(--ecran); }
+.choix button { font-size: 18px; padding: 6px; }
+.choix button.on { background: var(--ecran); color: #05121a; border-color: var(--ecran); font-weight: normal; box-shadow: 0 0 10px var(--ecran); }
+
+/* Écrans plein écran : serrures, règles, pause */
+#serrures, #regles, #pause { background: var(--menu-ligne), rgba(3, 6, 14, .93); backdrop-filter: none; font-size: 20px; }
+#serrures > p { color: #d9f2ff !important; }
+.ligne-son { border-radius: 0; background: rgba(255,255,255,.03); border: 2px solid color-mix(in srgb, var(--ecran) 35%, transparent); }
+.ligne-son .nom { color: #fff; font-size: 24px; }
+.ligne-son .desc { color: var(--ecran); font-size: 18px; }
+.ligne-son button { background: var(--ecran); color: #05121a; min-width: 56px; }
+.picto-ligne .picto-svg { stroke: var(--ecran); }
+#regles .texte { color: #d9f2ff; line-height: 1.05; }
+#regles .texte h3 { font-family: var(--police-pixel-titre); color: var(--ecran); font-size: .7rem; margin: 18px 0 6px; text-shadow: 0 0 8px var(--ecran); }
+#regles .texte b { color: #fff; font-weight: normal; text-shadow: 0 0 6px var(--ecran); }
+#pause button { width: min(320px, 70vw); }
+
+/* Bandeau de mise à jour */
+#maj { border-radius: 0; background: var(--menu-ligne), var(--menu-fond); color: #d9f2ff; border: 3px solid var(--ecran); box-shadow: 0 0 0 3px #000, 0 0 22px color-mix(in srgb, var(--ecran) 45%, transparent); font-size: 18px; }
+#maj strong { font-family: var(--police-pixel-titre); font-size: .65rem; color: var(--ecran); font-weight: normal; }
+#maj button { background: var(--ecran); color: #05121a; }
+#maj button.plus-tard { background: transparent; color: var(--ecran); }
+
+/* Annonce du plan au début de chaque coffre */
+#annonce { background: var(--menu-ligne), rgba(3, 6, 14, .9); font-family: var(--police-pixel); color: var(--ecran); }
+#annonce .titre-plan { font-family: var(--police-pixel-titre); font-size: 1.1rem; text-shadow: 0 0 10px var(--ecran); }
+#annonce-lettre { font-family: var(--police-pixel-titre); font-size: 5rem; color: #fff; margin-top: 18px; text-shadow: 0 0 14px var(--ecran), 0 0 40px var(--ecran); }
+#annonce-coups span { border-radius: 0; background: rgba(255,255,255,.12); }
+#annonce-coups span.on { background: var(--ecran); box-shadow: 0 0 14px var(--ecran); }
+
+/* Petit message temporaire */
+#toast { border-radius: 0; font-family: var(--police-pixel); font-size: 18px; background: var(--menu-fond); border: 2px solid var(--ecran); color: var(--ecran); box-shadow: 0 0 12px color-mix(in srgb, var(--ecran) 45%, transparent); }
+
+/* Aide pour les tests et boutons « Sans scan » */
+#aide { border-radius: 0; background: var(--menu-ligne), var(--menu-fond); border: 2px solid var(--ecran); font-family: var(--police-pixel); font-size: 16px; line-height: 1; color: #d9f2ff; }
+#aide b { color: var(--ecran); font-weight: normal; }
+#test { border-radius: 0; background: var(--menu-fond); border: 2px solid color-mix(in srgb, var(--ecran) 50%, transparent); }
+#test button { font-size: 15px; padding: 4px 3px; border-width: 1px; }
+#test .btn-planque, #btn-test-serrure { background: var(--alarme-allumee); border-color: #ffb0a0; color: #fff; }
+#test .btn-action { background: color-mix(in srgb, var(--ecran) 25%, #000); }
+#btn-test-serrure { font-family: var(--police-pixel); font-size: 17px; border-radius: 0; }
+#jeu .bas button, .btn-son { padding: 5px 10px; }
+#apercu { border-radius: 0; border-color: var(--ecran); }
+
+/* Page « Tourne ton téléphone » : déjà au style du logo */

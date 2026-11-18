@@ -11,15 +11,16 @@
 const SCENE_W = 1783, SCENE_H = 882;
 
 // Chaque niveau : décor + encadrement (trou transparent), porte, et réglages de la porte
-//   volant : centre et rayon de la roue (en % de la largeur/hauteur de la porte) — la partie qui tourne
+//   volant : centre et rayon de la roue (en % de la largeur/hauteur de la porte) — la partie qui tourne,
+//            coupée pile dans le cercle sombre qui entoure l'anneau intérieur (mesuré sur chaque image)
 //   plaque : rectangle de la plaque des verrous sur la porte (en %)
 const NIVEAUX_SCENE = [
   { cadre: 'img/cuivre1.webp', porte: 'img/cuivre2.webp', trou: { x: 836, y: 151, w: 682, h: 567 }, porteRatio: 684 / 569,
-    volant: { x: 50.3, y: 49.6, r: 21 }, plaque: { x: 83.5, y: 36, w: 14, h: 26 } },
+    volant: { x: 51.26, y: 49.45, r: 24.4 }, plaque: { x: 83.5, y: 36, w: 14, h: 26 } },
   { cadre: 'img/argent1.webp', porte: 'img/argent2.webp', trou: { x: 845, y: 158, w: 665, h: 565 }, porteRatio: 667 / 567,
-    volant: { x: 51.3, y: 48.3, r: 21 }, plaque: { x: 83.5, y: 36, w: 14, h: 26 } },
+    volant: { x: 51.85, y: 48.76, r: 24.0 }, plaque: { x: 83.5, y: 36, w: 14, h: 26 } },
   { cadre: 'img/or1.webp',     porte: 'img/or2.webp',     trou: { x: 834, y: 146, w: 687, h: 569 }, porteRatio: 689 / 571,
-    volant: { x: 51.2, y: 49.2, r: 22 }, plaque: { x: 83, y: 37, w: 14, h: 24 } }
+    volant: { x: 51.08, y: 50.48, r: 24.2 }, plaque: { x: 83, y: 37, w: 14, h: 24 } }
 ];
 // Les deux écrans du décor (en pixels de l'image) : textes + alarme dans le grand, symboles dans le petit
 const ECRANS = {
@@ -107,21 +108,51 @@ function _htmlNiveau(niveau, actif) {
   return `<div class="sc-niveau" data-niveau="${niveau}">${derriere}${_htmlPorte(niveau, actif)}<img class="sc-cadre" src="${n.cadre}" alt=""></div>`;
 }
 
+// Bande noire du côté de la caméra (encoche / Dynamic Island) : on y met rien, le décor commence après.
+// Sa largeur = la zone que le téléphone réserve à la caméra. Sur ordinateur : pas de bande.
+// BANDE_SECOURS : largeur utilisée si le téléphone ne donne pas la taille de sa caméra (0 = pas de bande)
+const BANDE_SECOURS = 0;
+function majBande() {
+  let sonde = document.getElementById('sonde-encoche');
+  if (!sonde) {
+    sonde = document.createElement('div'); sonde.id = 'sonde-encoche';
+    sonde.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)';
+    document.body.appendChild(sonde);
+  }
+  const cs = getComputedStyle(sonde);
+  let largeur = Math.max(parseFloat(cs.paddingLeft) || 0, parseFloat(cs.paddingRight) || 0);
+  const paysage = window.innerWidth > window.innerHeight;
+  const tactile = matchMedia('(pointer: coarse)').matches;
+  if (!largeur && tactile) largeur = BANDE_SECOURS;
+  if (!paysage || !tactile) largeur = 0;
+  // De quel côté est la caméra ? Téléphone tourné vers la gauche (angle 90) : caméra à gauche ; vers la droite (270) : à droite
+  let angle = screen.orientation ? screen.orientation.angle : (window.orientation || 0);
+  if (angle < 0) angle += 360;
+  const b = angle === 270 ? { g: 0, d: largeur } : { g: largeur, d: 0 };
+  const st = document.documentElement.style;
+  st.setProperty('--bande-g', b.g + 'px'); st.setProperty('--bande-d', b.d + 'px');
+  return b;
+}
+
 const Scene = {
   niveau: 0,
   init() {
     document.documentElement.style.setProperty('--zoom', REGLAGES_SCENE.dureeZoom + 's');
     [...NIVEAUX_SCENE.flatMap((n) => [n.cadre, n.porte])].forEach((s) => { const i = new Image(); i.src = s; });
     this.cadrer(); window.addEventListener('resize', () => this.cadrer());
+    window.addEventListener('orientationchange', () => setTimeout(() => this.cadrer(), 300));
+    if (screen.orientation) screen.orientation.addEventListener?.('change', () => setTimeout(() => this.cadrer(), 300));
     this.afficher(0);
   },
   // Adapte l'image à l'écran : elle le remplit (on rogne au plus 8 %), sinon un flou complète les bords
   cadrer() {
-    const vw = window.innerWidth, vh = window.innerHeight;
+    const b = majBande();                        // bande noire du côté de la caméra du téléphone
+    const vw = window.innerWidth - b.g - b.d, vh = window.innerHeight;
     // On garde toujours visibles les deux écrans (de x 50 à 1772) et presque toute la hauteur
     const c = Math.min(Math.max(vw / SCENE_W, vh / SCENE_H), vw / 1722, vh / 800);
     let x = vw / 2 - 911 * c;
     if (SCENE_W * c >= vw) x = Math.min(0, Math.max(vw - SCENE_W * c, x)); else x = (vw - SCENE_W * c) / 2;
+    x += b.g;
     const y = (vh - SCENE_H * c) / 2;
     this.vue = { x, y, c, vw, vh };
     document.getElementById('sc-cadrage').style.transform = `translate(${x}px, ${y}px) scale(${c})`;

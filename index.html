@@ -32,6 +32,8 @@
 
 <!-- La scène (tes illustrations) : commune à tous les écrans, voir scene.js -->
 <div id="sc-stage"><div id="sc-cadrage"><div id="sc-camera"></div></div></div>
+<!-- Bande noire du côté de la caméra du téléphone (voir scene.js) -->
+<div id="bande-gauche" class="bande-camera"></div><div id="bande-droite" class="bande-camera"></div>
 
 <!-- Téléphone à la verticale : on demande de le tourner -->
 <!-- C'est aussi la page d'introduction, avec le logo -->
@@ -577,7 +579,7 @@ function nouvelleCombinaison() {
 function lancerPartie() {
   Son.init();
   $('#entracte').classList.remove('visible');
-  document.body.classList.remove('camera');
+  document.body.classList.remove('camera', 'eteint');
   choisirFondFinal();                               // la salle forte de cette partie (jamais la même que la précédente)
   Scene.afficher(0);
   bloquerHorizontal();
@@ -817,6 +819,8 @@ function coffreOuvert() {
   const dernier = J.coffre >= COFFRES.length - 1;
   setTimeout(async () => {
     await Scene.ouvrir();
+    document.body.classList.add('eteint');           // les écrans du décor s'éteignent juste avant le zoom
+    await new Promise((ok) => setTimeout(ok, 380));
     document.body.classList.add('camera');          // l'interface s'efface pendant que la caméra avance
     Son.pas(0.25, 0);
     await Scene.avancer();
@@ -826,7 +830,7 @@ function coffreOuvert() {
       return setTimeout(() => finPartie(true, ''), 800);
     }
     Musique.jouer('p' + (J.coffre + 2));          // la musique de la porte suivante
-    document.body.classList.remove('camera');
+    document.body.classList.remove('camera', 'eteint');
     const suivant = J.coffre + 1;
     $('#entracte-num').textContent = `Coffre ${suivant + 1} / 3`;
     $('#entracte-titre').textContent = COFFRES[suivant].nom;
@@ -880,7 +884,7 @@ $('#btn-reprendre').addEventListener('click', () => { J.enPause = false; ecran('
 $('#btn-abandon').addEventListener('click', () => { J.enPause = false; finPartie(false, 'Vous avez abandonné le casse.'); });
 $('#btn-lancer').addEventListener('click', lancerPartie);
 $('#btn-rejouer').addEventListener('click', () => { lancerPartie(); });
-$('#btn-accueil').addEventListener('click', () => { document.body.classList.remove('camera'); Scene.afficher(0); ecran('accueil'); });
+$('#btn-accueil').addEventListener('click', () => { document.body.classList.remove('camera', 'eteint'); Scene.afficher(0); ecran('accueil'); });
 
 /* ---------------- Téléphone à l'horizontale ---------------- */
 // Android (app installée ou plein écran) : on verrouille l'orientation.
