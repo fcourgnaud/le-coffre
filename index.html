@@ -62,7 +62,7 @@
       <div class="pied">
         <span id="version-affichee">v—</span>
         <button class="discret" id="btn-verifier">Mises à jour ?</button>
-        <button class="btn-son" title="Volume de la musique">🔊</button>
+        <button class="btn-son" title="Volume de la musique"></button>
       </div>
     </div>
   </div>
@@ -171,7 +171,14 @@
       <div id="plan">Plan <span id="plan-lettre">—</span></div>
     </div>
     <div id="message">Écoutez la serrure…</div>
-    <div id="indice-ecoute">Touchez le coffre pour réécouter</div>
+    <div class="pied-ecran">
+      <div id="indice-ecoute">Touchez le coffre pour réécouter</div>
+      <div class="commandes">
+        <div class="camera-cadre"><video id="apercu" playsinline muted></video><span>SANS SCAN</span></div>
+        <button class="btn-son" title="Volume de la musique"></button>
+        <button id="btn-pause" title="Pause"><svg viewBox="0 0 8 8" shape-rendering="crispEdges"><rect x="1" y="1" width="2" height="6"/><rect x="5" y="1" width="2" height="6"/></svg></button>
+      </div>
+    </div>
   </div>
   <!-- Petit écran du décor (à droite de la porte) : le symbole de la serrure -->
   <div id="ecran-symbole" class="ecran-deco"><svg id="picto" viewBox="0 0 24 24" shape-rendering="crispEdges"></svg><div class="veille"></div></div>
@@ -183,8 +190,6 @@
   <div id="test"></div>
 
   <div class="bas">
-    <video id="apercu" playsinline muted></video>
-    <div class="ligne-haut"><button class="btn-son" title="Volume de la musique">🔊</button><button class="discret" id="btn-pause">Pause</button></div>
     <button id="btn-test-serrure" title="Pour les tests : ouvre la serrure en cours">🔓 Ouvrir la serrure</button>
   </div>
 
@@ -436,7 +441,12 @@ const Musique = {
   },
   majVolume() {
     const n = this.niveaux[this.niveau];
-    document.querySelectorAll('.btn-son').forEach((b) => { b.textContent = n.icone; b.title = n.nom; b.classList.toggle('coupe', n.v === 0); });
+    // Haut-parleur en pixels + barres de volume (3 = fort, 2 = moyen, 1 = bas, croix = coupé)
+    const barres = [3, 2, 1, 0][this.niveau];
+    let svg = '<rect x="1" y="4" width="2" height="4"/><rect x="3" y="3" width="1" height="6"/><rect x="4" y="2" width="1" height="8"/><rect x="5" y="1" width="1" height="10"/>';
+    if (barres) for (let k = 0; k < 3; k++) svg += `<rect x="${7 + k * 2}" y="${5 - k * 2}" width="1" height="${2 + k * 4}" ${k < barres ? '' : 'opacity=".25"'}/>`;
+    else svg += '<rect x="7" y="4" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="9" y="6" width="1" height="1"/><rect x="10" y="7" width="1" height="1"/><rect x="10" y="4" width="1" height="1"/><rect x="9" y="5" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="8" y="6" width="1" height="1"/>';
+    document.querySelectorAll('.btn-son').forEach((b) => { b.innerHTML = `<svg viewBox="0 0 12 12" shape-rendering="crispEdges">${svg}</svg>`; b.title = n.nom; b.classList.toggle('coupe', n.v === 0); });
     if (!this.pret) return;
     const t = Son.ctx.currentTime;
     this.general.gain.cancelScheduledValues(t); this.general.gain.setTargetAtTime(n.v * this.base, t, 0.08);

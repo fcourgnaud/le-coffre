@@ -244,7 +244,7 @@ body[data-ecran="accueil"] #logo { display: block; }   /* ajoute , body[data-ecr
 #message::before { content: '> '; color: var(--ecran); }
 #message::after { content: '_'; animation: clignote 1s steps(2) infinite; }
 #message.alerte { color: #ff8a7a; text-shadow: 0 0 calc(var(--u) * 2) #ff3b2f; }
-#indice-ecoute { margin-top: auto; font-size: calc(var(--u) * 7); line-height: 1; opacity: .8; }
+#indice-ecoute { font-size: calc(var(--u) * 6.5); line-height: 1; opacity: .8; flex: 1; min-width: 0; }
 #indice-ecoute::before { content: '▶ '; }
 /* Entre deux coffres, l'écran laisse la place à la carte */
 #jeu:has(#entracte.visible) .hud { visibility: hidden; }
@@ -487,3 +487,23 @@ body.camera #jeu .hud, body.camera #ecran-symbole { opacity: 0; transition: none
 #demarrage.parti { opacity: 0; pointer-events: none; }
 #demarrage img { width: min(70vw, 120vh); filter: drop-shadow(0 0 22px rgba(94, 226, 255, .45)); animation: logo-arrive 1.1s cubic-bezier(.2, 1.5, .4, 1) both, logo-pulse 3s 1.1s ease-in-out infinite; }
 #demarrage p { margin: 0; font-family: var(--police-pixel-titre); font-size: clamp(10px, 3.2vh, 16px); color: #5ee2ff; text-shadow: 0 0 10px #5ee2ff; text-transform: uppercase; animation: clignote 1.1s steps(2) infinite; }
+
+/* =========================================================
+   BAS DU GRAND ÉCRAN : indice, caméra, son, pause
+   ========================================================= */
+#jeu .pied-ecran { margin-top: auto; display: flex; align-items: flex-end; gap: calc(var(--u) * 3); }
+#jeu .commandes { display: flex; align-items: stretch; gap: calc(var(--u) * 2.5); height: calc(var(--u) * 22); min-height: 30px; }
+.camera-cadre { position: relative; height: 100%; aspect-ratio: 4 / 3; border: calc(var(--u) * .8) solid var(--ecran); background: #000;
+  box-shadow: 0 0 calc(var(--u) * 3) color-mix(in srgb, var(--ecran) 50%, transparent); overflow: hidden; }
+.camera-cadre #apercu { width: 100%; height: 100%; border: none; border-radius: 0; display: block; object-fit: cover; transform: scaleX(-1); filter: saturate(.6) contrast(1.1); }
+.camera-cadre::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,0,0,.35) 0 1px, transparent 1px 3px); }
+.camera-cadre:has(#apercu.lu) { border-color: #fff; box-shadow: 0 0 calc(var(--u) * 5) #fff; }
+.camera-cadre span { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; text-align: center;
+  font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 3.6); line-height: 1.3; color: var(--ecran); }
+body.mode-test .camera-cadre #apercu { display: none; }
+body.mode-test .camera-cadre span { display: flex; }
+#jeu .commandes button { height: 100%; aspect-ratio: 1; padding: calc(var(--u) * 3); display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.45); border: calc(var(--u) * .8) solid var(--ecran); border-radius: 0; color: var(--ecran); box-shadow: none; }
+#jeu .commandes button svg, #accueil .btn-son svg { width: 100%; height: 100%; fill: currentColor; filter: drop-shadow(0 0 2px currentColor); }
+#jeu .commandes button:active { background: var(--ecran); color: #05121a; }
+#accueil .colonne .btn-son { width: max(28px, calc(var(--u) * 13)); height: max(24px, calc(var(--u) * 11)); padding: 3px; display: flex; align-items: center; justify-content: center; color: var(--ecran); }
