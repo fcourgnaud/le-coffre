@@ -36,6 +36,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.10.0** — Jauge d'alarme en barre de détection : 20 blocs (4 par point), vert (1-2), orange (3), rouge (4-5), pourcentage, « ! ALERTE ! » à 4 ; effet tremblement + flash + « ALERTE +1 » quand l'alarme monte.
 - **3.9.2** — Aperçu caméra, bouton son (icône pixel à barres) et pause (icône pixel) rangés en bas du grand écran.
 - **3.9.1** — Écran de démarrage « Touche l'écran pour commencer » qui lance la musique ; symboles du petit écran dessinés pixel par pixel en SVG (`SYMBOLES_PIXELS` dans index.html) au lieu d'un canvas.
 - **3.9.0** — Scan amélioré : caméra en HD avec mise au point continue, lecteur QR du téléphone quand il existe (Android), sinon lecture à 4 échelles (image entière, centre zoomé, contraste renforcé, cœur très zoomé).

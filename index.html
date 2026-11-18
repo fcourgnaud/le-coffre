@@ -165,12 +165,13 @@
     </div>
     <div class="milieu">
       <div id="alarme">
-        <div class="etiquette">Alarme</div>
+        <div class="etiquette"><span>Détection</span><b id="alarme-pc">0 %</b><em>! ALERTE !</em></div>
         <div class="segments" id="segments"></div>
       </div>
       <div id="plan">Plan <span id="plan-lettre">—</span></div>
     </div>
     <div id="message">Écoutez la serrure…</div>
+    <div id="alerte-flash">ALERTE +1</div>
     <div class="pied-ecran">
       <div id="indice-ecoute">Touchez le coffre pour réécouter</div>
       <div class="commandes">
@@ -584,7 +585,28 @@ $('#btn-fermer-reglages').addEventListener('click', () => $('#reglages').classLi
 $('#reglages').addEventListener('click', (e) => { if (e.target.id === 'reglages') $('#reglages').classList.remove('visible'); });
 
 // Jauge d'alarme
-for (let i = 0; i < ALARME_MAX; i++) { const s = document.createElement('div'); s.className = 'seg'; $('#segments').appendChild(s); }
+// Jauge de détection : 20 blocs, 4 par point d'alarme. Zones : vert (alarme 1-2), orange (3), rouge (4-5)
+const BLOCS_PAR_POINT = 4, NB_BLOCS = ALARME_MAX * BLOCS_PAR_POINT;
+for (let i = 0; i < NB_BLOCS; i++) {
+  const s = document.createElement('div'); const point = Math.floor(i / BLOCS_PAR_POINT) + 1;
+  s.className = 'seg ' + (point <= 2 ? 'vert' : point === 3 ? 'orange' : 'rouge'); $('#segments').appendChild(s);
+}
+let blocsAffiches = 0, minuteurBlocs = null;
+// Remplit (ou vide) la jauge bloc par bloc, en grésillant
+function majAlarme(instantane) {
+  const cible = J ? J.alarme * BLOCS_PAR_POINT : 0;
+  const segs = document.querySelectorAll('#segments .seg');
+  clearInterval(minuteurBlocs);
+  const pas = () => {
+    if (blocsAffiches === cible) { clearInterval(minuteurBlocs); return; }
+    blocsAffiches += cible > blocsAffiches ? 1 : -1;
+    segs.forEach((s, i) => s.classList.toggle('on', i < blocsAffiches));
+    $('#alarme-pc').textContent = Math.round(blocsAffiches / NB_BLOCS * 100) + ' %';
+  };
+  if (instantane) { blocsAffiches = cible; segs.forEach((s, i) => s.classList.toggle('on', i < cible)); $('#alarme-pc').textContent = Math.round(cible / NB_BLOCS * 100) + ' %'; }
+  else minuteurBlocs = setInterval(pas, 90);
+  document.body.classList.toggle('danger', !!J && J.alarme >= 4);
+}
 
 /* ---------------- La partie ---------------- */
 let J = null;           // état de la partie
@@ -825,6 +847,10 @@ function outilsAcceptes() { return PLANS[J.plans[J.coffre]][J.combinaison[J.etap
 function monterAlarme(n) {
   J.alarme = Math.min(ALARME_MAX, J.alarme + n);
   majAffichage();
+  // Effet « prise » : l'écran tremble, flash rouge, « ALERTE +n »
+  const f = $('#alerte-flash'), hud = $('#jeu .hud');
+  f.textContent = `ALERTE +${n}`;
+  hud.classList.remove('prise'); void hud.offsetWidth; hud.classList.add('prise');
   setTimeout(() => Son.alarme(J.alarme), 400);
   if (navigator.vibrate) navigator.vibrate(200);
   if (J.alarme >= ALARME_MAX) setTimeout(() => finPartie(false, 'L\'alarme hurle dans tout le bâtiment. Tout le monde au poste !'), 900);
@@ -874,7 +900,7 @@ function finPartie(gagne, texte) {
 
 function majAffichage() {
   Scene.verrous(J.etape);
-  document.querySelectorAll('#segments .seg').forEach((s, i) => s.classList.toggle('on', i < J.alarme));
+  majAlarme(J.horloge < 0.2);
 }
 
 function majAide() {

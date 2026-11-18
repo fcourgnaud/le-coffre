@@ -232,13 +232,28 @@ body[data-ecran="accueil"] #logo { display: block; }   /* ajoute , body[data-ecr
 #plan { font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 4.5); white-space: nowrap; }
 #plan-lettre { font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 11); color: #fff; vertical-align: middle; }
 
-/* Jauge d'alarme : 5 blocs de pixels */
-#alarme { flex: 1; }
-#alarme .etiquette { font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 4.5); margin-bottom: calc(var(--u) * 2); }
-#alarme .segments { display: flex; gap: calc(var(--u) * 2); }
-#alarme .seg { flex: 1; height: calc(var(--u) * 9); background: rgba(0,0,0,.45); border: calc(var(--u) * .8) solid color-mix(in srgb, var(--ecran) 55%, transparent); transition: background .2s, box-shadow .2s; }
-#alarme .seg.on { background: var(--alarme-allumee); border-color: #ffb0a0; box-shadow: 0 0 calc(var(--u) * 4) var(--alarme-allumee); animation: seg-allume .4s steps(3); }
-@keyframes seg-allume { 0%, 66% { background: #fff; } }
+/* Jauge de détection : 20 petits blocs (4 par point d'alarme), vert → orange → rouge */
+#alarme { flex: 1; min-width: 0; }
+#alarme .etiquette { display: flex; align-items: baseline; gap: calc(var(--u) * 3); font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 4.2); margin-bottom: calc(var(--u) * 1.5); }
+#alarme-pc { font-family: var(--police-pixel); font-weight: normal; font-size: calc(var(--u) * 8); line-height: .6; color: #fff; }
+#alarme .etiquette em { display: none; margin-left: auto; font-style: normal; font-size: 1.25em; color: #ff3b2f; text-shadow: 0 0 6px #ff3b2f; animation: clignote .6s steps(2) infinite; }
+body.danger #alarme .etiquette em { display: inline; }
+#alarme .segments { display: flex; gap: calc(var(--u) * .7); padding: calc(var(--u) * .9); border: calc(var(--u) * .7) solid var(--ecran); background: rgba(0,0,0,.45); }
+#alarme .seg { flex: 1; height: calc(var(--u) * 7); --c: #6cff5a; background: color-mix(in srgb, var(--c) 14%, transparent); }
+#alarme .seg.vert { --c: #6cff5a; } #alarme .seg.orange { --c: #ffa82e; } #alarme .seg.rouge { --c: #ff3b2f; }
+#alarme .seg.on { background: var(--c); box-shadow: 0 0 calc(var(--u) * 2.5) var(--c); animation: bloc-allume .27s steps(3); }
+@keyframes bloc-allume { 0% { background: #fff; } 34% { background: transparent; } 67% { background: #fff; } }
+/* Danger (alarme 4) : la jauge clignote, l'écran rougeoie */
+body.danger #alarme .seg.on { animation: clignote .8s steps(2) infinite; }
+body.danger #jeu .hud { box-shadow: inset 0 0 calc(var(--u) * 10) rgba(255, 59, 47, .45); }
+body.danger #alarme .segments { border-color: #ff3b2f; }
+/* Effet quand l'alarme monte : tremblement, flash rouge et « ALERTE +1 » */
+#alerte-flash { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; opacity: 0;
+  font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 11); color: #fff; text-shadow: 0 0 8px #ff3b2f, 0 0 20px #ff3b2f; background: rgba(255, 30, 20, .35); }
+#jeu .hud.prise { animation: prise .5s steps(6); }
+#jeu .hud.prise #alerte-flash { animation: flash-alerte 1.3s steps(8) forwards; }
+@keyframes prise { 0%, 100% { transform: none; } 20% { transform: translate(calc(var(--u) * -2), calc(var(--u) * 1)); } 40% { transform: translate(calc(var(--u) * 2), calc(var(--u) * -1)); } 60% { transform: translate(calc(var(--u) * -1), 0); } 80% { transform: translate(calc(var(--u) * 1), calc(var(--u) * 1)); } }
+@keyframes flash-alerte { 0% { opacity: 1; } 12% { opacity: .2; } 24%, 70% { opacity: 1; } 100% { opacity: 0; } }
 
 #message { font-size: calc(var(--u) * 10); line-height: .95; color: #fff; min-height: 2em; }
 #message::before { content: '> '; color: var(--ecran); }
