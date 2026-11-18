@@ -1,6 +1,8 @@
 {
-  "name": "Le Casse du siècle",
+  "name": "Break Protocol",
   "short_name": "Le Coffre",
+  "description": "Jeu de société coopératif : le téléphone est le coffre-fort.",
+  "lang": "fr",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -8,7 +10,8 @@
   "background_color": "#141a2e",
   "theme_color": "#141a2e",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

@@ -1,4 +1,4 @@
-# Le Casse du siècle
+# Break Protocol (ex « Le Casse du siècle »)
 
 Jeu coopératif en temps réel (2 à 4 joueurs) : le téléphone posé au centre est un coffre-fort. On écoute, on scanne des cartes à QR code, on se tait.
 
@@ -7,21 +7,23 @@ Jeu coopératif en temps réel (2 à 4 joueurs) : le téléphone posé au centre
 | Fichier | Rôle | Tu peux le modifier ? |
 |---|---|---|
 | `index.html` | Les écrans et toute la logique du jeu | Oui, avec prudence |
-| `theme.css` | Tout le visuel (couleurs, polices, cadran…) | **Oui, c'est fait pour** |
-| `scene.js` | Place tes illustrations et règle les animations (porte, caméra, verrous) | Les réglages en haut du fichier, oui |
-| `img/` | Tes illustrations : cuivre1/2, argent1/2, or1/2 (1783 × 882 px), fond1 à fond6, logo (l'app utilise les .webp) | Oui, remplace-les par tes nouvelles versions |
+| `theme.css` | Tout le visuel (couleurs, polices, tailles), rangé par écran | **Oui, c'est fait pour** |
+| `scene.js` | Place tes illustrations et règle les animations (porte, caméra, verrous, écrans du décor) | Les réglages en haut du fichier, oui |
+| `img/` | Tes illustrations : cuivre1/2, argent1/2, or1/2 (1783 × 882 px), fond1 à fond6, logo (en .webp) | Oui, remplace-les par tes nouvelles versions |
 | `audio/` | Les musiques : introfin (accueil + fin), musique1/2/3 (une par porte) | Oui, garde les mêmes noms |
-| `pictos-outils.js` | Les pictos des 16 outils (SVG) | Oui, remplace-les par tes dessins |
+| `polices/` | Les polices pixel VT323 et Press Start 2P (licence libre OFL) | Non |
+| `lib/jsQR.js` | Le lecteur de QR codes (licence Apache 2.0) | Non |
 | `version.js` | Numéro de version + notes affichées dans le bandeau | Claude s'en occupe |
 | `sw.js` | Garde l'app hors ligne et gère les mises à jour | Non |
 | `manifest.webmanifest`, `icon-*.png` | Installation sur l'écran d'accueil | Les icônes, oui |
-| `cartes.html` | Planche de cartes prototype à imprimer | Oui |
+
+Les cartes à imprimer sont un PDF à part (A3 recto-verso, style pixel, logo au dos).
 
 ## Contenu des QR codes
 
-- `CASSE:O01` à `CASSE:O32` : 16 outils en 2 exemplaires (O01-O02 Perceuse, O03-O04 Stéthoscope, O05-O06 Pied-de-biche, O07-O08 Crochet, O09-O10 Aimant, O11-O12 Chalumeau, O13-O14 Ventouse, O15-O16 Scie à métaux, O17-O18 Marteau, O19-O20 Tournevis, O21-O22 Lampe torche, O23-O24 Corde, O25-O26 Pince coupante, O27-O28 Loupe, O29-O30 Clé à molette, O31-O32 Dynamite)
+- `CASSE:O01` à `CASSE:O32` : 16 programmes en 2 exemplaires (O01-O02 Cheval de Troie, O03-O04 Ver, O05-O06 Virus, O07-O08 Hameçonnage, O09-O10 Porte dérobée, O11-O12 Force brute, O13-O14 Cookie espion, O15-O16 Bombe logique, O17-O18 Bot, O19-O20 Araignée du web, O21-O22 Fantôme, O23-O24 Pare-feu percé, O25-O26 Spam, O27-O28 Mot de passe, O29-O30 Clé de chiffrement, O31-O32 Miroir proxy)
 - `CASSE:P01` : Planquez-vous ! (milieu de table)
-- `CASSE:C01` : Os (milieu de table)
+- `CASSE:C01` : Os à moelle (milieu de table)
 - `CASSE:B01` : Court-circuit (milieu de table)
 - Tout le monde peut scanner les 3 cartes du milieu
 - Cartes Plan A à F : sans QR, seul le Cerveau les regarde
@@ -36,6 +38,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.11.0** — Vérification complète et optimisation : programmes à la place des outils dans l'app (aide, boutons de test, messages, règles) ; polices et lecteur QR hébergés avec l'app (marche sans connexion) ; images allégées (≈ 1,3 Mo de moins) ; theme.css réécrit et rangé par écran ; pause automatique quand on quitte l'app ; scan suspendu en pause ; code inutilisé retiré (cartes.html, pictos-outils.js, sticker, lingots).
 - **3.10.3** — Démarrage du son corrigé sur iPhone (déblocage au doigt levé, à chaque toucher) ; sons joués même en mode silencieux (audioSession).
 - **3.10.2** — Indices visuels toujours actifs ; option retirée des réglages.
 - **3.10.1** — Grand écran en 4 rangées de hauteur fixe : la caméra, le son et la pause ne sont plus coupés sur les petits téléphones.

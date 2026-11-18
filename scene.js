@@ -1,10 +1,11 @@
 /* =========================================================
-   LE CASSE DU SIÈCLE — SCÈNE (tes illustrations)
+   BREAK PROTOCOL — SCÈNE (tes illustrations)
    ---------------------------------------------------------
    Les images sont dans le dossier img/ :
      cuivre1 / argent1 / or1 = le décor + l'encadrement (trou transparent)
+                               (porte 1 bleue, porte 2 verte, porte 3 or)
      cuivre2 / argent2 / or2 = la porte
-     fond1 = la chambre forte finale
+     fond1 à fond6 = les salles fortes finales (une au hasard)
    Toutes les positions sont en pixels de l'image (1783 × 882).
    ========================================================= */
 
@@ -59,7 +60,7 @@ const REGLAGES_SCENE = {
   echelleSuivant: 0.648,   // taille de la scène suivante vue au fond
   echelleFond: 0.648,      // taille de la chambre finale vue au fond (exemple 7)
   bandeVisible: 62,        // largeur de porte qui reste visible après glissement (pixels de l'image)
-  traversee: 4,          // de combien l'écran d'avant grossit en plus pendant le zoom (plus grand = il sort plus vite)
+  traversee: 4,            // de combien l'écran d'avant grossit en plus pendant le zoom (plus grand = il sort plus vite)
   sortiePorte: 1.1,
   dureeZoom: 1.4,          // durée du zoom caméra vers l'écran suivant (secondes) — avant : 2,5
   dureeAllumage: 1.4,      // durée du clignotement des néons quand la lumière s'allume (secondes)        // quand la caméra avance, la porte glisse encore vers la gauche (en largeurs de porte)
@@ -177,7 +178,6 @@ const Scene = {
     this.niveau = niveau;
     document.body.dataset.niveau = niveau;                                   // couleur des écrans (bleu, vert, or)
     document.getElementById('sc-stage').style.setProperty('--fond-flou', `url(${NIVEAUX_SCENE[niveau].cadre})`);
-    document.querySelectorAll('#sc-cadrage > .sc-sticker').forEach((s) => s.remove());
     const cam = document.getElementById('sc-camera');
     cam.classList.add('sans-transition'); cam.classList.remove('avance'); cam.style.transform = '';
     cam.innerHTML = _htmlNiveau(niveau, true);
@@ -220,33 +220,5 @@ const Scene = {
       if (this.onAllumage) this.onAllumage();
       setTimeout(ok, REGLAGES_SCENE.dureeAllumage * 1000);
     }, REGLAGES_SCENE.dureeZoom * 1000 + 100));
-  },
-  // Fin de partie : un sticker « YOU WIN » sort de la porte ouverte (on reste devant le coffre en or)
-  sticker() {
-    // Après le zoom final, le sticker se pose au milieu de l'écran
-    const v = this.vue, w = Math.min(v.vw * 0.5, v.vh * 1.05) / v.c, h = w * 0.62;
-    const cx = (v.vw * 0.56 - v.x) / v.c, cy = (v.vh * 0.5 - v.y) / v.c;
-    const t = { x: cx - w / 2 / 0.92, y: cy - h / 2, w: w / 0.92, h };
-    const niv = document.getElementById('sc-cadrage'); if (!niv) return;
-    niv.querySelectorAll('.sc-sticker').forEach((s) => s.remove());
-    const pts = Array.from({ length: 28 }, (_, i) => {
-      const a = (i / 28) * Math.PI * 2, r = i % 2 ? 0.86 : 1;
-      return `${(50 + Math.cos(a) * 49 * r).toFixed(2)},${(50 + Math.sin(a) * 49 * r).toFixed(2)}`;
-    }).join(' ');
-    niv.insertAdjacentHTML('beforeend', `<div class="sc-sticker" style="left:${cx - w / 2}px;top:${cy - h / 2}px;width:${w}px;height:${h}px">
-      <svg viewBox="0 0 100 62" preserveAspectRatio="none">
-        <defs><linearGradient id="st-or" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1b8"/><stop offset=".45" stop-color="#f4c445"/><stop offset="1" stop-color="#c47a12"/></linearGradient></defs>
-        <g transform="scale(1 .62)"><polygon points="${pts}" fill="#fff" stroke="#1a1208" stroke-width="1.2" stroke-linejoin="round"/>
-        <polygon points="${pts}" fill="url(#st-or)" transform="translate(50 50) scale(.9) translate(-50 -50)"/></g>
-      </svg>
-      <div class="sc-sticker-texte"><span>YOU</span><span>WIN!</span></div>
-    </div>`);
-  },
-
-  // Le butin se pose sur les étagères de la chambre finale
-  butin() {
-    const b = document.querySelector('.sc-butin'); if (!b) return;
-    const piles = [[150, 548], [310, 548], [150, 662], [310, 662], [2070, 548], [2230, 548], [2070, 662], [2230, 662]];
-    b.innerHTML = piles.map(([x, y], i) => `<div class="lingots" style="left:${x}px;top:${y}px;animation-delay:${0.3 + i * 0.25}s"></div>`).join('');
   }
 };

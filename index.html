@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>Break Protocol — Le Casse du siècle</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<title>Break Protocol</title>
+<link rel="preload" href="polices/VT323.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="polices/PressStart2P.woff" as="font" type="font/woff" crossorigin>
 <meta name="theme-color" content="#141a2e">
+<meta name="description" content="Break Protocol : jeu de société coopératif où le téléphone est le coffre-fort.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Le Coffre">
@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="theme.css">
 <script src="version.js"></script>
 <script src="scene.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="lib/jsQR.js" defer></script>
 </head>
 <body data-ecran="accueil">
 
@@ -72,7 +72,7 @@
     <div class="panneau">
       <h2>Réglages</h2>
   <div class="reglage reglage-test">
-    <label class="case"><input type="checkbox" id="opt-aide"> <span><b>Aide pour les tests</b><br><small>Affiche l'outil à utiliser, l'arrivée du vigile et le chien</small></span></label>
+    <label class="case"><input type="checkbox" id="opt-aide"> <span><b>Aide pour les tests</b><br><small>Affiche le programme à utiliser, l'arrivée du vigile et le chien</small></span></label>
   </div>
 
   <div class="reglage">
@@ -108,7 +108,7 @@
 <!-- ============ ÉCOUTER LES SERRURES ============ -->
 <section id="serrures" class="ecran">
   <h2>Les serrures</h2>
-  <p style="color:var(--texte-doux);margin:0">Chaque serrure a un son. Le Cerveau doit les reconnaître, puis chercher sur la carte Plan quel outil correspond.</p>
+  <p>Chaque serrure a un son et un symbole. Le Cerveau doit les reconnaître, puis chercher sur la carte Plan quel programme correspond.</p>
   <div id="liste-serrures"></div>
   <button id="btn-retour-serrures" style="margin-top:auto">Retour</button>
 </section>
@@ -123,19 +123,19 @@
     Un joueur est le <b>Cerveau</b>. Tous les autres sont <b>Porteurs</b>. Pas de cartes de rôle.
     <h3>Le plan</h3>
     Au début de chaque coffre, la cloche sonne et une lettre s'affiche : c'est le plan à utiliser (3 coups = plan C). Seul le Cerveau regarde la carte Plan. Il ne la montre jamais.
-    <h3>Les outils</h3>
-    16 outils différents, chacun en 2 exemplaires (32 cartes), mélangés en pioche. Chaque Porteur a 6 outils en main (10 s'il est seul Porteur). Le Cerveau n'a pas d'outils.
+    <h3>Les programmes</h3>
+    16 programmes différents, chacun en 2 exemplaires (32 cartes), mélangés en pioche. Chaque Porteur a 6 programmes en main (10 s'il est seul Porteur). Le Cerveau n'en a pas.
     <h3>Une serrure</h3>
-    Le téléphone joue le son de la serrure (touchez le coffre pour le réentendre). Le Cerveau cherche ce son sur le plan : il y trouve <b>2 outils possibles</b>. Il choisit lequel <b>mimer</b>. Puis les Porteurs parlent chacun leur tour, dans le sens des aiguilles d'une montre, <b>en commençant par le joueur qui suit celui qui a scanné (et repioché) en dernier</b> (pour la première serrure : le Porteur à gauche du Cerveau) :<br>
-    • s'il pense avoir le bon outil, il le <b>scanne</b> ;<br>
+    Le téléphone joue le son de la serrure (touchez le coffre pour le réentendre). Le Cerveau cherche ce son sur le plan : il y trouve <b>2 programmes possibles</b>. Il choisit lequel <b>mimer</b>. Puis les Porteurs parlent chacun leur tour, dans le sens des aiguilles d'une montre, <b>en commençant par le joueur qui suit celui qui a scanné (et repioché) en dernier</b> (pour la première serrure : le Porteur à gauche du Cerveau) :<br>
+    • s'il pense avoir le bon programme, il le <b>scanne</b> ;<br>
     • sinon, il dit « <b>J'ai pas</b> » et c'est au suivant.<br>
-    Bon outil : un voyant s'allume. Mauvais outil : +1 alarme. Si tout le monde a dit « J'ai pas », le Cerveau mime l'autre outil du plan. Si personne n'a l'un ni l'autre, chaque Porteur glisse une carte sous la pioche, en pioche une, et on refait un tour.
+    Bon programme : un voyant s'allume. Mauvais programme : +1 alarme. Si tout le monde a dit « J'ai pas », le Cerveau mime l'autre programme du plan. Si personne n'a l'un ni l'autre, chaque Porteur glisse une carte sous la pioche, en pioche une, et on refait un tour.
     <h3>Défausse</h3>
-    Tout outil scanné, bon ou mauvais, est défaussé (l'app refuse une carte déjà utilisée). Celui qui a scanné pioche aussitôt une carte pour revenir à sa main de départ.
+    Tout programme scanné, bon ou mauvais, est défaussé (l'app refuse une carte déjà utilisée). Celui qui a scanné pioche aussitôt une carte pour revenir à sa main de départ.
     <h3>Les 3 cartes du milieu</h3>
     « Planquez-vous ! », l'Os et le Court-circuit sont posés au milieu de la table. <b>Tout le monde</b> peut les scanner, Cerveau compris.
     <h3>Le garde</h3>
-    Quand les pas approchent, scannez « Planquez-vous ! ». Planqués, personne ne peut scanner d'outil jusqu'à ce que le garde reparte. Trop tard : +2 alarme. Pour rien (aucun pas) : +1 alarme. Parfois, il fait demi-tour…
+    Quand les pas approchent, scannez « Planquez-vous ! ». Planqués, personne ne peut scanner de programme jusqu'à ce que le garde reparte. Trop tard : +2 alarme. Pour rien (aucun pas) : +1 alarme. Parfois, il fait demi-tour…
     <h3>Le chien (coffres 2 et 3)</h3>
     Quand il renifle, scannez l'Os avant qu'il aboie, sinon +1 alarme.
     <h3>Court-circuit</h3>
@@ -228,49 +228,47 @@
 
 <script>
 /* =========================================================
-   LE CASSE DU SIÈCLE — logique de l'app
+   BREAK PROTOCOL — logique de l'app
    ========================================================= */
 
 /* ---------------- Données du jeu ---------------- */
-// Les 16 outils, chacun en 2 exemplaires. Cartes : CASSE:O01 à CASSE:O32
-// (O01-O02 = outil 1, O03-O04 = outil 2, etc.)
+// Les 16 programmes de piratage, chacun en 2 exemplaires. Cartes : CASSE:O01 à CASSE:O32
+// (O01-O02 = programme 1, O03-O04 = programme 2, etc.). Même ordre que les cartes imprimées.
+// (Dans le code, ils s'appellent encore « outils » : c'étaient des outils de cambrioleur avant le thème Break Protocol.)
 const COPIES = 2;
 const OUTILS = [
-  { id: 'perceuse',  nom: 'Perceuse' },
-  { id: 'steto',     nom: 'Stéthoscope' },
-  { id: 'pied',      nom: 'Pied-de-biche' },
-  { id: 'crochet',   nom: 'Crochet' },
-  { id: 'aimant',    nom: 'Aimant' },
-  { id: 'chalumeau', nom: 'Chalumeau' },
-  { id: 'ventouse',  nom: 'Ventouse' },
-  { id: 'scie',      nom: 'Scie à métaux' },
-  { id: 'marteau',   nom: 'Marteau' },
-  { id: 'tournevis', nom: 'Tournevis' },
-  { id: 'lampe',     nom: 'Lampe torche' },
-  { id: 'corde',     nom: 'Corde' },
-  { id: 'pince',     nom: 'Pince coupante' },
-  { id: 'loupe',     nom: 'Loupe' },
-  { id: 'cle',       nom: 'Clé à molette' },
-  { id: 'dynamite',  nom: 'Dynamite' }
+  { id: 'cheval',     nom: 'Cheval de Troie' },
+  { id: 'ver',        nom: 'Ver' },
+  { id: 'virus',      nom: 'Virus' },
+  { id: 'hamecon',    nom: 'Hameçonnage' },
+  { id: 'porte',      nom: 'Porte dérobée' },
+  { id: 'force',      nom: 'Force brute' },
+  { id: 'cookie',     nom: 'Cookie espion' },
+  { id: 'bombe',      nom: 'Bombe logique' },
+  { id: 'bot',        nom: 'Bot' },
+  { id: 'araignee',   nom: 'Araignée du web' },
+  { id: 'fantome',    nom: 'Fantôme' },
+  { id: 'parefeu',    nom: 'Pare-feu percé' },
+  { id: 'spam',       nom: 'Spam' },
+  { id: 'motdepasse', nom: 'Mot de passe' },
+  { id: 'cle',        nom: 'Clé de chiffrement' },
+  { id: 'miroir',     nom: 'Miroir proxy' }
 ];
 const NB_CARTES_OUTILS = OUTILS.length * COPIES;   // 32
 
 // Les 6 sons de serrure (noms neutres : ils ne désignent plus un outil)
 const SONS = [
-  { sig: 'steto',    nom: 'Tic-tac',    desc: 'Petits « toc » réguliers',        picto: 'M3.5 12 A8.5 8.5 0 1 0 20.5 12 A8.5 8.5 0 1 0 3.5 12 Z' },
-  { sig: 'perceuse', nom: 'Grincement', desc: 'Grincement métallique',           picto: 'M12 3.5 L21 19.5 H3 Z' },
-  { sig: 'brouille', nom: 'Bips',       desc: 'Bips électroniques aigus',        picto: 'M4.5 4.5 H19.5 V19.5 H4.5 Z' },
-  { sig: 'crochet',  nom: 'Cliquetis',  desc: 'Cliquetis rapides et irréguliers', picto: 'M12 2.5 L21.5 12 L12 21.5 L2.5 12 Z' },
-  { sig: 'aimant',   nom: 'Bourdon',    desc: 'Bourdonnement qui monte',         picto: 'M12 2.5 L20.2 7.25 V16.75 L12 21.5 L3.8 16.75 V7.25 Z' },
-  { sig: 'pied',     nom: 'Craquement', desc: 'Craquement qui accélère',         picto: 'M5 5 L19 19 M19 5 L5 19' }
+  { sig: 'steto',    nom: 'Tic-tac',    desc: 'Petits « toc » réguliers' },
+  { sig: 'perceuse', nom: 'Grincement', desc: 'Grincement métallique' },
+  { sig: 'brouille', nom: 'Bips',       desc: 'Bips électroniques aigus' },
+  { sig: 'crochet',  nom: 'Cliquetis',  desc: 'Cliquetis rapides et irréguliers' },
+  { sig: 'aimant',   nom: 'Bourdon',    desc: 'Bourdonnement qui monte' },
+  { sig: 'pied',     nom: 'Craquement', desc: 'Craquement qui accélère' }
 ];
-// Les pictos (formes simples : cercle, triangle, carré, losange, hexagone, croix) sont des tracés SVG
-// sur une grille 24 × 24. Ils sont recopiés dans cartes.html.
-const svgPicto = (i) => `<svg viewBox="0 0 24 24" class="picto-svg"><path d="${SONS[i].picto}"/></svg>`;
 
-// Les 6 cartes Plan (A à F). PLANS[plan][son] = les 2 outils acceptés pour ce son.
-// Chaque outil apparaît 4 ou 5 fois sur l'ensemble des plans, jamais deux fois dans le même plan.
-// ⚠️ Ce tableau est recopié dans cartes.html : modifier les deux, puis réimprimer les cartes Plan.
+// Les 6 cartes Plan (A à F). PLANS[plan][son] = les 2 programmes acceptés pour ce son.
+// Chaque programme apparaît 4 ou 5 fois sur l'ensemble des plans, jamais deux fois dans le même plan.
+// ⚠️ Ce tableau est imprimé sur les cartes Plan : si tu le modifies, il faut réimprimer les cartes.
 const PLANS = [
   [[12, 15], [4, 14], [5, 6], [3, 8], [0, 1], [7, 13]],   // Plan A
   [[9, 11], [6, 12], [8, 15], [0, 5], [4, 13], [2, 10]],  // Plan B
@@ -299,10 +297,8 @@ function lireCarte(code) {
   if (lettre === 'P') return { type: 'planque' };
   if (lettre === 'C') return { type: 'os' };
   if (lettre === 'B') return { type: 'courtcircuit' };
-  if (lettre === 'R') return { type: 'role', n };
   return null;
 }
-const ROLES = ['', 'Porteur 1', 'Porteur 2', 'Porteur 3', 'Cerveau'];
 
 /* ---------------- Sons (générés, pas de fichiers) ---------------- */
 const Son = {
@@ -393,11 +389,15 @@ const Son = {
 // Les 6 symboles dessinés pixel par pixel (24 × 24 ; # = pixel allumé), dans l'ordre des sons :
 // cercle, triangle, carré, losange, hexagone, croix. Tu peux les redessiner ici.
 const SYMBOLES_PIXELS = [["........................", "........................", ".........######.........", ".......##########.......", "......############......", ".....##############.....", "....######....######....", "...#####........#####...", "...####..........####...", "..#####..........#####..", "..####............####..", "..####............####..", "..####............####..", "..####............####..", "..#####..........#####..", "...####..........####...", "...#####........#####...", "....######....######....", ".....##############.....", "......############......", ".......##########.......", ".........######.........", "........................", "........................"], ["........................", "............#...........", "...........##...........", "...........###..........", "..........####..........", "..........#####.........", ".........######.........", ".........#######........", "........########........", "........####.####.......", ".......####...###.......", ".......####...####......", "......####.....###......", ".....#####.....####.....", ".....####.......###.....", "....#####.......####....", "....####.........###....", "...#####.........####...", "...####...........###...", "..####################..", "..####################..", ".######################.", "........................", "........................"], ["........................", "........................", "........................", "...###################..", "...###################..", "...###################..", "...###################..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...###################..", "...###################..", "...###################..", "...###################..", "........................", "........................"], ["........................", "............#...........", "...........###..........", "..........#####.........", ".........#######........", "........####.####.......", ".......####...####......", "......####.....####.....", ".....####.......####....", "....####........#####...", "...####..........#####..", "..####............#####.", ".####..............#####", "..####............#####.", "...####..........#####..", "....#####.......#####...", ".....#####.....#####....", "......#####...#####.....", ".......#####.#####......", "........#########.......", ".........#######........", "..........#####.........", "...........###..........", "............#..........."], ["........................", "............#...........", "..........#####.........", "........#########.......", "......############......", "....########.#######....", "..########.....#######..", "..#####..........#####..", "..###..............###..", "..###..............###..", "..###..............###..", "..###..............###..", "..###..............###..", "..###..............###..", "..###..............###..", "..###..............###..", "..#####..........#####..", "..#######.......######..", "....######....######....", ".....#######.######.....", ".......##########.......", ".........#######........", "..........####..........", "............#..........."], ["........................", "....#.............#.....", "...###...........###....", "..#####.........#####...", ".#######.......#######..", "..#######.....#######...", "...#######...#######....", "....#######.#######.....", ".....#############......", "......###########.......", ".......#########........", "........#######.........", ".......#########........", "......###########.......", ".....#############......", "....#######.#######.....", "...#######...#######....", "..#######.....#######...", ".#######.......#######..", "..#####.........#####...", "...###...........###....", "....#.............#.....", "........................", "........................"]];
-function afficherSymbole(i) {
-  const lignes = SYMBOLES_PIXELS[i];
+// Le symbole n° i en rectangles SVG (calculé une seule fois)
+const RECTS_SYMBOLES = SYMBOLES_PIXELS.map((lignes) => {
   let rects = '';
   lignes.forEach((l, y) => { const re = /#+/g; let m; while ((m = re.exec(l))) rects += `<rect x="${m.index}" y="${y}" width="${m[0].length}" height="1"/>`; });
-  $('#picto').innerHTML = rects;
+  return rects;
+});
+const svgSymbole = (i) => `<svg viewBox="0 0 24 24" shape-rendering="crispEdges">${RECTS_SYMBOLES[i]}</svg>`;
+function afficherSymbole(i) {
+  $('#picto').innerHTML = RECTS_SYMBOLES[i];
   const e = $('#ecran-symbole'); e.classList.remove('on'); void e.offsetWidth; e.classList.add('on');
 }
 
@@ -536,7 +536,7 @@ for (let i = 0; i < 5; i++) { const d = document.createElement('div'); d.classNa
 // Écran « Écouter les serrures »
 SONS.forEach((o, i) => {
   const l = document.createElement('div'); l.className = 'ligne-son';
-  l.innerHTML = `<div class="picto-ligne">${svgPicto(i)}</div><div style="flex:1"><div class="nom">${o.nom}</div><div class="desc">${o.desc}</div></div><button>▶</button>`;
+  l.innerHTML = `<div class="picto-ligne">${svgSymbole(i)}</div><div style="flex:1"><div class="nom">${o.nom}</div><div class="desc">${o.desc}</div></div><button>▶</button>`;
   l.querySelector('button').addEventListener('click', () => {
     Son.init(); Son.serrure(o.sig);
     const pi = l.querySelector('.picto-ligne'); pi.classList.remove('flash'); void pi.offsetWidth; pi.classList.add('flash');
@@ -657,8 +657,8 @@ function demarrerCoffre() {
   assurerEtape(); majBoutons();
   Scene.afficher(J.coffre);
   J.planques = false; document.body.classList.remove('planques');
-  document.documentElement.style.setProperty('--garde', 0);
-  document.querySelectorAll('#pattes .patte').forEach((pa) => pa.classList.remove('on'));
+  document.documentElement.style.setProperty('--garde', 0); tic.lumiere = '0.00';
+  el.pattes.forEach((pa) => pa.classList.remove('on')); tic.pattes = 0; tic.sec = -1;
   J.garde.etat = 'repos'; J.garde.prochain = J.horloge + hasard(c.attenteMin, c.attenteMax);
   J.chien.etat = 'absent'; J.chien.prochain = J.horloge + hasard(20, 35);
   // Annonce du plan : la lettre s'affiche et la cloche sonne (3 coups = plan C)
@@ -679,14 +679,19 @@ function demarrerCoffre() {
   boucle = setInterval(() => { const m = performance.now(); const dt = Math.min(0.25, (m - avant) / 1000); avant = m; if (!J.enPause && !J.fini) tic(dt); }, 50);
 }
 
+// Éléments souvent mis à jour (cherchés une seule fois)
+const el = { chrono: $('#chrono'), pattes: [...document.querySelectorAll('#pattes .patte')] };
 function tic(dt) {
   J.horloge += dt;
   const h = J.horloge, c = COFFRES[J.coffre], g = J.garde, ch = J.chien;
 
-  // Chrono de la nuit
-  const reste = Math.max(0, J.nuit - h);
-  $('#chrono').textContent = `${Math.floor(reste / 60)}:${String(Math.floor(reste % 60)).padStart(2, '0')}`;
-  $('#chrono').classList.toggle('presse', reste < 60);
+  // Chrono de la nuit (l'affichage ne change qu'une fois par seconde)
+  const reste = Math.max(0, J.nuit - h), sec = Math.floor(reste);
+  if (sec !== tic.sec) {
+    tic.sec = sec;
+    el.chrono.textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+    el.chrono.classList.toggle('presse', reste < 60);
+  }
   if (reste <= 0) return finPartie(false, 'L\'aube se lève. Le casse est raté.');
 
   // La serrure rejoue son son régulièrement
@@ -733,9 +738,10 @@ function tic(dt) {
   let lumiere = 0;
   if (g.etat === 'approche') lumiere = Math.pow(Math.min(1, (h - g.debut) / c.approche), 1.6);
   if (g.etat === 'depart') lumiere = g.gainDepart * Math.max(0, (g.finDepart - h) / 4);
-  document.documentElement.style.setProperty('--garde', lumiere.toFixed(3));
+  const l = lumiere.toFixed(2);
+  if (l !== tic.lumiere) { tic.lumiere = l; document.documentElement.style.setProperty('--garde', l); }
   const nbPattes = ch.etat === 'renifle' ? Math.min(5, Math.ceil((1 - (ch.fin - h) / 7) * 5)) : 0;
-  document.querySelectorAll('#pattes .patte').forEach((pa, i) => pa.classList.toggle('on', i < nbPattes));
+  if (nbPattes !== tic.pattes) { tic.pattes = nbPattes; el.pattes.forEach((pa, i) => pa.classList.toggle('on', i < nbPattes)); }
 
   majAide();
 }
@@ -780,8 +786,6 @@ function quandCarte(code) {
   if (!carte) { toast('Carte inconnue'); return; }
   const h = J.horloge, g = J.garde;
 
-  if (carte.type === 'role') { toast('Rôle : ' + ROLES[carte.n]); return; }
-
   if (carte.type === 'planque') {
     if (J.planques) return;
     if (g.etat === 'approche') {
@@ -810,7 +814,7 @@ function quandCarte(code) {
 
   if (carte.type === 'outil') {
     if (J.planques) { Son.chut(); toast('Vous êtes planqués !'); return; }
-    if (J.usees.has(carte.num)) { toast('Outil déjà utilisé : il est défaussé'); return; }
+    if (J.usees.has(carte.num)) { toast('Programme déjà utilisé : il est défaussé'); return; }
     J.usees.add(carte.num);            // bon ou mauvais, l'outil scanné part à la défausse
     majBoutons();
     if (outilsAcceptes().includes(carte.type_)) {
@@ -822,8 +826,8 @@ function quandCarte(code) {
       J.stats.erreurs++;
       Son.erreur();
       Scene.secouer();
-      if (COFFRES[J.coffre].rebloque && J.etape > 0) { J.etape = 0; J.reecoutes = 0; assurerEtape(); majAffichage(); message('Mauvais outil ! Le mécanisme se rebloque. Alarme +1', true); }
-      else message('Mauvais outil ! Alarme +1', true);
+      if (COFFRES[J.coffre].rebloque && J.etape > 0) { J.etape = 0; J.reecoutes = 0; assurerEtape(); majAffichage(); message('Mauvais programme ! Le mécanisme se rebloque. Alarme +1', true); }
+      else message('Mauvais programme ! Alarme +1', true);
       assurerEtape();
       monterAlarme(1);
       J.prochaineSerrure = h + 1.6;
@@ -831,7 +835,7 @@ function quandCarte(code) {
   }
 }
 
-// Nombre d'exemplaires encore disponibles d'un type d'outil (5 par type)
+// Nombre d'exemplaires encore disponibles d'un programme (2 par programme)
 function restants(type) { let r = 0; for (let n = type * COPIES + 1; n <= type * COPIES + COPIES; n++) if (!J.usees.has(n)) r++; return r; }
 
 // Garantit que la serrure en cours reste ouvrable : si tous les exemplaires de l'outil
@@ -917,7 +921,7 @@ function majAide() {
     : ch.etat === 'renifle' ? `<b class="danger">renifle, aboie dans ${Math.ceil(ch.fin - h)} s</b>` : `revient dans ${Math.max(0, Math.ceil(ch.prochain - h))} s`;
   const son = J.etape < 4 ? SONS[J.combinaison[J.etape]].nom : '—';
   const outil = J.etape < 4 ? outilsAcceptes().map((t) => `${OUTILS[t].nom} (${restants(t)})`).join(' ou ') : '—';
-  $('#aide').innerHTML = `<div>🔧 <b>${outil}</b></div><div class="petit">Plan ${LETTRES[J.plans[J.coffre]]} · son : ${son}</div>`
+  $('#aide').innerHTML = `<div>💾 <b>${outil}</b></div><div class="petit">Plan ${LETTRES[J.plans[J.coffre]]} · son : ${son}</div>`
     + `<div>🔦 Vigile : ${vigile}</div><div>🐕 Chien : ${chien}</div><div class="petit">Défausse : ${J.usees.size}/${NB_CARTES_OUTILS}</div>`;
 }
 function toastAide(t) { if (document.body.classList.contains('aide-visuelle')) toast(t); }
@@ -1026,7 +1030,8 @@ let analyseEnCours = false;
 async function boucleScan() {
   if (!scanActif) return;
   const v = $('#apercu');
-  if (v.readyState >= 2 && v.videoWidth && !analyseEnCours) {
+  const enJeu = J && !J.fini && !J.enPause && !document.hidden;   // en pause : on n'analyse pas (économise la batterie)
+  if (enJeu && v.readyState >= 2 && v.videoWidth && !analyseEnCours) {
     analyseEnCours = true;
     try {
       let data = null;
@@ -1050,7 +1055,17 @@ async function boucleScan() {
 let verrou = null;
 async function verrouEcran() { try { if ('wakeLock' in navigator) verrou = await navigator.wakeLock.request('screen'); } catch (e) {} }
 function libererEcran() { if (verrou) { verrou.release().catch(() => {}); verrou = null; } }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && J && !J.fini) verrouEcran(); });
+// Quand on quitte l'app (appel, autre app, écran verrouillé) : la partie se met en pause et le son se coupe
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    if (J && !J.fini && !J.enPause && $('#jeu').classList.contains('actif')) { J.enPause = true; ecran('pause'); }
+    Musique.lecteurs.forEach((l) => l.a.pause());
+    if (Son.ctx) Son.ctx.suspend().catch(() => {});
+  } else {
+    if (J && !J.fini) verrouEcran();
+    Musique.debloquer();
+  }
+});
 
 /* =========================================================
    VERSIONS ET MISES À JOUR
