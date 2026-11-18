@@ -9,7 +9,7 @@ Jeu coopératif en temps réel (2 à 4 joueurs) : le téléphone posé au centre
 | `index.html` | Les écrans et toute la logique du jeu | Oui, avec prudence |
 | `theme.css` | Tout le visuel (couleurs, polices, cadran…) | **Oui, c'est fait pour** |
 | `scene.js` | Place tes illustrations et règle les animations (porte, caméra, verrous) | Les réglages en haut du fichier, oui |
-| `img/` | Tes illustrations : cuivre1/2, argent1/2, or1/2 (1783 × 882 px), fond1 à fond7, logo (l'app utilise les .webp) | Oui, remplace-les par tes nouvelles versions |
+| `img/` | Tes illustrations : cuivre1/2, argent1/2, or1/2 (1783 × 882 px), fond1 à fond6, logo (l'app utilise les .webp) | Oui, remplace-les par tes nouvelles versions |
 | `audio/` | Les musiques : introfin (accueil + fin), musique1/2/3 (une par porte) | Oui, garde les mêmes noms |
 | `pictos-outils.js` | Les pictos des 16 outils (SVG) | Oui, remplace-les par tes dessins |
 | `version.js` | Numéro de version + notes affichées dans le bandeau | Claude s'en occupe |
@@ -36,6 +36,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.8.0** — 6 nouvelles salles fortes pixel art (fond1 à fond6, les anciennes supprimées) ; logo visible aussi pendant la partie ; pendant le zoom, l'image de derrière est prolongée en miroir (plus de halo flou ni de bords visibles).
 - **3.7.3** — Annulation de 3.7.2 : le logo revient comme en 3.7.1 (taille d'avant, seulement sur l'accueil).
 - **3.7.1** — Bande noire côté caméra (largeur = zone réservée par le téléphone, réglage `BANDE_SECOURS` dans scene.js), décor recadré à côté ; menus (réglages, règles, serrures, pause, mise à jour, annonce du plan, aide) au style pixel ; textes des écrans qui s'éteignent avant le zoom ; roues recentrées et coupées dans le cercle sombre.
 - **3.7.0** — Décors pixel art (portes bleue, verte, or), logo Break Protocol (accueil + page d'intro quand le téléphone est vertical), textes et alarme dans le grand écran du décor, symboles en gros pixels dans le petit écran, musiques (dossier `audio/`) et bouton de volume 🔊.
@@ -46,7 +47,7 @@ QR standard uniquement (pas de Micro QR).
 - **3.4.1** — Plus de fondu pendant le zoom : l'écran d'avant disparaît d'un coup à la fin.
 - **3.4.0** — Bouton de test « Ouvrir la serrure » ; la porte file vers la gauche au début du zoom (réglage `sortiePorte`).
 - **3.3.1** — Sticker retiré : la salle forte puis le panneau de résultat.
-- **3.3.0** — Zoom final rétabli ; salle forte tirée au hasard parmi fond1 à fond7 (jamais la même deux fois de suite) ; sticker au centre après le zoom.
+- **3.3.0** — Zoom final rétabli ; salle forte tirée au hasard parmi fond1 à fond6 (jamais la même deux fois de suite) ; sticker au centre après le zoom.
 - **3.2.0** — Fin : pas de zoom dans le dernier coffre, sticker « YOU WIN! » qui sort de la porte, puis le panneau de résultat.
 - **3.1.2** — Retour au zoom caméra avec fondu (annule la traversée de la 3.1.1).
 - **3.1.0** — Pictos des sons en formes simples : Tic-tac = cercle, Grincement = triangle, Bips = carré, Cliquetis = losange, Bourdon = hexagone, Craquement = croix.

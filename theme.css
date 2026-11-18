@@ -96,7 +96,8 @@ button.discret { background: transparent; border-color: transparent; color: var(
 .sc-derriere { position: absolute; transform-origin: 0 0; filter: brightness(var(--penombre)); }   /* derrière la porte : presque dans le noir */
 :root { --penombre: .14; --zoom: 1.4s; }   /* --zoom : durée du zoom caméra (le réglage dureeZoom de scene.js la remplace) */   /* luminosité de ce qu'on voit derrière une porte (0 = noir, 1 = allumé) */
 /* Prolongement flou et sombre de l'image, tout autour : évite les bords noirs pendant le zoom */
-.sc-prolonge { position: absolute; left: -100%; top: -100%; width: 300%; height: 300%; filter: blur(60px) brightness(.7); pointer-events: none; }
+.sc-derriere { background: #000; box-shadow: 0 0 0 1783px #000; }   /* noir derrière (sous les miroirs) */
+.sc-prolonge { position: absolute; width: 100%; height: 100%; pointer-events: none; }
 /* La lumière s'allume comme des néons qui clignotent */
 .sc-niveau.neon > .sc-cadre, .sc-niveau.neon > .sc-porte, .sc-derriere.neon { animation: neon 1.4s linear both; }
 @keyframes neon {
@@ -165,10 +166,13 @@ body.en-jeu #maj { display: none; }
 #accueil { padding: 0; }
 #accueil .colonne { position: absolute; left: var(--grand-x); top: var(--grand-y); width: var(--grand-w); height: var(--grand-h);
   display: flex; flex-direction: column; gap: calc(var(--u) * 2); padding: calc(var(--u) * 3) calc(var(--u) * 4) calc(var(--u) * 2); }
-#accueil .logo { position: absolute; left: 50%; bottom: calc(100% - var(--u) * 14); width: 112%; transform: translateX(-50%);
-  filter: drop-shadow(0 calc(var(--u) * 3) calc(var(--u) * 4) rgba(0,0,0,.7)); animation: logo-flotte 4s ease-in-out infinite; pointer-events: none; }
-@keyframes logo-flotte { 50% { transform: translateX(-50%) translateY(calc(var(--u) * -1.5)); } }
-#accueil .accroche { margin: calc(var(--u) * 9) 0 0; text-align: center; font-family: var(--police-pixel); color: var(--ecran); font-size: max(13px, calc(var(--u) * 8)); line-height: 1; text-shadow: 0 0 8px var(--ecran); }
+/* Le logo : au-dessus du grand écran, sur l'accueil ET pendant la partie */
+#logo { display: none; position: fixed; z-index: 5; width: calc(var(--grand-w) * 1.12); left: calc(var(--grand-x) + var(--grand-w) / 2);
+  top: calc(var(--grand-y) + var(--u) * 7); transform: translate(-50%, -100%); pointer-events: none;
+  filter: drop-shadow(0 calc(var(--u) * 3) calc(var(--u) * 4) rgba(0,0,0,.7)); animation: logo-flotte 4s ease-in-out infinite; }
+body[data-ecran="accueil"] #logo, body[data-ecran="jeu"] #logo { display: block; }
+@keyframes logo-flotte { 50% { transform: translate(-50%, -100%) translateY(calc(var(--u) * -1.5)); } }
+#accueil .accroche { margin: calc(var(--u) * 4) 0 0; text-align: center; font-family: var(--police-pixel); color: var(--ecran); font-size: max(13px, calc(var(--u) * 8)); line-height: 1; text-shadow: 0 0 8px var(--ecran); }
 #accueil .actions { display: flex; flex-direction: column; gap: calc(var(--u) * 2); margin-top: auto; }
 #accueil .ligne-boutons button { padding: calc(var(--u) * 2) 4px; }
 #accueil .colonne button.principal { padding: calc(var(--u) * 3) 8px; }
@@ -214,7 +218,7 @@ body.en-jeu #maj { display: none; }
 .ecran-deco { position: absolute; z-index: 4; font-family: var(--police-pixel); color: var(--ecran); text-shadow: 0 0 calc(var(--u) * 2) color-mix(in srgb, var(--ecran) 70%, transparent); }
 .ecran-deco::after { content: ''; position: absolute; inset: 0; pointer-events: none;
   background: repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px); mix-blend-mode: multiply; }
-#jeu .hud { left: var(--grand-x); top: var(--grand-y); width: var(--grand-w); height: var(--grand-h); padding: calc(var(--u) * 4) calc(var(--u) * 5);
+#jeu .hud { left: var(--grand-x); top: var(--grand-y); width: var(--grand-w); height: var(--grand-h); padding: calc(var(--u) * 8) calc(var(--u) * 5) calc(var(--u) * 3);
   display: flex; flex-direction: column; gap: calc(var(--u) * 3); overflow: hidden; animation: allume-ecran .5s steps(4) both; }
 @keyframes allume-ecran { 0% { opacity: 0; } 40% { opacity: .7; } 60% { opacity: .2; } 100% { opacity: 1; } }
 #jeu .haut { display: flex; justify-content: space-between; align-items: flex-start; gap: calc(var(--u) * 3); }

@@ -18,7 +18,7 @@
 <script src="scene.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 </head>
-<body>
+<body data-ecran="accueil">
 
 <!-- ============ BANDEAU DE MISE À JOUR ============ -->
 <div id="maj">
@@ -32,6 +32,8 @@
 
 <!-- La scène (tes illustrations) : commune à tous les écrans, voir scene.js -->
 <div id="sc-stage"><div id="sc-cadrage"><div id="sc-camera"></div></div></div>
+<!-- Le logo, au-dessus du grand écran : sur l'accueil et pendant la partie -->
+<img id="logo" src="img/logo.webp" alt="Break Protocol">
 <!-- Bande noire du côté de la caméra du téléphone (voir scene.js) -->
 <div id="bande-gauche" class="bande-camera"></div><div id="bande-droite" class="bande-camera"></div>
 
@@ -45,7 +47,6 @@
 <!-- ============ ACCUEIL ============ -->
 <section id="accueil" class="ecran actif">
   <div class="colonne">
-    <img class="logo" src="img/logo.webp" alt="Break Protocol">
     <p class="accroche">Une nuit, trois coffres. Taisez-vous. Écoutez. Ouvrez.</p>
     <div class="actions">
       <button class="principal" id="btn-lancer">Commencer le casse</button>
@@ -461,6 +462,7 @@ document.querySelectorAll('.btn-son').forEach((b) => b.addEventListener('click',
 /* ---------------- Outils d'interface ---------------- */
 const $ = (s) => document.querySelector(s);
 function ecran(id) {
+  document.body.dataset.ecran = id;
   if (id === 'accueil' || id === 'fin' || id === 'serrures' || id === 'regles') Musique.jouer('intro');
   document.querySelectorAll('.ecran').forEach((e) => e.classList.toggle('actif', e.id === id));
   document.body.classList.toggle('en-jeu', id === 'jeu' || id === 'pause' || id === 'entracte');

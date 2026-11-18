@@ -32,7 +32,7 @@ const CENTRE_PORTE = 1177;   // milieu de l'encadrement de porte dans les images
 // Les salles fortes finales : une est tirée au hasard à chaque partie,
 // jamais la même que la partie précédente. Ajoute ou retire des noms ici.
 // (Si un fichier .webp n'existe pas, l'app essaie le même nom en .png puis en .jpg.)
-const FONDS_FINAUX = ['img/fond1', 'img/fond2', 'img/fond3', 'img/fond4', 'img/fond5', 'img/fond6', 'img/fond7'];
+const FONDS_FINAUX = ['img/fond1', 'img/fond2', 'img/fond3', 'img/fond4', 'img/fond5', 'img/fond6'];
 let FOND_FINAL = 'img/fond1.webp';
 
 // Tire une salle forte différente de la dernière
@@ -102,7 +102,13 @@ function _htmlNiveau(niveau, actif) {
     const contenu = niveau < 2 ? _htmlNiveau(niveau + 1, false)
       : `<img class="sc-fond" src="${FOND_FINAL}" alt="" onerror="secoursFond(this)">`;
     // Prolongement flou de l'image tout autour : pas de bord noir pendant le zoom
-    const prolongement = `<img class="sc-prolonge" src="${image}" alt="" ${niveau < 2 ? '' : 'onerror="secoursFond(this)"'}>`;
+    // Prolongement de l'image tout autour, en miroir (pas de flou, pas de teinte) : on ne voit pas ses bords pendant le zoom
+    let prolongement = '';
+    for (const dy of [-1, 0, 1]) for (const dx of [-1, 0, 1]) {
+      if (!dx && !dy) continue;
+      prolongement += `<img class="sc-prolonge" src="${image}" alt="" ${niveau < 2 ? '' : 'onerror="secoursFond(this)"'}
+        style="left:${dx * 100}%;top:${dy * 100}%;transform:scale(${dx ? -1 : 1}, ${dy ? -1 : 1})">`;
+    }
     derriere = `<div class="sc-derriere" style="left:${r.x}px;top:${r.y}px;width:${SCENE_W}px;height:${SCENE_H}px;transform:scale(${r.s})">${prolongement}${contenu}</div>`;
   }
   return `<div class="sc-niveau" data-niveau="${niveau}">${derriere}${_htmlPorte(niveau, actif)}<img class="sc-cadre" src="${n.cadre}" alt=""></div>`;
