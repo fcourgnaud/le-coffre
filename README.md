@@ -36,6 +36,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.8.1** — Logo retiré pendant la partie (seulement sur l'accueil).
 - **3.8.0** — 6 nouvelles salles fortes pixel art (fond1 à fond6, les anciennes supprimées) ; logo visible aussi pendant la partie ; pendant le zoom, l'image de derrière est prolongée en miroir (plus de halo flou ni de bords visibles).
 - **3.7.3** — Annulation de 3.7.2 : le logo revient comme en 3.7.1 (taille d'avant, seulement sur l'accueil).
 - **3.7.1** — Bande noire côté caméra (largeur = zone réservée par le téléphone, réglage `BANDE_SECOURS` dans scene.js), décor recadré à côté ; menus (réglages, règles, serrures, pause, mise à jour, annonce du plan, aide) au style pixel ; textes des écrans qui s'éteignent avant le zoom ; roues recentrées et coupées dans le cercle sombre.

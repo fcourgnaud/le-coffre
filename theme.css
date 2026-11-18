@@ -166,11 +166,11 @@ body.en-jeu #maj { display: none; }
 #accueil { padding: 0; }
 #accueil .colonne { position: absolute; left: var(--grand-x); top: var(--grand-y); width: var(--grand-w); height: var(--grand-h);
   display: flex; flex-direction: column; gap: calc(var(--u) * 2); padding: calc(var(--u) * 3) calc(var(--u) * 4) calc(var(--u) * 2); }
-/* Le logo : au-dessus du grand écran, sur l'accueil ET pendant la partie */
+/* Le logo : au-dessus du grand écran, sur l'accueil seulement */
 #logo { display: none; position: fixed; z-index: 5; width: calc(var(--grand-w) * 1.12); left: calc(var(--grand-x) + var(--grand-w) / 2);
   top: calc(var(--grand-y) + var(--u) * 7); transform: translate(-50%, -100%); pointer-events: none;
   filter: drop-shadow(0 calc(var(--u) * 3) calc(var(--u) * 4) rgba(0,0,0,.7)); animation: logo-flotte 4s ease-in-out infinite; }
-body[data-ecran="accueil"] #logo, body[data-ecran="jeu"] #logo { display: block; }
+body[data-ecran="accueil"] #logo { display: block; }   /* ajoute , body[data-ecran="jeu"] #logo pour l'avoir aussi pendant la partie */
 @keyframes logo-flotte { 50% { transform: translate(-50%, -100%) translateY(calc(var(--u) * -1.5)); } }
 #accueil .accroche { margin: calc(var(--u) * 4) 0 0; text-align: center; font-family: var(--police-pixel); color: var(--ecran); font-size: max(13px, calc(var(--u) * 8)); line-height: 1; text-shadow: 0 0 8px var(--ecran); }
 #accueil .actions { display: flex; flex-direction: column; gap: calc(var(--u) * 2); margin-top: auto; }
@@ -218,7 +218,7 @@ body[data-ecran="accueil"] #logo, body[data-ecran="jeu"] #logo { display: block;
 .ecran-deco { position: absolute; z-index: 4; font-family: var(--police-pixel); color: var(--ecran); text-shadow: 0 0 calc(var(--u) * 2) color-mix(in srgb, var(--ecran) 70%, transparent); }
 .ecran-deco::after { content: ''; position: absolute; inset: 0; pointer-events: none;
   background: repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px); mix-blend-mode: multiply; }
-#jeu .hud { left: var(--grand-x); top: var(--grand-y); width: var(--grand-w); height: var(--grand-h); padding: calc(var(--u) * 8) calc(var(--u) * 5) calc(var(--u) * 3);
+#jeu .hud { left: var(--grand-x); top: var(--grand-y); width: var(--grand-w); height: var(--grand-h); padding: calc(var(--u) * 4) calc(var(--u) * 5);
   display: flex; flex-direction: column; gap: calc(var(--u) * 3); overflow: hidden; animation: allume-ecran .5s steps(4) both; }
 @keyframes allume-ecran { 0% { opacity: 0; } 40% { opacity: .7; } 60% { opacity: .2; } 100% { opacity: 1; } }
 #jeu .haut { display: flex; justify-content: space-between; align-items: flex-start; gap: calc(var(--u) * 3); }
