@@ -867,9 +867,20 @@ function monterAlarme(n) {
 
 /* ---------------- Ouverture d'un coffre ---------------- */
 // La porte glisse vers la gauche, puis la caméra avance jusqu'au coffre suivant (scene.js)
+// Coffre déverrouillé : le drone et le cyber-dog disparaissent tout de suite (lumière, empreintes, planque)
+function annulerMenaces() {
+  J.garde.etat = 'repos'; J.garde.demiTour = null;
+  J.chien.etat = 'absent';
+  J.planques = false; document.body.classList.remove('planques');
+  document.documentElement.style.setProperty('--garde', 0); tic.lumiere = '0.00';
+  el.pattes.forEach((pa) => pa.classList.remove('on')); tic.pattes = 0;
+  $('#jeu').classList.remove('flash-garde', 'flash-chien');
+}
+
 function coffreOuvert() {
   Son.ouverture();
   J.enPause = true;
+  annulerMenaces();
   message('Le coffre est ouvert !');
   const dernier = J.coffre >= COFFRES.length - 1;
   setTimeout(async () => {
