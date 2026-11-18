@@ -5,7 +5,7 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.7.2';
+self.APP_VERSION = '3.7.3';
 self.APP_NOTES = [
-  'Logo un peu plus petit, et visible aussi pendant le jeu'
+  'Retour du logo comme avant (version 3.7.1)'
 ];
