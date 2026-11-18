@@ -167,7 +167,7 @@ body.en-jeu #maj { display: none; }
 #accueil .colonne { position: absolute; left: var(--grand-x); top: var(--grand-y); width: var(--grand-w); height: var(--grand-h);
   display: flex; flex-direction: column; gap: calc(var(--u) * 2); padding: calc(var(--u) * 3) calc(var(--u) * 4) calc(var(--u) * 2); }
 /* Le logo : au-dessus du grand écran, sur l'accueil seulement */
-#logo { display: none; position: fixed; z-index: 5; width: calc(var(--grand-w) * 1.12); left: calc(var(--grand-x) + var(--grand-w) / 2);
+#logo { display: none; position: fixed; z-index: 1;   /* sous les menus (réglages…) */ width: calc(var(--grand-w) * 1.12); left: calc(var(--grand-x) + var(--grand-w) / 2);
   top: calc(var(--grand-y) + var(--u) * 1); transform: translate(-50%, -100%);   /* remonte/descend le logo : change le * 1 */ pointer-events: none;
   filter: drop-shadow(0 calc(var(--u) * 3) calc(var(--u) * 4) rgba(0,0,0,.7)); animation: logo-flotte 4s ease-in-out infinite; }
 body[data-ecran="accueil"] #logo { display: block; }   /* ajoute , body[data-ecran="jeu"] #logo pour l'avoir aussi pendant la partie */

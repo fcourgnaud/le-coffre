@@ -5,7 +5,7 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.8.3';
+self.APP_VERSION = '3.8.4';
 self.APP_NOTES = [
-  'Logo un peu plus haut sur l\'accueil'
+  'Le logo ne passe plus devant la fenêtre des réglages'
 ];
