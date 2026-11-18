@@ -908,10 +908,33 @@ verticale.addEventListener ? verticale.addEventListener('change', surOrientation
 
 /* ---------------- Caméra et lecture des QR ---------------- */
 let flux = null, scanActif = false, dernierCode = '', dernierCodeA = 0, dernierScanA = 0;
+// Lecture des QR, de près comme de loin :
+//  - la caméra est demandée en haute définition (1280 × 720) avec mise au point automatique si possible ;
+//  - sur Android (Chrome), le lecteur de QR intégré au téléphone est utilisé : rapide et précis ;
+//  - sinon (iPhone), jsQR lit l'image à 4 échelles, à tour de rôle :
+//      1. l'image entière réduite (carte tenue près de la caméra),
+//      2. le centre de l'image en pleine définition (carte tenue loin = petit QR),
+//      3. le centre élargi, contraste renforcé (lumière faible, carte un peu floue),
+//      4. le cœur de l'image très zoomé (carte tenue très loin).
+let lecteurNatif = null, passe = 0;
 async function demarrerCamera() {
   if (flux) { scanActif = true; boucleScan(); return; }
   try {
-    flux = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
+    try {
+      flux = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } }, audio: false });
+    } catch (e) {
+      flux = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    }
+    // Mise au point continue, si la caméra le permet
+    const piste = flux.getVideoTracks()[0];
+    try {
+      const cap = piste.getCapabilities ? piste.getCapabilities() : {};
+      if (cap.focusMode && cap.focusMode.includes('continuous')) await piste.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
+    } catch (e) {}
+    // Lecteur de QR du téléphone, s'il existe
+    try {
+      if ('BarcodeDetector' in window && (await BarcodeDetector.getSupportedFormats()).includes('qr_code')) lecteurNatif = new BarcodeDetector({ formats: ['qr_code'] });
+    } catch (e) { lecteurNatif = null; }
     const v = $('#apercu'); v.srcObject = flux; await v.play();
     scanActif = true; boucleScan();
   } catch (e) {
@@ -919,26 +942,59 @@ async function demarrerCamera() {
   }
 }
 function arreterCamera() { scanActif = false; if (flux) { flux.getTracks().forEach((t) => t.stop()); flux = null; } }
-function boucleScan() {
-  if (!scanActif) return;
-  const v = $('#apercu'), cv = $('#canvas-scan');
-  if (v.readyState >= 2 && window.jsQR) {
-    const w = 320, hh = Math.round(320 * v.videoHeight / v.videoWidth) || 240;
-    cv.width = w; cv.height = hh;
-    const cx = cv.getContext('2d', { willReadFrequently: true });
-    cx.drawImage(v, 0, 0, w, hh);
-    const img = cx.getImageData(0, 0, w, hh);
-    const r = jsQR(img.data, w, hh, { inversionAttempts: 'dontInvert' });
-    if (r && r.data) {
-      const m = performance.now();
-      if ((r.data !== dernierCode || m - dernierCodeA > 2500) && m - dernierScanA > 600) {
-        dernierCode = r.data; dernierCodeA = m; dernierScanA = m;
-        v.classList.add('lu'); setTimeout(() => v.classList.remove('lu'), 300);
-        quandCarte(r.data);
-      } else if (r.data === dernierCode) dernierCodeA = m;
-    }
+
+function codeLu(data) {
+  const v = $('#apercu'), m = performance.now();
+  if ((data !== dernierCode || m - dernierCodeA > 2500) && m - dernierScanA > 600) {
+    dernierCode = data; dernierCodeA = m; dernierScanA = m;
+    v.classList.add('lu'); setTimeout(() => v.classList.remove('lu'), 300);
+    quandCarte(data);
+  } else if (data === dernierCode) dernierCodeA = m;
+}
+
+// Lit une zone de la vidéo avec jsQR. zone = [x, y, largeur, hauteur] en fraction de l'image ; taille = largeur d'analyse en pixels
+function lireZone(v, zone, taille, contraste) {
+  const cv = $('#canvas-scan'), vw = v.videoWidth, vh = v.videoHeight;
+  const sx = zone[0] * vw, sy = zone[1] * vh, sw = zone[2] * vw, sh = zone[3] * vh;
+  const w = taille, h = Math.round(w * sh / sw);   // une petite zone est agrandie : jsQR repère mieux les petits QR
+  cv.width = w; cv.height = h;
+  const cx = cv.getContext('2d', { willReadFrequently: true });
+  cx.imageSmoothingEnabled = true;
+  cx.drawImage(v, sx, sy, sw, sh, 0, 0, w, h);
+  const img = cx.getImageData(0, 0, w, h);
+  if (contraste) {
+    // Étire le contraste (le plus sombre devient noir, le plus clair blanc)
+    const d = img.data; let mn = 255, mx = 0;
+    for (let i = 0; i < d.length; i += 16) { const l = (d[i] + d[i + 1] + d[i + 2]) / 3; if (l < mn) mn = l; if (l > mx) mx = l; }
+    const k = 255 / Math.max(30, mx - mn);
+    for (let i = 0; i < d.length; i += 4) { const l = ((d[i] + d[i + 1] + d[i + 2]) / 3 - mn) * k; d[i] = d[i + 1] = d[i + 2] = l; }
   }
-  setTimeout(() => requestAnimationFrame(boucleScan), 90);
+  const r = jsQR(img.data, w, h, { inversionAttempts: 'dontInvert' });
+  return r && r.data ? r.data : null;
+}
+
+let analyseEnCours = false;
+async function boucleScan() {
+  if (!scanActif) return;
+  const v = $('#apercu');
+  if (v.readyState >= 2 && v.videoWidth && !analyseEnCours) {
+    analyseEnCours = true;
+    try {
+      let data = null;
+      if (lecteurNatif) {
+        try { const res = await lecteurNatif.detect(v); if (res.length) data = res[0].rawValue; } catch (e) { lecteurNatif = null; }
+      }
+      if (!data && window.jsQR) {
+        passe = (passe + 1) % 4;
+        if (passe === 0) data = lireZone(v, [0, 0, 1, 1], 480, false);                  // de près
+        else if (passe === 1) data = lireZone(v, [0.25, 0.2, 0.5, 0.6], 1000, false);  // de loin : le centre, zoomé
+        else if (passe === 2) data = lireZone(v, [0.12, 0.08, 0.76, 0.84], 900, true); // entre les deux, contraste renforcé
+        else data = lireZone(v, [0.3, 0.25, 0.4, 0.5], 1000, true);                     // très loin : le cœur de l'image, zoomé
+      }
+      if (data) codeLu(data);
+    } finally { analyseEnCours = false; }
+  }
+  setTimeout(() => requestAnimationFrame(boucleScan), lecteurNatif ? 120 : 60);
 }
 
 // Garder l'écran allumé pendant la partie
