@@ -38,6 +38,9 @@
 <div id="bande-gauche" class="bande-camera"></div><div id="bande-droite" class="bande-camera"></div>
 
 <!-- Téléphone à la verticale : on demande de le tourner -->
+<!-- Écran de démarrage : un toucher lance la musique (les navigateurs l'exigent) -->
+<div id="demarrage"><img src="img/logo.webp" alt="Break Protocol"><p>Touche l'écran pour commencer</p></div>
+
 <!-- C'est aussi la page d'introduction, avec le logo -->
 <div id="tourner">
   <img class="logo-intro" src="img/logo.webp" alt="Break Protocol">
@@ -171,7 +174,7 @@
     <div id="indice-ecoute">Touchez le coffre pour réécouter</div>
   </div>
   <!-- Petit écran du décor (à droite de la porte) : le symbole de la serrure -->
-  <div id="ecran-symbole" class="ecran-deco"><canvas id="picto" width="24" height="24"></canvas><div class="veille"></div></div>
+  <div id="ecran-symbole" class="ecran-deco"><svg id="picto" viewBox="0 0 24 24" shape-rendering="crispEdges"></svg><div class="veille"></div></div>
   <div id="aide"></div>
 
   <div id="lampe"><div class="halo"></div><div class="faisceau"></div><div class="ampoule"></div></div>
@@ -380,16 +383,14 @@ const Son = {
 };
 
 /* ---------------- Le symbole dans le petit écran (en vrais pixels) ---------------- */
-// Le tracé du symbole est dessiné en tout petit (24 × 24 pixels), puis agrandi sans lissage : effet pixel art
+// Les 6 symboles dessinés pixel par pixel (24 × 24 ; # = pixel allumé), dans l'ordre des sons :
+// cercle, triangle, carré, losange, hexagone, croix. Tu peux les redessiner ici.
+const SYMBOLES_PIXELS = [["........................", "........................", ".........######.........", ".......##########.......", "......############......", ".....##############.....", "....######....######....", "...#####........#####...", "...####..........####...", "..#####..........#####..", "..####............####..", "..####............####..", "..####............####..", "..####............####..", "..#####..........#####..", "...####..........####...", "...#####........#####...", "....######....######....", ".....##############.....", "......############......", ".......##########.......", ".........######.........", "........................", "........................"], ["........................", "............#...........", "...........##...........", "...........###..........", "..........####..........", "..........#####.........", ".........######.........", ".........#######........", "........########........", "........####.####.......", ".......####...###.......", ".......####...####......", "......####.....###......", ".....#####.....####.....", ".....####.......###.....", "....#####.......####....", "....####.........###....", "...#####.........####...", "...####...........###...", "..####################..", "..####################..", ".######################.", "........................", "........................"], ["........................", "........................", "........................", "...###################..", "...###################..", "...###################..", "...###################..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...####...........####..", "...###################..", "...###################..", "...###################..", "...###################..", "........................", "........................"], ["........................", "............#...........", "...........###..........", "..........#####.........", ".........#######........", "........####.####.......", ".......####...####......", "......####.....####.....", ".....####.......####....", "....####........#####...", "...####..........#####..", "..####............#####.", ".####..............#####", "..####............#####.", "...####..........#####..", "....#####.......#####...", ".....#####.....#####....", "......#####...#####.....", ".......#####.#####......", "........#########.......", ".........#######........", "..........#####.........", "...........###..........", "............#..........."], ["........................", "............#...........", "..........#####.........", "........#########.......", "......############......", "....########.#######....", "..########.....#######..", "..#####..........#####..", "..###..............###..", "..###..............###..", "..###..............###..", "..###..............###..", "..###..............###..", "..###..............###..", "..###..............###..", "..###..............###..", "..#####..........#####..", "..#######.......######..", "....######....######....", ".....#######.######.....", ".......##########.......", ".........#######........", "..........####..........", "............#..........."], ["........................", "....#.............#.....", "...###...........###....", "..#####.........#####...", ".#######.......#######..", "..#######.....#######...", "...#######...#######....", "....#######.#######.....", ".....#############......", "......###########.......", ".......#########........", "........#######.........", ".......#########........", "......###########.......", ".....#############......", "....#######.#######.....", "...#######...#######....", "..#######.....#######...", ".#######.......#######..", "..#####.........#####...", "...###...........###....", "....#.............#.....", "........................", "........................"]];
 function afficherSymbole(i) {
-  const cv = $('#picto'), g = cv.getContext('2d');
-  g.clearRect(0, 0, 24, 24);
-  g.strokeStyle = getComputedStyle(document.body).getPropertyValue('--ecran').trim() || '#fff'; g.lineWidth = 2.6; g.lineCap = 'square'; g.lineJoin = 'miter';
-  g.save(); g.translate(12, 12); g.scale(0.82, 0.82); g.translate(-12, -12);
-  g.stroke(new Path2D(SONS[i].picto)); g.restore();
-  const d = g.getImageData(0, 0, 24, 24);          // pixels nets : allumé ou éteint, rien entre les deux
-  for (let k = 3; k < d.data.length; k += 4) d.data[k] = d.data[k] > 100 ? 255 : 0;
-  g.putImageData(d, 0, 0);
+  const lignes = SYMBOLES_PIXELS[i];
+  let rects = '';
+  lignes.forEach((l, y) => { const re = /#+/g; let m; while ((m = re.exec(l))) rects += `<rect x="${m.index}" y="${y}" width="${m[0].length}" height="1"/>`; });
+  $('#picto').innerHTML = rects;
   const e = $('#ecran-symbole'); e.classList.remove('on'); void e.offsetWidth; e.classList.add('on');
 }
 
@@ -458,6 +459,13 @@ Musique.majVolume();
 document.querySelectorAll('.btn-son').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); Musique.init(); Musique.changerVolume(); }));
 // Le navigateur n'autorise le son qu'après un premier toucher : la musique démarre à ce moment-là
 ['pointerdown', 'keydown'].forEach((ev) => document.addEventListener(ev, () => Musique.init(), { once: true, capture: true }));
+// Écran de démarrage : le premier toucher lance la musique de l'accueil et ouvre l'app
+function demarrerApp() {
+  const d = document.getElementById('demarrage'); if (!d || d.classList.contains('parti')) return;
+  Musique.init(); d.classList.add('parti'); setTimeout(() => d.remove(), 600);
+}
+document.getElementById('demarrage').addEventListener('pointerdown', demarrerApp);
+document.addEventListener('keydown', demarrerApp, { once: true });
 
 /* ---------------- Outils d'interface ---------------- */
 const $ = (s) => document.querySelector(s);

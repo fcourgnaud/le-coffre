@@ -5,7 +5,8 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.9.0';
+self.APP_VERSION = '3.9.1';
 self.APP_NOTES = [
-  'Scan des cartes amélioré, de près comme de loin'
+  'Écran de démarrage : la musique se lance au premier toucher',
+  'Symboles du petit écran redessinés en vrais pixels (affichage plus fiable)'
 ];

@@ -36,6 +36,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.9.1** — Écran de démarrage « Touche l'écran pour commencer » qui lance la musique ; symboles du petit écran dessinés pixel par pixel en SVG (`SYMBOLES_PIXELS` dans index.html) au lieu d'un canvas.
 - **3.9.0** — Scan amélioré : caméra en HD avec mise au point continue, lecteur QR du téléphone quand il existe (Android), sinon lecture à 4 échelles (image entière, centre zoomé, contraste renforcé, cœur très zoomé).
 - **3.8.4** — Le logo passe sous la fenêtre des réglages.
 - **3.8.3** — Logo remonté sur l'accueil.

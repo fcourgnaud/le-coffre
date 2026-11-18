@@ -251,7 +251,7 @@ body[data-ecran="accueil"] #logo { display: block; }   /* ajoute , body[data-ecr
 
 /* Petit écran du décor : le symbole de la serrure, en gros pixels */
 #ecran-symbole { left: var(--petit-x); top: var(--petit-y); width: var(--petit-w); height: var(--petit-h); display: flex; align-items: center; justify-content: center; pointer-events: none; }
-#picto { height: 86%; aspect-ratio: 1; image-rendering: pixelated; opacity: 0;
+#picto { height: 86%; width: auto; aspect-ratio: 1; fill: var(--ecran); opacity: 0;
   filter: drop-shadow(0 0 2px var(--ecran)) drop-shadow(0 0 calc(var(--u) * 3) var(--ecran)); }
 #ecran-symbole .veille { position: absolute; left: 18%; right: 18%; top: 50%; height: calc(var(--u) * 1.4); background: var(--ecran); opacity: .55; box-shadow: 0 0 6px var(--ecran);
   animation: veille 2.4s steps(6) infinite; }
@@ -337,7 +337,7 @@ body[data-niveau="2"] { --ecran: #ffb636; }
 /* =========================================================
    INDICES VISUELS (pour jouer dans le bruit)
    ========================================================= */
-body:not(.visuels) #ecran-symbole canvas, body:not(.visuels) #lampe, body:not(.visuels) #pattes { display: none; }
+body:not(.visuels) #ecran-symbole svg, body:not(.visuels) #lampe, body:not(.visuels) #pattes { display: none; }
 
 .picto-ligne { width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .picto-ligne .picto-svg { width: 100%; height: 100%; stroke: var(--accent-clair); }
@@ -477,3 +477,13 @@ body.camera #jeu .hud, body.camera #ecran-symbole { opacity: 0; transition: none
 #apercu { border-radius: 0; border-color: var(--ecran); }
 
 /* Page « Tourne ton téléphone » : déjà au style du logo */
+
+/* =========================================================
+   ÉCRAN DE DÉMARRAGE (« touche l'écran ») : lance la musique
+   ========================================================= */
+#demarrage { position: fixed; inset: 0; z-index: 95; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6vh; cursor: pointer;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.35) 0 1px, transparent 1px 3px), radial-gradient(ellipse at 50% 40%, #2a1d5c 0%, #110c2a 50%, #05040d 100%);
+  transition: opacity .5s steps(4); }
+#demarrage.parti { opacity: 0; pointer-events: none; }
+#demarrage img { width: min(70vw, 120vh); filter: drop-shadow(0 0 22px rgba(94, 226, 255, .45)); animation: logo-arrive 1.1s cubic-bezier(.2, 1.5, .4, 1) both, logo-pulse 3s 1.1s ease-in-out infinite; }
+#demarrage p { margin: 0; font-family: var(--police-pixel-titre); font-size: clamp(10px, 3.2vh, 16px); color: #5ee2ff; text-shadow: 0 0 10px #5ee2ff; text-transform: uppercase; animation: clignote 1.1s steps(2) infinite; }
