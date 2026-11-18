@@ -50,9 +50,9 @@
 <!-- ============ ACCUEIL ============ -->
 <section id="accueil" class="ecran actif">
   <div class="colonne">
-    <p class="accroche">Une nuit, trois coffres. Taisez-vous. Écoutez. Ouvrez.</p>
+    <p class="accroche">Une nuit, trois run.</p>
     <div class="actions">
-      <button class="principal" id="btn-lancer">Commencer le casse</button>
+      <button class="principal" id="btn-lancer">Démarrer le piratage</button>
       <div class="ligne-boutons">
         <button id="btn-reglages">Réglages</button>
         <button id="btn-serrures">Les serrures</button>
@@ -72,7 +72,7 @@
     <div class="panneau">
       <h2>Réglages</h2>
   <div class="reglage reglage-test">
-    <label class="case"><input type="checkbox" id="opt-aide"> <span><b>Aide pour les tests</b><br><small>Affiche le programme à utiliser, l'arrivée du vigile et le chien</small></span></label>
+    <label class="case"><input type="checkbox" id="opt-aide"> <span><b>Aide pour les tests</b><br><small>Affiche le programme à utiliser, l'arrivée du drone et du cyber-dog</small></span></label>
   </div>
 
   <div class="reglage">
@@ -108,7 +108,7 @@
 <!-- ============ ÉCOUTER LES SERRURES ============ -->
 <section id="serrures" class="ecran">
   <h2>Les serrures</h2>
-  <p>Chaque serrure a un son et un symbole. Le Cerveau doit les reconnaître, puis chercher sur la carte Plan quel programme correspond.</p>
+  <p>Chaque serrure a un son et un symbole. Le Runner doit les reconnaître, puis chercher sur la carte Plan quel programme correspond.</p>
   <div id="liste-serrures"></div>
   <button id="btn-retour-serrures" style="margin-top:auto">Retour</button>
 </section>
@@ -120,30 +120,30 @@
     <h3>But</h3>
     Ouvrir 3 coffres avant l'aube, sans que l'alarme n'atteigne 5.
     <h3>Les rôles</h3>
-    Un joueur est le <b>Cerveau</b>. Tous les autres sont <b>Porteurs</b>. Pas de cartes de rôle.
+    Un joueur est le <b>Cyberrunner</b>. Tous les autres sont des <b>Deckrunner</b>. Pas de cartes de rôle.
     <h3>Le plan</h3>
     Au début de chaque coffre, la cloche sonne et une lettre s'affiche : c'est le plan à utiliser (3 coups = plan C). Seul le Cerveau regarde la carte Plan. Il ne la montre jamais.
     <h3>Les programmes</h3>
-    16 programmes différents, chacun en 2 exemplaires (32 cartes), mélangés en pioche. Chaque Porteur a 6 programmes en main (10 s'il est seul Porteur). Le Cerveau n'en a pas.
+    16 programmes différents, chacun en 2 exemplaires (32 cartes), mélangés en pioche. Chaque Deckrunner a 6 programmes en main (10 s'il est seul Deckrunner). Le Cyberrunner n'en a pas.
     <h3>Une serrure</h3>
-    Le téléphone joue le son de la serrure (touchez le coffre pour le réentendre). Le Cerveau cherche ce son sur le plan : il y trouve <b>2 programmes possibles</b>. Il choisit lequel <b>mimer</b>. Puis les Porteurs parlent chacun leur tour, dans le sens des aiguilles d'une montre, <b>en commençant par le joueur qui suit celui qui a scanné (et repioché) en dernier</b> (pour la première serrure : le Porteur à gauche du Cerveau) :<br>
+    Le téléphone joue le son de la serrure (touchez le coffre pour le réentendre). Le Cyberrunner cherche ce symbole sur le plan : il y trouve <b>2 programmes possibles</b>. Il choisit lequel <b>mimer</b>. Puis les Deckrunner parlent chacun leur tour, dans le sens des aiguilles d'une montre, <b>en commençant par le joueur qui suit celui qui a scanné (et repioché) en dernier</b> (pour la première serrure : le Deckrunner à gauche du Cyberrunner) :<br>
     • s'il pense avoir le bon programme, il le <b>scanne</b> ;<br>
     • sinon, il dit « <b>J'ai pas</b> » et c'est au suivant.<br>
-    Bon programme : un voyant s'allume. Mauvais programme : +1 alarme. Si tout le monde a dit « J'ai pas », le Cerveau mime l'autre programme du plan. Si personne n'a l'un ni l'autre, chaque Porteur glisse une carte sous la pioche, en pioche une, et on refait un tour.
+    Bon programme : un voyant s'allume. Mauvais programme : +1 alarme. Si tout le monde a dit « J'ai pas », le Cyberrunner mime l'autre programme du plan. Si personne n'a l'un ni l'autre, chaque Deckrunner glisse une carte sous la pioche, en pioche une, et on refait un tour.
     <h3>Défausse</h3>
     Tout programme scanné, bon ou mauvais, est défaussé (l'app refuse une carte déjà utilisée). Celui qui a scanné pioche aussitôt une carte pour revenir à sa main de départ.
     <h3>Les 3 cartes du milieu</h3>
-    « Planquez-vous ! », l'Os et le Court-circuit sont posés au milieu de la table. <b>Tout le monde</b> peut les scanner, Cerveau compris.
+    « Planquez-vous ! », l'Os et le Court-circuit sont posés au milieu de la table. <b>Tout le monde</b> peut les scanner, Cyberrunner compris.
     <h3>Le garde</h3>
     Quand les pas approchent, scannez « Planquez-vous ! ». Planqués, personne ne peut scanner de programme jusqu'à ce que le garde reparte. Trop tard : +2 alarme. Pour rien (aucun pas) : +1 alarme. Parfois, il fait demi-tour…
-    <h3>Le chien (coffres 2 et 3)</h3>
+    <h3>Le Cyber-dog (coffres 2 et 3)</h3>
     Quand il renifle, scannez l'Os avant qu'il aboie, sinon +1 alarme.
     <h3>Court-circuit</h3>
     Une fois par nuit : −1 alarme.
     <h3>Coffre 3</h3>
     Une erreur rebloque tout le mécanisme : on recommence à la serrure 1.
     <h3>Silence</h3>
-    Les seuls mots autorisés sont « J'ai pas ». Le Cerveau mime, il ne montre pas sa carte et ne pointe rien. Pour prévenir d'un danger, on peut taper sur la table.
+    Les seuls mots autorisés sont « J'ai pas ». Le Cyberrunner mime, il ne montre pas sa carte et ne pointe rien. Pour prévenir d'un danger, on peut taper sur la table.
   </div>
   <button id="btn-retour-regles" style="margin-top:16px">Retour</button>
 </section>
@@ -208,7 +208,7 @@
 <section id="pause" class="ecran" style="align-items:center;justify-content:center;gap:14px">
   <h2>Pause</h2>
   <button class="principal" id="btn-reprendre">Reprendre</button>
-  <button id="btn-abandon">Abandonner le casse</button>
+  <button id="btn-abandon">Abandonner le run</button>
 </section>
 
 <!-- ============ FIN ============ -->
@@ -671,7 +671,7 @@ function demarrerCoffre() {
   J.reecoutes = 0;
   $('#coffre-num').textContent = `Coffre ${J.coffre + 1} / 3`;
   $('#coffre-nom').textContent = c.nom;
-  message(`Plan ${LETTRES[plan]}. Cerveau, à toi.`);
+  message(`Plan ${LETTRES[plan]}. Cyberrunner, à toi.`);
   majAffichage();
   ecran('jeu');
   let avant = performance.now();
@@ -692,7 +692,7 @@ function tic(dt) {
     el.chrono.textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
     el.chrono.classList.toggle('presse', reste < 60);
   }
-  if (reste <= 0) return finPartie(false, 'L\'aube se lève. Le casse est raté.');
+  if (reste <= 0) return finPartie(false, 'L\'aube se lève. Le run est raté.');
 
   // La serrure rejoue son son régulièrement
   if (!J.planques && h >= J.prochaineSerrure) { jouerSerrure(); J.prochaineSerrure = h + 7; }
@@ -705,10 +705,10 @@ function tic(dt) {
   if (g.etat === 'approche') {
     const p = Math.min(1, (h - g.debut) / c.approche);
     if (h >= g.prochainPas) { Son.pas(0.04 + 0.96 * Math.pow(p, 1.6), g.pan * (1 - p)); g.prochainPas = h + (0.8 - 0.38 * p); }
-    if (g.demiTour && h >= g.demiTour) { depart(0.04 + 0.96 * Math.pow(p, 1.6)); toastAide('Le garde fait demi-tour'); }
+    if (g.demiTour && h >= g.demiTour) { depart(0.04 + 0.96 * Math.pow(p, 1.6)); toastAide('Le drone fait demi-tour'); }
     else if (h >= g.arrivee) {
-      if (J.planques) { message('Le garde passe sans vous voir…'); }
-      else { J.stats.vu++; message('Le garde vous a vus ! Alarme +2', true); flashEcran('flash-garde'); monterAlarme(2); }
+      if (J.planques) { message('Le drone passe sans vous voir…'); }
+      else { J.stats.vu++; message('Le drone vous a vus ! Alarme +2', true); flashEcran('flash-garde'); monterAlarme(2); }
       depart(1);
     }
   }
@@ -730,7 +730,7 @@ function tic(dt) {
     if (ch.etat === 'renifle') {
       const p = 1 - (ch.fin - h) / 7;
       if (h >= ch.prochainReni) { Son.reniflement(0.2 + 0.8 * p); ch.prochainReni = h + 0.9; }
-      if (h >= ch.fin) { flashEcran('flash-chien'); Son.aboiement(); J.stats.aboiements++; message('Le chien aboie ! Alarme +1', true); ch.etat = 'absent'; ch.prochain = h + hasard(25, 40); monterAlarme(1); }
+      if (h >= ch.fin) { flashEcran('flash-chien'); Son.aboiement(); J.stats.aboiements++; message('Le cyber-dog aboie ! Alarme +1', true); ch.etat = 'absent'; ch.prochain = h + hasard(25, 40); monterAlarme(1); }
     }
   }
 
@@ -792,7 +792,7 @@ function quandCarte(code) {
       J.planques = true; document.body.classList.add('planques'); Son.chut();
       message('Planqués… on ne bouge plus.');
     } else if (g.etat === 'depart') {
-      toast('Le garde s\'éloigne déjà');
+      toast('Le drone s\'éloigne déjà');
     } else {
       message('Fausse alerte, vous avez fait du bruit ! Alarme +1', true); monterAlarme(1);
     }
@@ -800,8 +800,8 @@ function quandCarte(code) {
   }
 
   if (carte.type === 'os') {
-    if (J.chien.etat === 'renifle') { J.chien.etat = 'absent'; J.chien.prochain = h + hasard(25, 40); Son.chienContent(); message('Le chien ronge son os.'); }
-    else toast('Pas de chien en vue');
+    if (J.chien.etat === 'renifle') { J.chien.etat = 'absent'; J.chien.prochain = h + hasard(25, 40); Son.chienContent(); message('Le cyber-dog ronge son os.'); }
+    else toast('Pas de cyber-dog en vue');
     return;
   }
 
@@ -862,7 +862,7 @@ function monterAlarme(n) {
   hud.classList.remove('prise'); void hud.offsetWidth; hud.classList.add('prise');
   setTimeout(() => Son.alarme(J.alarme), 400);
   if (navigator.vibrate) navigator.vibrate(200);
-  if (J.alarme >= ALARME_MAX) setTimeout(() => finPartie(false, 'L\'alarme hurle dans tout le bâtiment. Tout le monde au poste !'), 900);
+  if (J.alarme >= ALARME_MAX) setTimeout(() => finPartie(false, 'L\'alarme hurle dans tout le bâtiment. Tout le monde a le cerveau grillé.'), 900);
 }
 
 /* ---------------- Ouverture d'un coffre ---------------- */
@@ -889,7 +889,7 @@ function coffreOuvert() {
     const suivant = J.coffre + 1;
     $('#entracte-num').textContent = `Coffre ${suivant + 1} / 3`;
     $('#entracte-titre').textContent = COFFRES[suivant].nom;
-    $('#entracte-texte').textContent = `Nouveau plan à écouter. ${suivant === 1 ? 'Attention, un chien rôde.' : 'Une seule erreur rebloque tout le mécanisme.'}`;
+    $('#entracte-texte').textContent = `Nouveau plan à écouter. ${suivant === 1 ? 'Attention, un cyber-dog rôde.' : 'Une seule erreur rebloque tout le mécanisme.'}`;
     $('#entracte').classList.add('visible');
   }, 700);
 }
@@ -936,7 +936,7 @@ $('#btn-test-serrure').addEventListener('click', () => {
 });
 $('#btn-pause').addEventListener('click', () => { J.enPause = true; ecran('pause'); });
 $('#btn-reprendre').addEventListener('click', () => { J.enPause = false; ecran('jeu'); });
-$('#btn-abandon').addEventListener('click', () => { J.enPause = false; finPartie(false, 'Vous avez abandonné le casse.'); });
+$('#btn-abandon').addEventListener('click', () => { J.enPause = false; finPartie(false, 'Vous avez abandonné le run.'); });
 $('#btn-lancer').addEventListener('click', lancerPartie);
 $('#btn-rejouer').addEventListener('click', () => { lancerPartie(); });
 $('#btn-accueil').addEventListener('click', () => { document.body.classList.remove('camera', 'eteint'); Scene.afficher(0); ecran('accueil'); });
