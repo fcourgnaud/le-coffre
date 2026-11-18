@@ -36,6 +36,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.10.2** — Indices visuels toujours actifs ; option retirée des réglages.
 - **3.10.1** — Grand écran en 4 rangées de hauteur fixe : la caméra, le son et la pause ne sont plus coupés sur les petits téléphones.
 - **3.10.0** — Jauge d'alarme en barre de détection : 20 blocs (4 par point), vert (1-2), orange (3), rouge (4-5), pourcentage, « ! ALERTE ! » à 4 ; effet tremblement + flash + « ALERTE +1 » quand l'alarme monte.
 - **3.9.2** — Aperçu caméra, bouton son (icône pixel à barres) et pause (icône pixel) rangés en bas du grand écran.

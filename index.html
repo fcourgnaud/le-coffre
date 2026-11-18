@@ -98,7 +98,6 @@
 
   <div class="reglage">
     <label class="case"><input type="checkbox" id="opt-reecoutes"> Réécoutes limitées (2 par serrure, puis +1 alarme)</label>
-    <label class="case"><input type="checkbox" id="opt-visuels" checked> Indices visuels (pour jouer dans le bruit)</label>
   </div>
 
       <button class="principal" id="btn-fermer-reglages">OK</button>
@@ -518,13 +517,8 @@ function choisirAide(on) {
 }
 $('#opt-aide').addEventListener('change', (e) => choisirAide(e.target.checked));
 try { choisirAide(localStorage.getItem('casse-aide') === '1'); } catch (e) {}
-// Indices visuels : mémorisé sur le téléphone
-function choisirVisuels(on) {
-  $('#opt-visuels').checked = on; document.body.classList.toggle('visuels', on);
-  try { localStorage.setItem('casse-visuels', on ? '1' : '0'); } catch (e) {}
-}
-$('#opt-visuels').addEventListener('change', (e) => choisirVisuels(e.target.checked));
-try { choisirVisuels(localStorage.getItem('casse-visuels') !== '0'); } catch (e) { choisirVisuels(true); }
+// Indices visuels (symbole, lampe du vigile, empreintes du chien) : toujours affichés
+document.body.classList.add('visuels');
 // Les 5 empreintes du chien
 for (let i = 0; i < 5; i++) { const d = document.createElement('div'); d.className = 'patte'; d.innerHTML = '<svg viewBox="0 0 24 24"><ellipse cx="12" cy="16" rx="5" ry="4"/><circle cx="5.5" cy="9.5" r="2.2"/><circle cx="9.5" cy="5.5" r="2.2"/><circle cx="14.5" cy="5.5" r="2.2"/><circle cx="18.5" cy="9.5" r="2.2"/></svg>'; $('#pattes').appendChild(d); }
 
