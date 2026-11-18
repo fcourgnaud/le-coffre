@@ -5,7 +5,8 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.10.2';
+self.APP_VERSION = '3.10.3';
 self.APP_NOTES = [
-  'Indices visuels toujours affichés (option retirée des réglages)'
+  'La musique démarre bien au premier toucher sur iPhone',
+  'Les sons jouent même avec le bouton silencieux de l\'iPhone'
 ];

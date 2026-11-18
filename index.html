@@ -308,7 +308,9 @@ const ROLES = ['', 'Porteur 1', 'Porteur 2', 'Porteur 3', 'Cerveau'];
 const Son = {
   ctx: null, sortie: null, bruit: null,
   init() {
-    if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
+    // iPhone : sans ça, le bouton « silencieux » coupe tous les sons du jeu
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+    if (this.ctx) { if (this.ctx.state !== 'running') this.ctx.resume().catch(() => {}); return; }
     const C = window.AudioContext || window.webkitAudioContext;
     this.ctx = new C();
     this.sortie = this.ctx.createGain();
@@ -406,6 +408,13 @@ const Musique = {
   niveaux: [{ v: 1, icone: '🔊', nom: 'Musique forte' }, { v: 0.45, icone: '🔉', nom: 'Musique moyenne' }, { v: 0.15, icone: '🔈', nom: 'Musique basse' }, { v: 0, icone: '🔇', nom: 'Musique coupée' }],
   base: 0.55,                                     // volume max de la musique (les sons du jeu restent au-dessus)
   niveau: 0, voulue: 'intro', courante: null, pret: false, lecteurs: [], actif: 0,
+  // Appelé à CHAQUE toucher : relance le moteur audio et la musique s'ils ont été bloqués par le téléphone
+  debloquer() {
+    if (!this.pret) return this.init();
+    Son.init();
+    const l = this.lecteurs[this.actif];
+    if (this.courante && l && l.a.paused) l.a.play().catch(() => {});
+  },
   init() {
     if (this.pret) return;
     Son.init();
@@ -468,13 +477,15 @@ try { Musique.niveau = Math.min(3, parseInt(localStorage.getItem('casse-musique'
 Musique.majVolume();
 document.querySelectorAll('.btn-son').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); Musique.init(); Musique.changerVolume(); }));
 // Le navigateur n'autorise le son qu'après un premier toucher : la musique démarre à ce moment-là
-['pointerdown', 'keydown'].forEach((ev) => document.addEventListener(ev, () => Musique.init(), { once: true, capture: true }));
+// (l'iPhone n'accepte le son qu'au moment où le doigt se lève : on écoute donc « touchend » et « click », à chaque fois)
+['touchend', 'click', 'keydown'].forEach((ev) => document.addEventListener(ev, () => Musique.debloquer(), { capture: true }));
 // Écran de démarrage : le premier toucher lance la musique de l'accueil et ouvre l'app
 function demarrerApp() {
   const d = document.getElementById('demarrage'); if (!d || d.classList.contains('parti')) return;
-  Musique.init(); d.classList.add('parti'); setTimeout(() => d.remove(), 600);
+  Musique.debloquer(); d.classList.add('parti'); setTimeout(() => d.remove(), 600);
 }
-document.getElementById('demarrage').addEventListener('pointerdown', demarrerApp);
+document.getElementById('demarrage').addEventListener('click', demarrerApp);
+document.getElementById('demarrage').addEventListener('touchend', (e) => { e.preventDefault(); demarrerApp(); });
 document.addEventListener('keydown', demarrerApp, { once: true });
 
 /* ---------------- Outils d'interface ---------------- */
