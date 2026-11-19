@@ -173,16 +173,14 @@
   </div>
   <!-- Petit écran du décor (à droite de la porte) : le symbole de la serrure -->
   <div id="ecran-symbole" class="ecran-deco"><svg id="picto" viewBox="0 0 24 24" shape-rendering="crispEdges"></svg><div class="veille"></div></div>
-  <div id="aide"></div>
 
   <div id="lampe"><div class="halo"></div><div class="faisceau"></div><div class="ampoule"></div></div>
   <div id="pattes"></div>
   <div id="annonce"><div class="titre-plan">Plan <span id="annonce-lettre"></span></div><div id="annonce-coups"></div></div>
   <div id="test"></div>
 
-  <div class="bas">
-    <button id="btn-test-serrure" title="Pour les tests : ouvre la serrure en cours">🔓 Ouvrir la serrure</button>
-  </div>
+  <!-- Pour les tests (« Aide pour les tests » cochée) : une ligne en bas de l'écran -->
+  <div id="barre-test"><div id="aide"></div><button id="btn-test-serrure" title="Pour les tests : ouvre la serrure en cours">🔓 Ouvrir</button></div>
 
   <!-- Entre deux coffres : carte posée par-dessus la scène -->
   <div id="entracte">
@@ -910,8 +908,9 @@ function majAide() {
     : ch.etat === 'renifle' ? `<b class="danger">renifle, aboie dans ${Math.ceil(ch.fin - h)} s</b>` : `revient dans ${Math.max(0, Math.ceil(ch.prochain - h))} s`;
   const son = J.etape < 4 ? SONS[J.combinaison[J.etape]].nom : '—';
   const outil = J.etape < 4 ? outilsAcceptes().map((t) => `${OUTILS[t].nom} (${restants(t)})`).join(' ou ') : '—';
-  $('#aide').innerHTML = `<div>💾 <b>${outil}</b></div><div class="petit">Plan ${LETTRES[J.plans[J.coffre]]} · son : ${son}</div>`
-    + `<div>🔦 Vigile : ${vigile}</div><div>🐕 Chien : ${chien}</div><div class="petit">Défausse : ${J.usees.size}/${NB_CARTES_OUTILS}</div>`;
+  // Tout sur une seule ligne
+  $('#aide').innerHTML = `<span>💾 <b>${outil}</b></span><span class="petit">plan ${LETTRES[J.plans[J.coffre]]} · ${son}</span>`
+    + `<span>🛸 ${vigile}</span><span>🐕 ${chien}</span><span class="petit">défausse ${J.usees.size}/${NB_CARTES_OUTILS}</span>`;
 }
 function toastAide(t) { if (document.body.classList.contains('aide-visuelle')) toast(t); }
 
