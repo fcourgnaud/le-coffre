@@ -908,9 +908,9 @@ function majAide() {
     : ch.etat === 'renifle' ? `<b class="danger">renifle, aboie dans ${Math.ceil(ch.fin - h)} s</b>` : `revient dans ${Math.max(0, Math.ceil(ch.prochain - h))} s`;
   const son = J.etape < 4 ? SONS[J.combinaison[J.etape]].nom : '—';
   const outil = J.etape < 4 ? outilsAcceptes().map((t) => `${OUTILS[t].nom} (${restants(t)})`).join(' ou ') : '—';
-  // Tout sur une seule ligne
-  $('#aide').innerHTML = `<span>💾 <b>${outil}</b></span><span class="petit">plan ${LETTRES[J.plans[J.coffre]]} · ${son}</span>`
-    + `<span>🛸 ${vigile}</span><span>🐕 ${chien}</span><span class="petit">défausse ${J.usees.size}/${NB_CARTES_OUTILS}</span>`;
+  // Deux lignes : ce qu'il faut scanner, puis les menaces
+  $('#aide').innerHTML = `<div><span>💾 <b>${outil}</b></span><span class="petit">plan ${LETTRES[J.plans[J.coffre]]} · ${son}</span></div>`
+    + `<div><span>🛸 ${vigile}</span><span>🐕 ${chien}</span><span class="petit">défausse ${J.usees.size}/${NB_CARTES_OUTILS}</span></div>`;
 }
 function toastAide(t) { if (document.body.classList.contains('aide-visuelle')) toast(t); }
 

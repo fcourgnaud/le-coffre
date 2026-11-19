@@ -414,14 +414,15 @@ body.camera #barre-test, body.camera #pattes { opacity: 0; transition: opacity .
   background: rgba(4, 6, 16, .86); border: calc(var(--u) * 1.2) solid var(--ecran); box-shadow: 0 0 24px color-mix(in srgb, var(--ecran) 60%, transparent), inset 0 0 18px rgba(0,0,0,.8); }
 
 /* =========================================================
-   POUR LES TESTS : ligne d'aide avec le bouton « Ouvrir », mode « Sans scan »
+   POUR LES TESTS : aide sur deux lignes avec le bouton « Ouvrir », mode « Sans scan »
    ========================================================= */
-/* Une seule ligne en bas de l'écran : l'aide (programme, plan, drone, cyber-dog, défausse) et le bouton « Ouvrir » */
+/* Deux lignes en bas de l'écran : l'aide (programme, plan, drone, cyber-dog, défausse) et le bouton « Ouvrir » */
 #barre-test { display: none; position: absolute; z-index: 6; left: calc(var(--bande-g, 0px) + max(8px, env(safe-area-inset-left))); right: calc(var(--bande-d, 0px) + max(8px, env(safe-area-inset-right)));
-  bottom: max(4px, env(safe-area-inset-bottom)); height: 30px; align-items: center; gap: 8px; padding: 0 0 0 10px;
+  bottom: max(4px, env(safe-area-inset-bottom)); height: 46px; align-items: center; gap: 8px; padding: 0 0 0 10px;
   background: var(--balayage), var(--menu-fond); border: 2px solid var(--ecran); }
 body.aide-visuelle #barre-test { display: flex; }
-#aide { flex: 1; min-width: 0; display: flex; gap: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--texte-menu); font-size: 17px; line-height: 1; pointer-events: none; }
+#aide { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; color: var(--texte-menu); font-size: 17px; line-height: 1; pointer-events: none; }
+#aide > div { display: flex; gap: 14px; white-space: nowrap; overflow: hidden; }
 #aide b { color: var(--ecran); font-weight: normal; }
 #aide .danger { color: #ff8a7a; }
 #aide .petit { opacity: .7; }
@@ -431,7 +432,7 @@ body.aide-visuelle #barre-test { display: flex; }
   max-height: 30vh; overflow-y: auto; flex-wrap: wrap; align-content: flex-start; gap: 4px; padding: 6px;
   background: var(--menu-fond); border: 2px solid color-mix(in srgb, var(--ecran) 50%, transparent); }
 body.mode-test #test { display: flex; }
-body.aide-visuelle #test { bottom: calc(max(4px, env(safe-area-inset-bottom)) + 36px); max-height: 26vh; }   /* au-dessus de la ligne d'aide */
+body.aide-visuelle #test { bottom: calc(max(4px, env(safe-area-inset-bottom)) + 52px); max-height: 26vh; }   /* au-dessus de l'aide */
 #test button { flex: 1 1 15%; padding: 4px 3px; font-size: 15px; border-width: 1px; }
 #test .btn-planque { order: -2; flex: 1 1 30%; background: var(--alarme); border-color: #ffb0a0; color: #fff; padding: 8px; font-size: .8rem; font-weight: 700; }
 #test .btn-action { order: -1; flex: 1 1 20%; background: color-mix(in srgb, var(--ecran) 25%, #000); }
