@@ -1,0 +1,7 @@
+Polices pixel de Break Protocol (licence SIL Open Font License 1.1, voir les fichiers OFL-*.txt)
+
+- VT323.woff : VT323, telle quelle.
+- BPPixelTitre.woff : version modifiée de « Press Start 2P » (Cody Boisclair).
+  Modification : les majuscules accentuées (À É È Ê Ë Î Ï Ô Ö Ù Û Ü Ñ Ç…) ont la même taille
+  que les autres majuscules (dans l'original, elles sont écrasées pour faire tenir l'accent).
+  Comme le demande la licence, la police modifiée porte un autre nom : « BP Pixel Titre ».

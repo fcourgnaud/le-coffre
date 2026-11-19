@@ -32,7 +32,7 @@
 
   /* --- Polices (fichiers dans le dossier polices/) --- */
   --police-pixel: 'VT323', 'Courier New', monospace;               /* textes */
-  --police-pixel-titre: 'Press Start 2P', 'Courier New', monospace; /* petits titres en pixels */
+  --police-pixel-titre: 'BP Pixel Titre', 'Courier New', monospace; /* petits titres en pixels */
 
   /* --- Réglages de la scène --- */
   --penombre: .14;                 /* luminosité derrière une porte fermée (0 = noir, 1 = allumé) */
@@ -44,7 +44,7 @@
 }
 
 @font-face { font-family: 'VT323'; src: url('polices/VT323.woff') format('woff'); font-display: swap; }
-@font-face { font-family: 'Press Start 2P'; src: url('polices/PressStart2P.woff') format('woff'); font-display: swap; }
+@font-face { font-family: 'BP Pixel Titre'; src: url('polices/BPPixelTitre.woff') format('woff'); font-display: swap; }   /* Press Start 2P, majuscules accentuées redessinées */
 
 /* Couleur des écrans selon la porte (0 = bleue, 1 = verte, 2 = or) */
 body[data-niveau="0"] { --ecran: #5ee2ff; }

@@ -4,7 +4,7 @@
    ⚠️ Changer VERSION à chaque nouvelle version (même valeur
    que dans version.js), sinon le téléphone ne voit rien.
    ========================================================= */
-const VERSION = '3.13.2';
+const VERSION = '3.13.3';
 importScripts('version.js');
 
 const CACHE = 'le-coffre-' + VERSION;
@@ -15,7 +15,7 @@ const FICHIERS = [
   'version.js',
   'scene.js',
   'lib/jsQR.js', 'lib/quirc.wasm',
-  'polices/VT323.woff', 'polices/PressStart2P.woff',
+  'polices/VT323.woff', 'polices/BPPixelTitre.woff',
   'img/cuivre1.webp', 'img/cuivre2.webp', 'img/argent1.webp', 'img/argent2.webp',
   'img/or1.webp', 'img/or2.webp',
   'img/fond1.webp', 'img/fond2.webp', 'img/fond3.webp', 'img/fond4.webp', 'img/fond5.webp', 'img/fond6.webp',

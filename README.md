@@ -11,7 +11,7 @@ Jeu coopératif en temps réel (2 à 4 joueurs) : le téléphone posé au centre
 | `scene.js` | Place tes illustrations et règle les animations (porte, caméra, verrous, écrans du décor) | Les réglages en haut du fichier, oui |
 | `img/` | Tes illustrations : cuivre1/2, argent1/2, or1/2 (1783 × 882 px), fond1 à fond6, logo (en .webp) | Oui, remplace-les par tes nouvelles versions |
 | `audio/` | Les musiques : introfin (accueil + fin), musique1/2/3 (une par porte) | Oui, garde les mêmes noms |
-| `polices/` | Les polices pixel VT323 et Press Start 2P (licence libre OFL) | Non |
+| `polices/` | Les polices pixel VT323 et BP Pixel Titre (Press Start 2P modifiée), licence libre OFL | Non |
 | `lib/jsQR.js`, `lib/quirc.wasm` | Les deux lecteurs de QR codes (jsQR, licence Apache 2.0 ; quirc, licence ISC, compilé en WebAssembly depuis `outils/`) | Non |
 | `version.js` | Numéro de version + notes affichées dans le bandeau | Claude s'en occupe |
 | `sw.js` | Garde l'app hors ligne et gère les mises à jour | Non |
@@ -38,6 +38,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.13.3** — Police des titres pixel : majuscules accentuées redessinées à la taille des autres (police « BP Pixel Titre », modifiée depuis Press Start 2P).
 - **3.13.2** — Bouton et écran « Les serrures » retirés de l'accueil.
 - **3.13.1** — Coffre déverrouillé : le drone et le cyber-dog sont annulés (lumière, empreintes, planque), ils repartent de zéro au coffre suivant.
 - **3.13.0** — Textes revus par l'utilisatrice (tableau « textes de l'app et des cartes ») : Cyberrunner / Deckrunner, drone, cyber-dog, run.
