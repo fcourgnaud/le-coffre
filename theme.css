@@ -351,30 +351,35 @@ body.mode-test .camera-cadre span { display: flex; }
 /* Le cyber-dog : il entre par le bord gauche de l'app, au niveau du sol, passe devant le grand écran
    et glisse jusqu'au centre du coffre (position calculée en JS : --x). Deux calques : le corps et la tête. */
 #chien-zone { position: absolute; z-index: 5; left: var(--bande-g, 0px); right: var(--bande-d, 0px); bottom: 1.5vh; height: 40vh; overflow: hidden; pointer-events: none; }
-#chien { --x: -100vw; position: absolute; left: 0; bottom: 0; height: 31vh; aspect-ratio: 635 / 412;
-  transform: translateX(var(--x)); filter: drop-shadow(0 0 3px rgba(0,0,0,.9)) brightness(.92); }
-#chien.renifle, #chien.brusque { transition: none; }
-#chien.part-gauche { transition: transform 1s ease-in; }
-#chien.part-droite { transition: transform 2.2s cubic-bezier(.4, 0, 1, 1); }
-#chien .corps, #chien .tete { position: absolute; inset: 0; background: center / 100% 100% no-repeat; }
-#chien .corps { background-image: url(img/chien-corps.webp); }
-#chien .tete { background-image: url(img/chien-tete.webp); transform-origin: 67.7% 40%; }
-#chien .oeil { position: absolute; left: 78.7%; top: 20.4%; width: 5.9%; height: 4.5%; background: var(--ecran); mix-blend-mode: screen;
+.k9 { position: absolute; bottom: 0; height: 31vh; aspect-ratio: 635 / 412; filter: drop-shadow(0 0 3px rgba(0,0,0,.9)) brightness(.92); }
+#chien { --x: -100vw; left: 0; transform: translateX(var(--x)); }
+.k9.renifle, .k9.brusque { transition: none; }
+.k9.part-gauche { transition: transform 1s ease-in; }
+.k9.part-droite { transition: transform 2.2s cubic-bezier(.4, 0, 1, 1); }
+.k9 .corps, .k9 .tete { position: absolute; inset: 0; background: center / 100% 100% no-repeat; }
+.k9 .corps { background-image: url(img/chien-corps.webp); }
+.k9 .tete { background-image: url(img/chien-tete.webp); transform-origin: 67.7% 40%; }
+.k9 .oeil { position: absolute; left: 78.7%; top: 20.4%; width: 5.9%; height: 4.5%; background: var(--ecran); mix-blend-mode: screen;
   box-shadow: 0 0 6px 2px var(--ecran); opacity: 0; }
-#chien.renifle .tete { animation: flaire .9s ease-in-out infinite; }
-#chien.renifle .oeil { animation: oeil .45s steps(1) infinite; }
+.k9.renifle .tete { animation: flaire .9s ease-in-out infinite; }
+.k9.renifle .oeil { animation: oeil .45s steps(1) infinite; }
 @keyframes flaire { 0%, 100% { transform: rotate(0); } 35% { transform: rotate(9deg); } 50% { transform: rotate(6deg); } 65% { transform: rotate(10deg); } }
 @keyframes oeil { 0% { opacity: .85; } 50% { opacity: .15; } }
 /* Aboiement : la tête se relève d'un coup, le chien tremble, les yeux virent au rouge */
-#chien.aboie { animation: tremble .12s linear 6; }
-#chien.aboie .tete { animation: aboie .9s ease-out; }
-#chien.aboie .oeil { opacity: 1; background: #ff2a2a; box-shadow: 0 0 10px 4px #ff2a2a; }
+.k9.aboie { animation: tremble .12s linear 6; }
+.k9.aboie .tete { animation: aboie .9s ease-out; }
+.k9.aboie .oeil { opacity: 1; background: #ff2a2a; box-shadow: 0 0 10px 4px #ff2a2a; }
 @keyframes aboie { 0% { transform: rotate(0); } 12% { transform: rotate(-16deg); } 30%, 45% { transform: rotate(-11deg); } 55% { transform: rotate(-16deg); } 100% { transform: rotate(0); } }
 @keyframes tremble { 0%, 100% { translate: 0 0; } 25% { translate: -3px 1px; } 75% { translate: 3px -1px; } }
 /* Os scanné : petit bond content avant de repartir */
-#chien.content { animation: bond .3s ease-out 2 alternate; }
-#chien.content .oeil { opacity: .9; }
+.k9.content { animation: bond .3s ease-out 2 alternate; }
+.k9.content .oeil { opacity: .9; }
 @keyframes bond { to { translate: 0 -3vh; } }
+/* Écran d'accueil : le cyber-dog traverse la pièce de temps en temps (toutes les 30 s), en reniflant */
+#promenade { position: absolute; z-index: 3; left: var(--bande-g, 0px); right: var(--bande-d, 0px); bottom: 1.5vh; height: 40vh; overflow: hidden; pointer-events: none; }
+#promenade .k9 { left: auto; right: 100%; visibility: hidden; }
+#promenade .k9.passe { visibility: visible; animation: traverse 11s linear forwards; }
+@keyframes traverse { from { right: 100%; translate: 0 0; } to { right: 0%; translate: 100% 0; } }
 
 /* Annonce du plan au début de chaque coffre */
 #annonce { position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;

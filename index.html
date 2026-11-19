@@ -49,6 +49,7 @@
 
 <!-- ============ ACCUEIL ============ -->
 <section id="accueil" class="ecran actif">
+  <div id="promenade"><div class="k9 renifle"><div class="corps"></div><div class="tete"><div class="oeil"></div></div></div></div>
   <div class="colonne">
     <p class="accroche">Une nuit, trois run.</p>
     <div class="actions">
@@ -175,7 +176,7 @@
   <div id="ecran-symbole" class="ecran-deco"><svg id="picto" viewBox="0 0 24 24" shape-rendering="crispEdges"></svg><div class="veille"></div></div>
 
   <div id="lampe"><div class="halo"></div><div class="faisceau"></div><div class="ampoule"></div></div>
-  <div id="chien-zone"><div id="chien"><div class="corps"></div><div class="tete"><div class="oeil"></div></div></div></div>
+  <div id="chien-zone"><div id="chien" class="k9"><div class="corps"></div><div class="tete"><div class="oeil"></div></div></div></div>
   <div id="annonce"><div class="titre-plan">Plan <span id="annonce-lettre"></span></div><div id="decompte"><span id="decompte-chiffre">5</span></div></div>
   <div id="test"></div>
 
@@ -479,6 +480,13 @@ document.addEventListener('keydown', demarrerApp, { once: true });
 
 /* ---------------- Outils d'interface ---------------- */
 const $ = (s) => document.querySelector(s);
+// Accueil : le cyber-dog traverse la pièce toutes les 30 secondes (de gauche à droite)
+const PROMENADE_CHIEN = 30;
+function promenerChien() {
+  const k = document.querySelector('#promenade .k9');
+  if (document.body.dataset.ecran === 'accueil' && !document.hidden) { k.classList.remove('passe'); void k.offsetWidth; k.classList.add('passe'); }
+}
+setTimeout(() => { promenerChien(); setInterval(promenerChien, PROMENADE_CHIEN * 1000); }, 6000);
 function ecran(id) {
   document.body.dataset.ecran = id;
   if (id === 'accueil' || id === 'fin' || id === 'regles') Musique.jouer('intro');
