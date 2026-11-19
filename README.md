@@ -9,7 +9,7 @@ Jeu coopératif en temps réel (2 à 4 joueurs) : le téléphone posé au centre
 | `index.html` | Les écrans et toute la logique du jeu | Oui, avec prudence |
 | `theme.css` | Tout le visuel (couleurs, polices, tailles), rangé par écran | **Oui, c'est fait pour** |
 | `scene.js` | Place tes illustrations et règle les animations (porte, caméra, verrous, écrans du décor) | Les réglages en haut du fichier, oui |
-| `img/` | Tes illustrations : cuivre1/2, argent1/2, or1/2 (1783 × 882 px), fond1 à fond6, logo (en .webp) | Oui, remplace-les par tes nouvelles versions |
+| `img/` | Tes illustrations : cuivre1/2, argent1/2, or1/2 (1783 × 882 px), fond1 à fond6, logo, cyber-dog (chien-corps + chien-tete) (en .webp) | Oui, remplace-les par tes nouvelles versions |
 | `audio/` | Les musiques : introfin (accueil + fin), musique1/2/3 (une par porte) | Oui, garde les mêmes noms |
 | `polices/` | Les polices pixel VT323 et BP Pixel Titre (Press Start 2P modifiée), licence libre OFL | Non |
 | `lib/jsQR.js`, `lib/quirc.wasm` | Les deux lecteurs de QR codes (jsQR, licence Apache 2.0 ; quirc, licence ISC, compilé en WebAssembly depuis `outils/`) | Non |
@@ -38,6 +38,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.16.0** — Le cyber-dog remplace les empreintes : il sort de derrière le grand écran et avance d'un pas à chaque reniflement (5 pas), la tête flaire et les yeux clignotent ; quand il aboie, la tête se relève d'un coup, il tremble et ses yeux virent au rouge ; os scanné : petit bond puis il repart ; coffre ouvert : il disparaît. Images `img/chien-corps.webp` et `img/chien-tete.webp`.
 - **3.15.0** — Annonce du plan : la lettre reste affichée pendant un compte à rebours de 5 s avec un bip par seconde (réglage `DUREE_DECOMPTE`) ; plus de carrés ni de coups de cloche ; le chrono attend la fin du compte à rebours.
 - **3.14.1** — Aide pour les tests sur deux lignes (programme à scanner, puis drone, cyber-dog et défausse).
 - **3.14.0** — Textes des écrans du décor environ 20 % plus grands ; aide pour les tests sur une seule ligne en bas de l'écran, avec le bouton « Ouvrir ».

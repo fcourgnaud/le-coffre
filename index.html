@@ -175,7 +175,7 @@
   <div id="ecran-symbole" class="ecran-deco"><svg id="picto" viewBox="0 0 24 24" shape-rendering="crispEdges"></svg><div class="veille"></div></div>
 
   <div id="lampe"><div class="halo"></div><div class="faisceau"></div><div class="ampoule"></div></div>
-  <div id="pattes"></div>
+  <div id="chien-zone"><div id="chien"><div class="corps"></div><div class="tete"><div class="oeil"></div></div></div></div>
   <div id="annonce"><div class="titre-plan">Plan <span id="annonce-lettre"></span></div><div id="decompte"><span id="decompte-chiffre">5</span></div></div>
   <div id="test"></div>
 
@@ -517,10 +517,8 @@ function choisirAide(on) {
 }
 $('#opt-aide').addEventListener('change', (e) => choisirAide(e.target.checked));
 try { choisirAide(localStorage.getItem('casse-aide') === '1'); } catch (e) {}
-// Indices visuels (symbole, lampe du vigile, empreintes du chien) : toujours affichés
+// Indices visuels (symbole, lampe du vigile, cyber-dog) : toujours affichés
 document.body.classList.add('visuels');
-// Les 5 empreintes du chien
-for (let i = 0; i < 5; i++) { const d = document.createElement('div'); d.className = 'patte'; d.innerHTML = '<svg viewBox="0 0 24 24"><ellipse cx="12" cy="16" rx="5" ry="4"/><circle cx="5.5" cy="9.5" r="2.2"/><circle cx="9.5" cy="5.5" r="2.2"/><circle cx="14.5" cy="5.5" r="2.2"/><circle cx="18.5" cy="9.5" r="2.2"/></svg>'; $('#pattes').appendChild(d); }
 
 $('#btn-regles').addEventListener('click', () => ecran('regles'));
 $('#btn-retour-regles').addEventListener('click', () => ecran('accueil'));
@@ -635,7 +633,7 @@ function demarrerCoffre() {
   Scene.afficher(J.coffre);
   J.planques = false; document.body.classList.remove('planques');
   document.documentElement.style.setProperty('--garde', 0); tic.lumiere = '0.00';
-  el.pattes.forEach((pa) => pa.classList.remove('on')); tic.pattes = 0; tic.sec = -1;
+  placerChien(0, true); tic.sec = -1;
   J.garde.etat = 'repos'; J.garde.prochain = J.horloge + hasard(c.attenteMin, c.attenteMax);
   J.chien.etat = 'absent'; J.chien.prochain = J.horloge + hasard(20, 35);
   // Annonce du plan : la lettre s'affiche avec un compte à rebours de 5 secondes (le chrono de la nuit attend)
@@ -655,7 +653,21 @@ function demarrerCoffre() {
 }
 
 // Éléments souvent mis à jour (cherchés une seule fois)
-const el = { chrono: $('#chrono'), pattes: [...document.querySelectorAll('#pattes .patte')] };
+const el = { chrono: $('#chrono'), chien: $('#chien') };
+// Le cyber-dog : il entre par la gauche et avance d'un pas (sur 5) à chaque reniflement.
+// pas = 0 : caché ; brusque = true : il disparaît d'un coup (coffre ouvert, nouveau coffre)
+function placerChien(pas, brusque) {
+  tic.pas = pas;
+  el.chien.classList.toggle('brusque', !!brusque);
+  el.chien.classList.toggle('renifle', pas > 0);
+  el.chien.style.setProperty('--pas', pas);
+  if (brusque) el.chien.classList.remove('aboie', 'content');
+}
+function chienPart(classe) {   // il aboie ou ronge son os, puis repart vers la gauche
+  el.chien.classList.remove('aboie', 'content', 'brusque'); void el.chien.offsetWidth; el.chien.classList.add(classe);
+  tic.pas = 0; el.chien.classList.remove('renifle');
+  setTimeout(() => { if (tic.pas === 0) el.chien.style.setProperty('--pas', 0); }, classe === 'aboie' ? 900 : 600);
+}
 function tic(dt) {
   J.horloge += dt;
   const h = J.horloge, c = COFFRES[J.coffre], g = J.garde, ch = J.chien;
@@ -704,8 +716,8 @@ function tic(dt) {
     }
     if (ch.etat === 'renifle') {
       const p = 1 - (ch.fin - h) / 7;
-      if (h >= ch.prochainReni) { Son.reniflement(0.2 + 0.8 * p); ch.prochainReni = h + 0.9; }
-      if (h >= ch.fin) { flashEcran('flash-chien'); Son.aboiement(); J.stats.aboiements++; message('Le cyber-dog aboie ! Alarme +1', true); ch.etat = 'absent'; ch.prochain = h + hasard(25, 40); monterAlarme(1); }
+      if (h >= ch.prochainReni) { Son.reniflement(0.2 + 0.8 * p); ch.prochainReni = h + 0.9; const pas = Math.min(5, 1 + Math.floor(p * 5)); if (pas !== tic.pas) placerChien(pas); }
+      if (h >= ch.fin) { flashEcran('flash-chien'); chienPart('aboie'); Son.aboiement(); J.stats.aboiements++; message('Le cyber-dog aboie ! Alarme +1', true); ch.etat = 'absent'; ch.prochain = h + hasard(25, 40); monterAlarme(1); }
     }
   }
 
@@ -715,8 +727,6 @@ function tic(dt) {
   if (g.etat === 'depart') lumiere = g.gainDepart * Math.max(0, (g.finDepart - h) / 4);
   const l = lumiere.toFixed(2);
   if (l !== tic.lumiere) { tic.lumiere = l; document.documentElement.style.setProperty('--garde', l); }
-  const nbPattes = ch.etat === 'renifle' ? Math.min(5, Math.ceil((1 - (ch.fin - h) / 7) * 5)) : 0;
-  if (nbPattes !== tic.pattes) { tic.pattes = nbPattes; el.pattes.forEach((pa, i) => pa.classList.toggle('on', i < nbPattes)); }
 
   majAide();
 }
@@ -792,7 +802,7 @@ function quandCarte(code) {
   }
 
   if (carte.type === 'os') {
-    if (J.chien.etat === 'renifle') { J.chien.etat = 'absent'; J.chien.prochain = h + hasard(25, 40); Son.chienContent(); message('Le cyber-dog ronge son os.'); }
+    if (J.chien.etat === 'renifle') { J.chien.etat = 'absent'; J.chien.prochain = h + hasard(25, 40); Son.chienContent(); chienPart('content'); message('Le cyber-dog ronge son os.'); }
     else toast('Pas de cyber-dog en vue');
     return;
   }
@@ -859,13 +869,13 @@ function monterAlarme(n) {
 
 /* ---------------- Ouverture d'un coffre ---------------- */
 // La porte glisse vers la gauche, puis la caméra avance jusqu'au coffre suivant (scene.js)
-// Coffre déverrouillé : le drone et le cyber-dog disparaissent tout de suite (lumière, empreintes, planque)
+// Coffre déverrouillé : le drone et le cyber-dog disparaissent tout de suite (lumière, cyber-dog, planque)
 function annulerMenaces() {
   J.garde.etat = 'repos'; J.garde.demiTour = null;
   J.chien.etat = 'absent';
   J.planques = false; document.body.classList.remove('planques');
   document.documentElement.style.setProperty('--garde', 0); tic.lumiere = '0.00';
-  el.pattes.forEach((pa) => pa.classList.remove('on')); tic.pattes = 0;
+  placerChien(0, true);
   $('#jeu').classList.remove('flash-garde', 'flash-chien');
 }
 

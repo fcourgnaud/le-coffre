@@ -24,7 +24,6 @@
   --alarme-vert: #6cff5a;          /* jauge de détection : zones vert / orange / rouge */
   --alarme-orange: #ffa82e;
   --lumiere: 255, 236, 190;        /* lampe du vigile (rouge, vert, bleu) */
-  --patte: #c9a06a;                /* empreintes du chien */
   --verrou-ferme: #d10f0f;         /* verrous sur la plaque de la porte */
   --verrou-ouvert: #2fb51b;
   --menu-fond: rgba(4, 8, 18, .94);
@@ -349,15 +348,33 @@ body.mode-test .camera-cadre span { display: flex; }
 #lampe .ampoule { position: absolute; right: -24px; top: 50%; width: 48px; height: 48px; margin-top: -24px; border-radius: 50%; background: #fff; opacity: var(--garde);
   box-shadow: 0 0 calc(var(--garde) * 40px) calc(var(--garde) * 20px) rgba(var(--lumiere), 1), 0 0 calc(var(--garde) * 140px) calc(var(--garde) * 60px) rgba(var(--lumiere), .7); }
 
-/* Empreintes du chien : elles avancent sur le sol, devant le coffre */
-#pattes { position: absolute; z-index: 3; left: calc(var(--colonne) + 4vw); bottom: 2.5vh; display: flex; gap: 2.4vw; }
-#pattes .patte { width: 4.4vh; height: 4.4vh; opacity: 0; transform: scale(.4); transition: opacity .3s, transform .3s; }
-#pattes .patte:nth-child(odd) { margin-top: 1.4vh; rotate: 78deg; }
-#pattes .patte:nth-child(even) { rotate: 102deg; }
-#pattes .patte.on { opacity: .95; transform: scale(1); }
-#pattes .patte:nth-child(5).on { animation: patte .5s infinite alternate; }
-#pattes svg { width: 100%; height: 100%; fill: var(--patte); filter: drop-shadow(0 0 4px rgba(0,0,0,.8)); }
-@keyframes patte { to { transform: scale(1.3); } }
+/* Le cyber-dog : il sort de derrière le grand écran (à gauche) et avance d'un pas à chaque reniflement.
+   Deux calques : le corps et la tête (qui flaire, puis se relève d'un coup quand il aboie). */
+#chien-zone { position: absolute; z-index: 3; left: var(--colonne); right: 0; bottom: 1.5vh; height: 40vh; overflow: hidden; pointer-events: none; }
+#chien { --pas: 0; position: absolute; left: 0; bottom: 0; height: 31vh; aspect-ratio: 635 / 412;
+  transform: translateX(calc((var(--pas) * 26 - 104) * 1%)); transition: transform 1.1s cubic-bezier(.5, 0, .3, 1);
+  filter: drop-shadow(0 0 3px rgba(0,0,0,.9)) brightness(.92); }
+#chien.renifle { transition: transform .5s steps(4); }        /* pas saccadé, façon robot */
+#chien.brusque { transition: none; }
+#chien .corps, #chien .tete { position: absolute; inset: 0; background: center / 100% 100% no-repeat; }
+#chien .corps { background-image: url(img/chien-corps.webp); }
+#chien .tete { background-image: url(img/chien-tete.webp); transform-origin: 67.7% 40%; }
+#chien .oeil { position: absolute; left: 78.7%; top: 20.4%; width: 5.9%; height: 4.5%; background: var(--ecran); mix-blend-mode: screen;
+  box-shadow: 0 0 6px 2px var(--ecran); opacity: 0; }
+#chien.renifle .tete { animation: flaire .9s ease-in-out infinite; }
+#chien.renifle .oeil { animation: oeil .45s steps(1) infinite; }
+@keyframes flaire { 0%, 100% { transform: rotate(0); } 35% { transform: rotate(9deg); } 50% { transform: rotate(6deg); } 65% { transform: rotate(10deg); } }
+@keyframes oeil { 0% { opacity: .85; } 50% { opacity: .15; } }
+/* Aboiement : la tête se relève d'un coup, le chien tremble, les yeux virent au rouge */
+#chien.aboie { animation: tremble .12s linear 6; }
+#chien.aboie .tete { animation: aboie .9s ease-out; }
+#chien.aboie .oeil { opacity: 1; background: #ff2a2a; box-shadow: 0 0 10px 4px #ff2a2a; }
+@keyframes aboie { 0% { transform: rotate(0); } 12% { transform: rotate(-16deg); } 30%, 45% { transform: rotate(-11deg); } 55% { transform: rotate(-16deg); } 100% { transform: rotate(0); } }
+@keyframes tremble { 0%, 100% { translate: 0 0; } 25% { translate: -3px 1px; } 75% { translate: 3px -1px; } }
+/* Os scanné : petit bond content avant de repartir */
+#chien.content { animation: bond .3s ease-out 2 alternate; }
+#chien.content .oeil { opacity: .9; }
+@keyframes bond { to { translate: 0 -3vh; } }
 
 /* Annonce du plan au début de chaque coffre */
 #annonce { position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
@@ -386,9 +403,9 @@ body.eteint #jeu .hud, body.eteint #ecran-symbole { animation: eteint .35s steps
   80%  { opacity: 1; transform: scale(.4, .02); filter: brightness(4); }
   100% { opacity: 0; transform: scale(0, 0); }
 }
-body.eteint #barre-test, body.eteint #test, body.eteint #pattes { opacity: 0; transition: opacity .2s; }
+body.eteint #barre-test, body.eteint #test, body.eteint #chien-zone { opacity: 0; transition: opacity .2s; }
 body.camera #jeu .hud, body.camera #ecran-symbole { opacity: 0; transition: none; }
-body.camera #barre-test, body.camera #pattes { opacity: 0; transition: opacity .5s; }
+body.camera #barre-test, body.camera #chien-zone { opacity: 0; transition: opacity .5s; }
 
 /* =========================================================
    CARTE ENTRE DEUX COFFRES ET FIN DE PARTIE (dans le grand écran)
@@ -435,6 +452,7 @@ body.aide-visuelle #barre-test { display: flex; }
   background: var(--menu-fond); border: 2px solid color-mix(in srgb, var(--ecran) 50%, transparent); }
 body.mode-test #test { display: flex; }
 body.aide-visuelle #test { bottom: calc(max(4px, env(safe-area-inset-bottom)) + 52px); max-height: 26vh; }   /* au-dessus de l'aide */
+body.aide-visuelle #chien-zone { bottom: calc(max(4px, env(safe-area-inset-bottom)) + 50px); }   /* le cyber-dog marche au-dessus de l'aide */
 #test button { flex: 1 1 15%; padding: 4px 3px; font-size: 15px; border-width: 1px; }
 #test .btn-planque { order: -2; flex: 1 1 30%; background: var(--alarme); border-color: #ffb0a0; color: #fff; padding: 8px; font-size: .8rem; font-weight: 700; }
 #test .btn-action { order: -1; flex: 1 1 20%; background: color-mix(in srgb, var(--ecran) 25%, #000); }
