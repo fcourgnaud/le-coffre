@@ -38,6 +38,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.16.2** — Cyber-dog toujours au niveau du sol, même avec l'aide pour les tests : la barre d'aide passe par-dessus lui.
 - **3.16.1** — Cyber-dog : il entre par le bord gauche de l'app au niveau du sol, passe devant le grand écran et glisse en continu jusqu'au centre du coffre en `DUREE_CHIEN` secondes (7 s) ; s'il y arrive sans os, il aboie (+1 alarme) et repart vers la droite ; avec l'os, il repart vers la gauche.
 - **3.16.0** — Le cyber-dog remplace les empreintes : il sort de derrière le grand écran et avance d'un pas à chaque reniflement (5 pas), la tête flaire et les yeux clignotent ; quand il aboie, la tête se relève d'un coup, il tremble et ses yeux virent au rouge ; os scanné : petit bond puis il repart ; coffre ouvert : il disparaît. Images `img/chien-corps.webp` et `img/chien-tete.webp`.
 - **3.15.0** — Annonce du plan : la lettre reste affichée pendant un compte à rebours de 5 s avec un bip par seconde (réglage `DUREE_DECOMPTE`) ; plus de carrés ni de coups de cloche ; le chrono attend la fin du compte à rebours.

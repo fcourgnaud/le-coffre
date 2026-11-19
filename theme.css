@@ -452,7 +452,6 @@ body.aide-visuelle #barre-test { display: flex; }
   background: var(--menu-fond); border: 2px solid color-mix(in srgb, var(--ecran) 50%, transparent); }
 body.mode-test #test { display: flex; }
 body.aide-visuelle #test { bottom: calc(max(4px, env(safe-area-inset-bottom)) + 52px); max-height: 26vh; }   /* au-dessus de l'aide */
-body.aide-visuelle #chien-zone { bottom: calc(max(4px, env(safe-area-inset-bottom)) + 50px); }   /* le cyber-dog marche au-dessus de l'aide */
 #test button { flex: 1 1 15%; padding: 4px 3px; font-size: 15px; border-width: 1px; }
 #test .btn-planque { order: -2; flex: 1 1 30%; background: var(--alarme); border-color: #ffb0a0; color: #fff; padding: 8px; font-size: .8rem; font-weight: 700; }
 #test .btn-action { order: -1; flex: 1 1 20%; background: color-mix(in srgb, var(--ecran) 25%, #000); }
