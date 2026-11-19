@@ -38,6 +38,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.13.2** — Bouton et écran « Les serrures » retirés de l'accueil.
 - **3.13.1** — Coffre déverrouillé : le drone et le cyber-dog sont annulés (lumière, empreintes, planque), ils repartent de zéro au coffre suivant.
 - **3.13.0** — Textes revus par l'utilisatrice (tableau « textes de l'app et des cartes ») : Cyberrunner / Deckrunner, drone, cyber-dog, run.
 - **3.12.0** — Scan bien plus efficace : 2e lecteur de QR (quirc, compilé en WebAssembly) en pleine définition, image rendue plus nette, centre agrandi, en relais avec jsQR. Sur 70 photos difficiles : 48 lues au lieu de 29. Cadre caméra orange quand un QR est vu mais pas encore lisible.

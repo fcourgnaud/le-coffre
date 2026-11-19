@@ -55,7 +55,6 @@
       <button class="principal" id="btn-lancer">Démarrer le piratage</button>
       <div class="ligne-boutons">
         <button id="btn-reglages">Réglages</button>
-        <button id="btn-serrures">Les serrures</button>
         <button id="btn-regles">Règles</button>
       </div>
       <div id="info-maj"></div>
@@ -103,14 +102,6 @@
       <button class="principal" id="btn-fermer-reglages">OK</button>
     </div>
   </div>
-</section>
-
-<!-- ============ ÉCOUTER LES SERRURES ============ -->
-<section id="serrures" class="ecran">
-  <h2>Les serrures</h2>
-  <p>Chaque serrure a un son et un symbole. Le Runner doit les reconnaître, puis chercher sur la carte Plan quel programme correspond.</p>
-  <div id="liste-serrures"></div>
-  <button id="btn-retour-serrures" style="margin-top:auto">Retour</button>
 </section>
 
 <!-- ============ RÈGLES RAPIDES ============ -->
@@ -395,7 +386,6 @@ const RECTS_SYMBOLES = SYMBOLES_PIXELS.map((lignes) => {
   lignes.forEach((l, y) => { const re = /#+/g; let m; while ((m = re.exec(l))) rects += `<rect x="${m.index}" y="${y}" width="${m[0].length}" height="1"/>`; });
   return rects;
 });
-const svgSymbole = (i) => `<svg viewBox="0 0 24 24" shape-rendering="crispEdges">${RECTS_SYMBOLES[i]}</svg>`;
 function afficherSymbole(i) {
   $('#picto').innerHTML = RECTS_SYMBOLES[i];
   const e = $('#ecran-symbole'); e.classList.remove('on'); void e.offsetWidth; e.classList.add('on');
@@ -492,7 +482,7 @@ document.addEventListener('keydown', demarrerApp, { once: true });
 const $ = (s) => document.querySelector(s);
 function ecran(id) {
   document.body.dataset.ecran = id;
-  if (id === 'accueil' || id === 'fin' || id === 'serrures' || id === 'regles') Musique.jouer('intro');
+  if (id === 'accueil' || id === 'fin' || id === 'regles') Musique.jouer('intro');
   document.querySelectorAll('.ecran').forEach((e) => e.classList.toggle('actif', e.id === id));
   document.body.classList.toggle('en-jeu', id === 'jeu' || id === 'pause' || id === 'entracte');
 }
@@ -533,18 +523,6 @@ document.body.classList.add('visuels');
 // Les 5 empreintes du chien
 for (let i = 0; i < 5; i++) { const d = document.createElement('div'); d.className = 'patte'; d.innerHTML = '<svg viewBox="0 0 24 24"><ellipse cx="12" cy="16" rx="5" ry="4"/><circle cx="5.5" cy="9.5" r="2.2"/><circle cx="9.5" cy="5.5" r="2.2"/><circle cx="14.5" cy="5.5" r="2.2"/><circle cx="18.5" cy="9.5" r="2.2"/></svg>'; $('#pattes').appendChild(d); }
 
-// Écran « Écouter les serrures »
-SONS.forEach((o, i) => {
-  const l = document.createElement('div'); l.className = 'ligne-son';
-  l.innerHTML = `<div class="picto-ligne">${svgSymbole(i)}</div><div style="flex:1"><div class="nom">${o.nom}</div><div class="desc">${o.desc}</div></div><button>▶</button>`;
-  l.querySelector('button').addEventListener('click', () => {
-    Son.init(); Son.serrure(o.sig);
-    const pi = l.querySelector('.picto-ligne'); pi.classList.remove('flash'); void pi.offsetWidth; pi.classList.add('flash');
-  });
-  $('#liste-serrures').appendChild(l);
-});
-$('#btn-serrures').addEventListener('click', () => ecran('serrures'));
-$('#btn-retour-serrures').addEventListener('click', () => ecran('accueil'));
 $('#btn-regles').addEventListener('click', () => ecran('regles'));
 $('#btn-retour-regles').addEventListener('click', () => ecran('accueil'));
 
