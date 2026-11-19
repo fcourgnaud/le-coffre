@@ -113,7 +113,7 @@
     <h3>Les rôles</h3>
     Un joueur est le <b>Cyberrunner</b>. Tous les autres sont des <b>Deckrunner</b>. Pas de cartes de rôle.
     <h3>Le plan</h3>
-    Au début de chaque coffre, la cloche sonne et une lettre s'affiche : c'est le plan à utiliser (3 coups = plan C). Seul le Cerveau regarde la carte Plan. Il ne la montre jamais.
+    Au début de chaque coffre, une lettre s'affiche pendant un compte à rebours de 5 secondes : c'est le plan à utiliser. Seul le Cerveau regarde la carte Plan. Il ne la montre jamais.
     <h3>Les programmes</h3>
     16 programmes différents, chacun en 2 exemplaires (32 cartes), mélangés en pioche. Chaque Deckrunner a 6 programmes en main (10 s'il est seul Deckrunner). Le Cyberrunner n'en a pas.
     <h3>Une serrure</h3>
@@ -176,7 +176,7 @@
 
   <div id="lampe"><div class="halo"></div><div class="faisceau"></div><div class="ampoule"></div></div>
   <div id="pattes"></div>
-  <div id="annonce"><div class="titre-plan">Plan <span id="annonce-lettre"></span></div><div id="annonce-coups"></div></div>
+  <div id="annonce"><div class="titre-plan">Plan <span id="annonce-lettre"></span></div><div id="decompte"><span id="decompte-chiffre">5</span></div></div>
   <div id="test"></div>
 
   <!-- Pour les tests (« Aide pour les tests » cochée) : une ligne en bas de l'écran -->
@@ -344,7 +344,8 @@ const Son = {
   ouverture() { const t = this.t(); for (let i = 0; i < 6; i++) this.tic(t + i * 0.07, 0.3); this.ton(t + 0.5, 0.6, { f: 150, f2: 70, type: 'triangle', g: 0.6 }); [523, 659, 784, 1047].forEach((f, i) => this.ton(t + 0.7 + i * 0.1, 0.9, { f, type: 'triangle', g: 0.12 })); },
   // Grésillement des néons qui s'allument (calé sur l'animation)
   neon() { const t = this.t(); [0.1, 0.24, 0.42, 0.52].forEach((d, i) => { this.ton(t + d * 1.4, 0.07, { f: 120, type: 'square', g: 0.05 + i * 0.01 }); this.souffle(t + d * 1.4, 0.05, { filtre: 'highpass', f: 4000, g: 0.08 }); }); this.ton(t + 0.75, 0.6, { f: 100, type: 'sawtooth', g: 0.02 }); },
-  coups(n) { const t = this.t() + 0.1; for (let i = 0; i < n; i++) { this.ton(t + i * 0.6, 1.0, { f: 988, type: 'sine', g: 0.25 }); this.ton(t + i * 0.6, 0.6, { f: 1976, type: 'sine', g: 0.06 }); } },
+  // Compte à rebours : un bip par seconde, plus aigu et plus long à la fin (n = 0)
+  decompte(n) { const t = this.t(); if (n > 0) this.ton(t, 0.12, { f: 660, type: 'square', g: 0.12 }); else { this.ton(t, 0.35, { f: 1320, type: 'square', g: 0.14 }); this.ton(t, 0.35, { f: 990, type: 'square', g: 0.08 }); } },
   cloche() { const t = this.t(); [880, 660].forEach((f, i) => this.ton(t + i * 0.6, 1.4, { f, type: 'sine', g: 0.2 })); },
 
   // Signature sonore de chaque serrure
@@ -637,13 +638,11 @@ function demarrerCoffre() {
   el.pattes.forEach((pa) => pa.classList.remove('on')); tic.pattes = 0; tic.sec = -1;
   J.garde.etat = 'repos'; J.garde.prochain = J.horloge + hasard(c.attenteMin, c.attenteMax);
   J.chien.etat = 'absent'; J.chien.prochain = J.horloge + hasard(20, 35);
-  // Annonce du plan : la lettre s'affiche et la cloche sonne (3 coups = plan C)
+  // Annonce du plan : la lettre s'affiche avec un compte à rebours de 5 secondes (le chrono de la nuit attend)
   const plan = J.plans[J.coffre];
   Musique.jouer('p' + (J.coffre + 1));
   $('#plan-lettre').textContent = LETTRES[plan];
-  setTimeout(() => Son.coups(plan + 1), 400);
   annoncerPlan(plan);
-  J.prochaineSerrure = J.horloge + 1.5 + (plan + 1) * 0.6;
   J.reecoutes = 0;
   $('#coffre-num').textContent = `Coffre ${J.coffre + 1} / 3`;
   $('#coffre-nom').textContent = c.nom;
@@ -652,7 +651,7 @@ function demarrerCoffre() {
   ecran('jeu');
   let avant = performance.now();
   clearInterval(boucle);
-  boucle = setInterval(() => { const m = performance.now(); const dt = Math.min(0.25, (m - avant) / 1000); avant = m; if (!J.enPause && !J.fini) tic(dt); }, 50);
+  boucle = setInterval(() => { const m = performance.now(); const dt = Math.min(0.25, (m - avant) / 1000); avant = m; if (!J.enPause && !J.fini) { if (J.decompte > 0) avancerDecompte(dt); else tic(dt); } }, 50);
 }
 
 // Éléments souvent mis à jour (cherchés une seule fois)
@@ -724,12 +723,29 @@ function tic(dt) {
 
 function flashEcran(classe) { const j = $('#jeu'); j.classList.remove(classe); void j.offsetWidth; j.classList.add(classe); setTimeout(() => j.classList.remove(classe), 900); }
 
+const DUREE_DECOMPTE = 5;   // secondes de compte à rebours quand le plan s'affiche
 function annoncerPlan(plan) {
   $('#annonce-lettre').textContent = LETTRES[plan];
-  $('#annonce-coups').innerHTML = Array.from({ length: plan + 1 }, () => '<span></span>').join('');
-  const a = $('#annonce'); a.classList.add('visible');
-  a.querySelectorAll('#annonce-coups span').forEach((sp, i) => setTimeout(() => sp.classList.add('on'), 500 + i * 600));
-  setTimeout(() => a.classList.remove('visible'), 1200 + (plan + 1) * 600);
+  J.decompte = DUREE_DECOMPTE; J.decompteAffiche = 0;
+  $('#annonce').classList.add('visible');
+  avancerDecompte(0);
+}
+// Le compte à rebours avance avec le temps de jeu (il s'arrête si la partie est en pause)
+function avancerDecompte(dt) {
+  J.decompte -= dt;
+  const n = Math.ceil(J.decompte);
+  if (n > 0 && n !== J.decompteAffiche) {
+    J.decompteAffiche = n;
+    const c = $('#decompte-chiffre'); c.textContent = n;
+    c.classList.remove('bat'); void c.offsetWidth; c.classList.add('bat');
+    Son.decompte(n);
+  }
+  if (J.decompte <= 0) {
+    J.decompte = 0;
+    $('#annonce').classList.remove('visible');
+    Son.decompte(0);
+    J.prochaineSerrure = J.horloge + 0.5;    // la première serrure se fait entendre juste après
+  }
 }
 
 function depart(gainActuel) { const g = J.garde; g.etat = 'depart'; g.finDepart = J.horloge + 4; g.gainDepart = gainActuel; g.prochainPas = J.horloge + 0.4; }

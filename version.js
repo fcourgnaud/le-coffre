@@ -5,7 +5,7 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.14.1';
+self.APP_VERSION = '3.15.0';
 self.APP_NOTES = [
-  'Aide pour les tests sur deux lignes'
+  'Annonce du plan : compte à rebours de 5 secondes (plus de carrés ni de cloche)'
 ];

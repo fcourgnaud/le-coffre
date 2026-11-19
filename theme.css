@@ -360,15 +360,17 @@ body.mode-test .camera-cadre span { display: flex; }
 @keyframes patte { to { transform: scale(1.3); } }
 
 /* Annonce du plan au début de chaque coffre */
-#annonce { position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+#annonce { position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
   background: var(--balayage), rgba(3, 6, 14, .9); color: var(--ecran); opacity: 0; pointer-events: none; transition: opacity .3s; }
 #annonce.visible { opacity: 1; }
 #annonce .titre-plan { font-family: var(--police-pixel-titre); font-size: 1.1rem; text-shadow: 0 0 10px var(--ecran); }
 #annonce-lettre { display: block; margin-top: 18px; text-align: center; line-height: 1; font-family: var(--police-pixel-titre); font-size: 5rem; color: #fff;
   text-shadow: 0 0 14px var(--ecran), 0 0 40px var(--ecran); }
-#annonce-coups { display: flex; gap: 12px; }
-#annonce-coups span { width: 16px; height: 16px; background: rgba(255,255,255,.12); transition: background .15s, box-shadow .15s; }
-#annonce-coups span.on { background: var(--ecran); box-shadow: 0 0 14px var(--ecran); }
+/* Compte à rebours sous la lettre du plan */
+#decompte { width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border: 3px solid var(--ecran); box-shadow: 0 0 14px var(--ecran), inset 0 0 10px rgba(0,0,0,.6); }
+#decompte-chiffre { font-family: var(--police-pixel-titre); font-size: 1.8rem; color: var(--ecran); text-shadow: 0 0 10px var(--ecran); }
+#decompte-chiffre.bat { animation: bat .9s steps(6); }
+@keyframes bat { 0% { transform: scale(1.6); color: #fff; } 30% { transform: scale(1); } 100% { opacity: .85; } }
 
 /* Flashs : vigile qui vous voit, chien qui aboie */
 #jeu.flash-garde::after { content: ''; position: absolute; inset: 0; z-index: 20; pointer-events: none; animation: flash-garde .9s forwards; }

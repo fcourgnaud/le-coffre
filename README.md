@@ -38,6 +38,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.15.0** — Annonce du plan : la lettre reste affichée pendant un compte à rebours de 5 s avec un bip par seconde (réglage `DUREE_DECOMPTE`) ; plus de carrés ni de coups de cloche ; le chrono attend la fin du compte à rebours.
 - **3.14.1** — Aide pour les tests sur deux lignes (programme à scanner, puis drone, cyber-dog et défausse).
 - **3.14.0** — Textes des écrans du décor environ 20 % plus grands ; aide pour les tests sur une seule ligne en bas de l'écran, avec le bouton « Ouvrir ».
 - **3.13.3** — Police des titres pixel : majuscules accentuées redessinées à la taille des autres (police « BP Pixel Titre », modifiée depuis Press Start 2P).
