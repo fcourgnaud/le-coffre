@@ -654,19 +654,25 @@ function demarrerCoffre() {
 
 // Éléments souvent mis à jour (cherchés une seule fois)
 const el = { chrono: $('#chrono'), chien: $('#chien') };
-// Le cyber-dog : il entre par la gauche et avance d'un pas (sur 5) à chaque reniflement.
-// pas = 0 : caché ; brusque = true : il disparaît d'un coup (coffre ouvert, nouveau coffre)
-function placerChien(pas, brusque) {
-  tic.pas = pas;
+// Le cyber-dog : il entre par le bord gauche de l'app, au niveau du sol, et glisse jusqu'au centre du coffre.
+// Sa position = le temps qui reste : quand son centre arrive au centre du coffre, il aboie (alarme) et repart à droite.
+// p = 0 : caché à gauche ; p = 1 : centré sur le coffre
+const DUREE_CHIEN = 7;   // secondes pour aller du bord gauche au centre du coffre (= temps pour lui donner l'os)
+function xChien(p) { const w = el.chien.offsetWidth, z = el.chien.parentElement.getBoundingClientRect(); return -w + p * (Scene.centrePorte - z.left + w / 2); }
+function placerChien(p, brusque) {
+  el.chien.classList.remove('part-gauche', 'part-droite');
   el.chien.classList.toggle('brusque', !!brusque);
-  el.chien.classList.toggle('renifle', pas > 0);
-  el.chien.style.setProperty('--pas', pas);
-  if (brusque) el.chien.classList.remove('aboie', 'content');
+  el.chien.classList.toggle('renifle', p > 0);
+  if (brusque || p > 0) el.chien.classList.remove('aboie', 'content');
+  el.chien.style.setProperty('--x', xChien(p).toFixed(1) + 'px');
 }
-function chienPart(classe) {   // il aboie ou ronge son os, puis repart vers la gauche
-  el.chien.classList.remove('aboie', 'content', 'brusque'); void el.chien.offsetWidth; el.chien.classList.add(classe);
-  tic.pas = 0; el.chien.classList.remove('renifle');
-  setTimeout(() => { if (tic.pas === 0) el.chien.style.setProperty('--pas', 0); }, classe === 'aboie' ? 900 : 600);
+function chienPart(classe) {   // aboie : il repart vers la droite ; os : il repart vers la gauche
+  el.chien.classList.remove('aboie', 'content', 'brusque', 'renifle'); void el.chien.offsetWidth; el.chien.classList.add(classe);
+  setTimeout(() => {
+    if (J.chien.etat !== 'absent' || !el.chien.classList.contains(classe)) return;
+    if (classe === 'aboie') { el.chien.classList.add('part-droite'); el.chien.style.setProperty('--x', (el.chien.parentElement.clientWidth + 10) + 'px'); }
+    else { el.chien.classList.add('part-gauche'); el.chien.style.setProperty('--x', xChien(0).toFixed(1) + 'px'); }
+  }, classe === 'aboie' ? 900 : 600);
 }
 function tic(dt) {
   J.horloge += dt;
@@ -712,11 +718,12 @@ function tic(dt) {
   if (c.chien && J.planques && ch.etat === 'renifle') ch.fin += dt;   // planqués : le chien attend
   if (c.chien && !J.planques) {
     if (ch.etat === 'absent' && h >= ch.prochain && g.etat === 'repos' && g.prochain - h > 9) {
-      ch.etat = 'renifle'; ch.fin = h + 7; ch.prochainReni = h;
+      ch.etat = 'renifle'; ch.fin = h + DUREE_CHIEN; ch.prochainReni = h;
     }
     if (ch.etat === 'renifle') {
-      const p = 1 - (ch.fin - h) / 7;
-      if (h >= ch.prochainReni) { Son.reniflement(0.2 + 0.8 * p); ch.prochainReni = h + 0.9; const pas = Math.min(5, 1 + Math.floor(p * 5)); if (pas !== tic.pas) placerChien(pas); }
+      const p = 1 - (ch.fin - h) / DUREE_CHIEN;
+      if (h >= ch.prochainReni) { Son.reniflement(0.2 + 0.8 * p); ch.prochainReni = h + 0.9; }
+      placerChien(Math.min(1, p));
       if (h >= ch.fin) { flashEcran('flash-chien'); chienPart('aboie'); Son.aboiement(); J.stats.aboiements++; message('Le cyber-dog aboie ! Alarme +1', true); ch.etat = 'absent'; ch.prochain = h + hasard(25, 40); monterAlarme(1); }
     }
   }

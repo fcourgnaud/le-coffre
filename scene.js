@@ -173,6 +173,7 @@ const Scene = {
     }
     st.setProperty('--u', (ECRANS.grand.h * c / 100).toFixed(3) + 'px');      // 1 unité = 1 % de la hauteur du grand écran
     st.setProperty('--colonne', (x + 700 * c).toFixed(1) + 'px');           // bord droit du grand écran
+    this.centrePorte = x + CENTRE_PORTE * c;                                 // centre du coffre à l'écran (le cyber-dog s'y arrête)
   },
   afficher(niveau) {
     this.niveau = niveau;
