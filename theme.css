@@ -288,21 +288,27 @@ body.danger #jeu .hud { box-shadow: inset 0 0 calc(var(--u) * 10) rgba(255, 59, 
 @keyframes flash-alerte { 0% { opacity: 1; } 12% { opacity: .2; } 24%, 70% { opacity: 1; } 100% { opacity: 0; } }
 
 /* Bas de l'écran : chrono au centre, son et pause à droite, caméra collée dans le coin bas gauche */
-#jeu .pied-ecran { position: absolute; left: 0; right: 10%; top: calc(var(--u) * 76); height: calc(var(--u) * 14); display: flex; align-items: center; justify-content: center; }
-#jeu .pied-ecran #chrono { margin-left: 10%; }   /* centré sur l'écran malgré la marge de droite */
+#jeu .pied-ecran { position: absolute; left: 0; right: 0; top: calc(var(--u) * 76); height: calc(var(--u) * 14); }
+#jeu .pied-ecran #chrono { position: absolute; left: 0; right: 0; top: calc(var(--u) * 1); text-align: center; }
+#jeu .pied-ecran .commandes { right: 10%; }
 #chrono { font-size: calc(var(--u) * 21); line-height: .8; color: #fff; letter-spacing: .03em; }
 #chrono.presse { color: var(--alarme); text-shadow: 0 0 10px var(--alarme); animation: clignote 1s steps(2) infinite; }
-#jeu .commandes { position: absolute; right: 0; top: 0; bottom: 0; display: flex; gap: calc(var(--u) * 2.5); }
-#jeu .commandes button { height: 100%; aspect-ratio: 1; padding: calc(var(--u) * 3); display: flex; align-items: center; justify-content: center;
+/* Tailles fixes (en unités d'écran) : Safari sur iPhone gère mal les hauteurs en % et aspect-ratio dans un bloc positionné */
+#jeu .commandes { position: absolute; right: 0; top: 0; display: flex; gap: calc(var(--u) * 2.5); }
+#jeu .commandes button { width: calc(var(--u) * 14); height: calc(var(--u) * 14); min-width: 0; min-height: 0; padding: calc(var(--u) * 3); margin: 0;
+  display: flex; align-items: center; justify-content: center;
   border: calc(var(--u) * .6) solid var(--ecran); background: rgba(0,0,0,.35); color: var(--ecran); box-shadow: none; }
-#jeu .commandes button svg { width: 100%; height: 100%; fill: currentColor; filter: drop-shadow(0 0 2px currentColor); }
+#jeu .commandes button svg { width: calc(var(--u) * 7); height: calc(var(--u) * 7); fill: currentColor; filter: drop-shadow(0 0 2px currentColor); }
 #jeu .commandes button:active { background: var(--ecran); color: var(--encre); }
-/* Caméra : collée au bord gauche et au bas de l'écran, coin haut droit coupé (le cadre = fond couleur écran, la vidéo par-dessus) */
-.camera-cadre { --coupe: polygon(0 0, 84% 0, 100% 24%, 100% 100%, 0 100%); position: absolute; left: 0; bottom: 0; width: 28%; height: 32%; z-index: 1;
-  background: var(--ecran); clip-path: var(--coupe); }
-#apercu { position: absolute; top: calc(var(--u) * .8); right: calc(var(--u) * .8); left: 0; bottom: 0; width: calc(100% - var(--u) * .8); height: calc(100% - var(--u) * .8);
-  display: block; object-fit: cover; transform: scaleX(-1); filter: saturate(.6) contrast(1.1); background: #000; clip-path: var(--coupe); }
-.camera-cadre::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,0,0,.35) 0 1px, transparent 1px 3px); }
+/* Caméra : collée au bord gauche et au bas de l'écran, coin haut droit coupé.
+   Le cadre (fond couleur écran) dessine le liseré en haut, sur le biais et à droite ; la vidéo est dans un bloc découpé à part
+   (on ne découpe jamais la vidéo elle-même : Safari l'affiche mal) */
+.camera-cadre { --coupe: polygon(0 0, 84% 0, 100% 24%, 100% 100%, 0 100%); position: absolute; left: 0; bottom: 0; width: 28%; height: calc(var(--u) * 32); z-index: 1;
+  background: var(--ecran); -webkit-clip-path: var(--coupe); clip-path: var(--coupe); }
+.camera-vue { position: absolute; left: 0; bottom: 0; width: calc(100% - var(--u) * 1); height: calc(var(--u) * 31); overflow: hidden; background: #000;
+  -webkit-clip-path: var(--coupe); clip-path: var(--coupe); transform: translateZ(0); }
+#apercu { display: block; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); filter: saturate(.6) contrast(1.1); }
+.camera-vue::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,0,0,.35) 0 1px, transparent 1px 3px); }
 .camera-cadre.vu { background: var(--alarme-orange); }   /* un QR est vu, pas encore lisible : tenir la carte immobile */
 .camera-cadre:has(#apercu.lu) { background: #fff; }      /* une carte vient d'être lue */
 body.mode-test .camera-cadre { display: none; }           /* sans scan : pas de caméra */

@@ -5,7 +5,7 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.22.0';
+self.APP_VERSION = '3.22.1';
 self.APP_NOTES = [
-  'Nouvelle disposition du grand écran (coffre, détection, plan, caméra, chrono, son, pause)'
+  'Grand écran : caméra et boutons son et pause corrigés sur iPhone'
 ];
