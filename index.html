@@ -175,7 +175,7 @@
   <!-- Petit écran du décor (à droite de la porte) : le symbole de la serrure -->
   <div id="ecran-symbole" class="ecran-deco"><svg id="picto" viewBox="0 0 24 24" shape-rendering="crispEdges"></svg><div class="veille"></div></div>
 
-  <div id="lampe"><div class="halo"></div><div id="drone"><div class="faisceau"></div><div class="vol"><div class="source"></div><div class="coque"></div><i class="feu g"></i><i class="feu d"></i></div></div></div>
+  <div id="lampe"><div id="drone"><div class="halo"></div><div class="coque"></div><i class="feu g"></i><i class="feu d"></i><i class="voyant"></i></div></div>
   <div id="chien-zone"><div id="chien" class="k9"><div class="corps"></div><div class="tete"><div class="oeil"></div></div></div></div>
   <div id="annonce"><div class="titre-plan">Plan <span id="annonce-lettre"></span></div><div id="decompte"><span id="decompte-chiffre">5</span></div></div>
   <div id="test"></div>
@@ -624,6 +624,7 @@ function lancerPartie() {
     planques: false,
     garde: { etat: 'repos', prochain: 0, debut: 0, arrivee: 0, demiTour: null, prochainPas: 0, finDepart: 0, gainDepart: 0, pan: 0 },
     chien: { etat: 'absent', prochain: 0, fin: 0, prochainReni: 0 },
+    drone: { u: 0, sens: 0 },
     prochaineSerrure: 0, derniereEcoute: -9,
     stats: { erreurs: 0, vu: 0, aboiements: 0 },
     enPause: false, fini: false
@@ -700,7 +701,7 @@ function tic(dt) {
 
   // ---- Le garde ----
   if (g.etat === 'repos' && h >= g.prochain) {
-    g.etat = 'approche'; g.debut = h; g.arrivee = h + c.approche; g.prochainPas = h; g.pan = hasard(-0.7, 0.7);
+    g.etat = 'approche'; g.debut = h; g.arrivee = h + c.approche; g.prochainPas = h; g.pan = 0.8;   // le son vient de la droite, comme le drone
     g.demiTour = Math.random() < c.demiTour ? h + c.approche * hasard(0.45, 0.7) : null;
   }
   if (g.etat === 'approche') {
@@ -742,20 +743,24 @@ function tic(dt) {
   if (g.etat === 'depart') lumiere = g.gainDepart * Math.max(0, (g.finDepart - h) / 4);
   const l = lumiere.toFixed(2);
   if (l !== tic.lumiere) { tic.lumiere = l; document.documentElement.style.setProperty('--garde', l); }
-  // Le drone : d'abord seulement sa lumière qui entre par la droite, puis il apparaît en haut à droite (fin de l'approche)
-  let e = 0;
-  if (g.etat === 'approche') e = Math.max(0, (Math.min(1, (h - g.debut) / c.approche) - DRONE_ENTREE) / (1 - DRONE_ENTREE));
-  if (g.etat === 'depart') e = (g.eDepart || 0) * Math.max(0, (g.finDepart - h) / 4);
-  majDrone(e);
+  // Le drone traverse l'écran de droite à gauche en ligne droite, à vitesse constante :
+  // u = 0 hors champ à droite, u = 1 au milieu de l'écran (fin de l'approche : il vous voit ou non), u = 2 sorti à gauche
+  const dr = J.drone;
+  if (g.etat === 'approche') { dr.u = Math.min(1, (h - g.debut) / c.approche); dr.sens = 0; }
+  else if (dr.sens) {
+    dr.u += dr.sens * dt / c.approche;
+    if (dr.u >= 2 || dr.u <= 0) { dr.u = 0; dr.sens = 0; }
+  }
+  majDrone(dr.u);
 
   majAide();
 }
 
-const DRONE_ENTREE = 0.55;   // part de l'approche où l'on ne voit que la lumière (ensuite le drone entre)
-function majDrone(e) {
-  const v = (1 - Math.pow(1 - e, 2)).toFixed(3);   // arrivée qui ralentit
+function majDrone(u) {
+  if (u === 0 && J && J.drone && J.garde.etat !== 'approche') { J.drone.u = 0; J.drone.sens = 0; }
+  const v = u.toFixed(4);
   if (v === tic.droneAff) return;
-  tic.droneAff = v; tic.drone = e;
+  tic.droneAff = v;
   document.documentElement.style.setProperty('--drone', v);
 }
 function flashEcran(classe) { const j = $('#jeu'); j.classList.remove(classe); void j.offsetWidth; j.classList.add(classe); setTimeout(() => j.classList.remove(classe), 900); }
@@ -785,7 +790,8 @@ function avancerDecompte(dt) {
   }
 }
 
-function depart(gainActuel) { const g = J.garde; g.eDepart = tic.drone || 0; g.etat = 'depart'; g.finDepart = J.horloge + 4; g.gainDepart = gainActuel; g.prochainPas = J.horloge + 0.4; }
+function depart(gainActuel) { const g = J.garde; J.drone.sens = J.horloge >= g.arrivee ? 1 : -1;   /* passé : il continue vers la gauche ; demi-tour : il repart à droite */
+  g.etat = 'depart'; g.finDepart = J.horloge + 4; g.gainDepart = gainActuel; g.prochainPas = J.horloge + 0.4; }
 
 function jouerSerrure() {
   if (J.etape >= 4) return;

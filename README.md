@@ -38,6 +38,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.19.0** — Drone : il entre par la droite dès le début de l'approche et traverse le haut de l'écran en ligne droite à vitesse constante ; au milieu de l'écran il vous voit (+2) ou passe, puis continue vers la gauche et sort ; demi-tour = il repart à droite. Grand halo rouge qui pulse autour de lui (on le voit arriver avant le drone), feux d'antennes rouges, façade qui grésille ; plus d'oscillation, plus de faisceau, plus d'ombre portée ; flash rouge quand il vous voit ; bruit de pas qui va de la droite vers la gauche.
 - **3.18.0** — Le drone remplace la lampe du vigile : pendant la première partie de l'approche (`DRONE_ENTREE` = 55 %), seule sa lumière entre par la droite ; ensuite le drone (`img/drone.webp`) apparaît en haut à droite et ralentit jusqu'à sa place, en oscillant, feux d'antennes qui clignotent, projecteur qui balaie la pièce vers le bas à gauche ; au départ (ou demi-tour) il ressort par la droite. Correctif : le cyber-dog n'apparaît plus immobile à gauche au début d'un coffre.
 - **3.17.0** — Accueil : le cyber-dog traverse la pièce de gauche à droite au niveau du sol, en reniflant, toutes les 30 s (réglage `PROMENADE_CHIEN`, traversée de 11 s ; premier passage 6 s après le lancement).
 - **3.16.2** — Cyber-dog toujours au niveau du sol, même avec l'aide pour les tests : la barre d'aide passe par-dessus lui.

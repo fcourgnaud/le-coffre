@@ -337,29 +337,26 @@ body.mode-test .camera-cadre span { display: flex; }
 /* =========================================================
    JEU : LE VIGILE, LE CHIEN, L'ANNONCE DU PLAN, LES FLASHS
    ========================================================= */
-/* Le drone (ex-vigile) : son projecteur entre d'abord par la DROITE (--garde = intensité),
-   puis le drone apparaît en haut à droite en oscillant (--drone : 0 = hors champ, 1 = arrivé) */
+/* Le drone (ex-vigile) : il traverse l'écran en haut, de droite à gauche, en ligne droite et à vitesse constante.
+   --drone : 0 = hors champ à droite, 1 = au milieu de l'écran (il vous voit ou non), 2 = sorti à gauche.
+   Un grand halo rouge pulse autour de lui : on le voit arriver par le bord droit avant le drone lui-même. */
 #lampe { position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; }
-#lampe .halo { position: absolute; inset: 0; opacity: calc(var(--garde) * .55);
-  background: radial-gradient(ellipse 60% 90% at 100% 30%, rgba(var(--lumiere), .7), transparent 70%); mix-blend-mode: screen; }
-#drone { position: absolute; top: 2vh; right: calc(var(--bande-d, 0px) + 4vw); height: 25vh; aspect-ratio: 552 / 309;
-  transform: translateX(calc((1 - var(--drone)) * (100% + 9vw))); }
-#drone .vol { position: absolute; inset: 0; animation: oscille 2.6s ease-in-out infinite; }
-#drone .coque { position: absolute; inset: 0; background: url(img/drone.webp) center / 100% 100% no-repeat; filter: drop-shadow(0 0 4px rgba(0,0,0,.9)); }
-@keyframes oscille { 0%, 100% { transform: translateY(0) rotate(-2deg); } 25% { transform: translateY(-1.2vh) rotate(0deg); } 50% { transform: translateY(0) rotate(2deg); } 75% { transform: translateY(.8vh) rotate(0deg); } }
-/* Feux des antennes qui clignotent */
-#drone .feu { position: absolute; width: 9%; height: 16%; top: 1.5%; border-radius: 50%; background: #bff6ff; mix-blend-mode: screen; opacity: 0;
-  box-shadow: 0 0 10px 4px rgba(var(--lumiere), 1); animation: feu 1.1s steps(1) infinite; }
-#drone .feu.g { left: 21.2%; } #drone .feu.d { left: 58.9%; animation-delay: .55s; }
-@keyframes feu { 0% { opacity: .9; } 30% { opacity: 0; } }
-/* Le projecteur sous le drone : un cône qui part vers le bas à gauche et balaie la pièce */
-#drone .source { position: absolute; left: 42%; top: 82%; width: 16%; height: 14%; border-radius: 50%; background: #fff; opacity: var(--garde);
-  box-shadow: 0 0 calc(var(--garde) * 30px) calc(var(--garde) * 14px) rgba(var(--lumiere), 1); }
-#drone .faisceau { position: absolute; right: 50%; top: 88%; width: 140vw; height: 110vh; margin-top: -55vh; opacity: var(--garde);
-  transform-origin: 100% 50%; clip-path: polygon(100% 49%, 100% 51%, 0% 100%, 0% 0%);
-  background: linear-gradient(270deg, rgba(var(--lumiere), 1) 0%, rgba(var(--lumiere), .7) 20%, rgba(var(--lumiere), .25) 60%, transparent 100%);
-  mix-blend-mode: screen; animation: balaye 3.2s ease-in-out infinite alternate; }
-@keyframes balaye { from { transform: rotate(-34deg); } to { transform: rotate(-14deg); } }
+#drone { position: absolute; top: 3vh; left: 50%; height: 24vh; aspect-ratio: 552 / 309;
+  transform: translateX(-50%) translateX(calc((1 - var(--drone)) * (50vw + 140%))); }
+#drone .halo { position: absolute; left: 50%; top: 50%; width: 340%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 50, 40, 1) 0%, rgba(255, 30, 30, .75) 18%, rgba(255, 20, 20, .38) 38%, rgba(255, 10, 10, .12) 55%, transparent 70%);
+  mix-blend-mode: screen; opacity: calc(.8 + var(--garde) * .2); animation: pulse-drone 1s ease-in-out infinite; }
+@keyframes pulse-drone { 0%, 100% { scale: .82; filter: brightness(.75); } 50% { scale: 1.08; filter: brightness(1.25); } }
+#drone .coque { position: absolute; inset: 0; background: url(img/drone.webp) center / 100% 100% no-repeat; }
+/* Feux des antennes qui clignotent en rouge, l'un après l'autre */
+#drone .feu { position: absolute; width: 9%; height: 16%; top: 1.5%; border-radius: 50%; background: #ffd0d0; mix-blend-mode: screen; opacity: 0;
+  box-shadow: 0 0 10px 5px rgba(255, 40, 40, 1); animation: feu 1s steps(1) infinite; }
+#drone .feu.g { left: 21.2%; } #drone .feu.d { left: 58.9%; animation-delay: .5s; }
+@keyframes feu { 0% { opacity: .95; } 25% { opacity: 0; } }
+/* Écran de façade qui grésille */
+#drone .voyant { position: absolute; left: 32.6%; top: 67.6%; width: 28%; height: 16%; background: #ff5030; mix-blend-mode: screen;
+  animation: voyant .35s steps(2) infinite; }
+@keyframes voyant { 0% { opacity: .05; } 50% { opacity: .35; } }
 
 /* Le cyber-dog : il entre par le bord gauche de l'app, au niveau du sol, passe devant le grand écran
    et glisse jusqu'au centre du coffre (position calculée en JS : --x). Deux calques : le corps et la tête. */
@@ -410,7 +407,7 @@ body.mode-test .camera-cadre span { display: flex; }
 /* Flashs : vigile qui vous voit, chien qui aboie */
 #jeu.flash-garde::after { content: ''; position: absolute; inset: 0; z-index: 20; pointer-events: none; animation: flash-garde .9s forwards; }
 #jeu.flash-chien { animation: flash-chien .9s; }
-@keyframes flash-garde { 0%, 30% { background: rgba(var(--lumiere), .85); } 100% { background: transparent; } }
+@keyframes flash-garde { 0%, 30% { background: rgba(255, 30, 30, .6); } 100% { background: transparent; } }   /* le drone vous voit : flash rouge */
 @keyframes flash-chien { 0%, 100% { transform: none; } 10%, 50% { transform: translateX(-10px); } 30%, 70% { transform: translateX(10px); } }
 
 /* Les écrans s'éteignent juste avant le zoom (comme une vieille télé), puis l'interface reste cachée pendant la caméra */
