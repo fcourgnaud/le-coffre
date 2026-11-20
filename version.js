@@ -5,7 +5,7 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.24.0';
+self.APP_VERSION = '3.24.1';
 self.APP_NOTES = [
-  'Hologramme au centre du coffre : un nouveau picto à chaque verrou validé'
+  'Hologramme : disque bleu agrandi jusqu’à l’anneau du coffre'
 ];

@@ -38,6 +38,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.24.1** — Hologramme : disque bleu agrandi (déborde de 11 % autour de la roue, jusqu'à l'anneau du coffre) ; le picto garde sa taille.
 - **3.24.0** — La roue du coffre ne tourne plus : un écran rond translucide (hologramme bleu cyan) se pose dessus, avec lignes de balayage, reflet qui descend, respiration lumineuse, picto qui flotte et grésille de temps en temps. Picto `img/holo1.webp` au départ, puis holo2 → holo5 à chaque verrou validé (grésillement au changement ; retour à holo1 si le coffre 3 se rebloque). Quand la serrure joue, l'hologramme s'illumine un instant.
 - **3.23.1** — Écran entre deux coffres (bouton « On y va ») : numéro du coffre, nom et texte centrés, comme le grand écran en jeu.
 - **3.23.0** — Grand écran : infos du coffre, « Détection », jauge, « Plan » et boutons son et pause agrandis. L'aperçu caméra sort du bloc de texte et se pose dans le coin bas gauche de la vitre du décor, contre le cadre, avec le même coin coupé que la vitre (mesuré sur chaque porte : `CAMERA_ECRAN` dans scene.js) et le coin haut droit coupé pareil ; liseré couleur écran en haut, sur le biais et à droite.
