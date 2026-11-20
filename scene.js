@@ -99,19 +99,31 @@ function _htmlPorte(niveau, actif) {
 }
 
 // Animations d'ambiance du décor, différentes pour chaque porte (calques posés sur l'encadrement, en pixels de l'image)
-//   porte 1 (bleue) : flux d'énergie qui court dans les lignes lumineuses bleues
-//   porte 2 (verte) : chenillard sur les néons verts + bandes de danger qui défilent
+//   porte 1 (bleue) : les lumières (pas les bordures) s'illuminent une par une, au hasard
+//   porte 2 (verte) : de temps en temps un néon grésille et clignote (néon défaillant) + vumètre du petit écran en haut à gauche
 //   porte 3 (or)    : néons d'alerte qui pulsent (plus vite quand l'alarme monte), étincelles, panneau de voyants qui clignote
-// Les masques (img/ambiance/masque-*.png) = les pixels lumineux de chaque décor : la lumière ne passe que là
-const RAYURES = [{ x: 740, y: 613, w: 40, h: 161 }, { x: 1580, y: 613, w: 40, h: 161 }];
+// Masques (img/ambiance/*.png) = les pixels lumineux de chaque décor : la lumière ne passe que là
+// LUMIERES : rectangles des lumières de chaque décor (x, y, largeur, hauteur en pixels de l'image)
+const LUMIERES = { 0: [[956, 84, 114, 32], [1310, 84, 114, 32], [300, 224, 140, 20], [300, 644, 140, 24], [610, 120, 70, 70], [600, 690, 80, 54], [600, 760, 80, 80], [370, 770, 50, 90], [870, 780, 40, 80], [1460, 776, 40, 84], [1700, 776, 40, 84], [1690, 170, 50, 40], [1620, 30, 100, 30]],
+  1: [[964, 88, 126, 30], [1296, 88, 128, 30], [290, 644, 160, 34], [580, 138, 80, 70], [580, 698, 80, 50], [580, 798, 80, 40], [730, 788, 50, 70], [870, 788, 40, 70], [1030, 788, 50, 70], [1280, 788, 60, 70], [1470, 788, 40, 70], [1580, 788, 40, 70], [200, 788, 50, 70], [410, 788, 20, 70], [200, 734, 90, 20], [1690, 178, 40, 44], [1610, 28, 120, 40]] };
+const VUMETRE = [[387, 18], [412, 20], [438, 19], [465, 19], [491, 18]];   // x et largeur des 5 barres (bas des barres : y = 134)
 const VOYANTS = [[466, 59], [485, 59], [502, 59], [466, 79], [485, 79], [502, 79]];
 const POINTS_ETINCELLES = [[182, 108], [262, 122], [1700, 196], [1706, 470]];
 function _htmlAmbiance(niveau) {
-  const masque = ['bleu', 'vert', 'or'][niveau];
-  let plus = '';
-  if (niveau === 1) plus = RAYURES.map((r) => `<div class="rayures" style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px"><i></i></div>`).join('');
-  if (niveau === 2) plus = VOYANTS.map(([x, y], i) => `<i class="voyant-or" style="left:${x}px;top:${y}px;animation-delay:${(-i * 0.37 - (i % 2) * 0.9).toFixed(2)}s;animation-duration:${(1.3 + (i * 0.53) % 1.4).toFixed(2)}s"></i>`).join('');
-  return `<div class="sc-ambiance amb${niveau}"><div class="lueur" style="-webkit-mask-image:url(img/ambiance/masque-${masque}.png);mask-image:url(img/ambiance/masque-${masque}.png)"><i></i></div>${plus}</div>`;
+  const masque = (n) => `-webkit-mask-image:url(img/ambiance/${n}.png);mask-image:url(img/ambiance/${n}.png)`;
+  const lampes = (niveau in LUMIERES) ? LUMIERES[niveau].map(([x, y, w, h]) => `<i style="left:${x}px;top:${y}px;width:${w}px;height:${h}px"></i>`).join('') : '';
+  if (niveau === 0) return `<div class="sc-ambiance amb0"><div class="lueur" style="${masque('lumieres-bleu')}">${lampes}</div></div>`;
+  if (niveau === 1) return `<div class="sc-ambiance amb1"><div class="lueur" style="${masque('lumieres-vert')}">${lampes}</div>
+    <div class="vumetre">${VUMETRE.map(([x, w], i) => `<i style="left:${x - 384}px;width:${w}px;animation-duration:${(1.7 + i * 0.37).toFixed(2)}s;animation-delay:${(-i * 0.6).toFixed(1)}s"></i>`).join('')}</div></div>`;
+  const voyants = VOYANTS.map(([x, y], i) => `<i class="voyant-or" style="left:${x}px;top:${y}px;animation-delay:${(-i * 0.37 - (i % 2) * 0.9).toFixed(2)}s;animation-duration:${(1.3 + (i * 0.53) % 1.4).toFixed(2)}s"></i>`).join('');
+  return `<div class="sc-ambiance amb2"><div class="lueur" style="${masque('masque-or')}"><i class="pouls"></i></div>${voyants}</div>`;
+}
+// Une lumière au hasard s'allume (porte 1) ou grésille (porte 2)
+function lumiereHasard(classe, duree) {
+  const l = document.querySelectorAll(`#sc-camera > .sc-niveau > .sc-ambiance .lueur > i:not(.${classe})`);
+  if (!l.length) return;
+  const e = l[Math.floor(Math.random() * l.length)];
+  e.classList.add(classe); setTimeout(() => e.classList.remove(classe), duree);
 }
 // Étincelles sur la porte 3 : un petit jaillissement de pixels à un endroit au hasard
 function etincelle() {

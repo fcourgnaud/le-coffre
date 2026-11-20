@@ -144,23 +144,23 @@ button:disabled { opacity: .35; }
 .sc-ambiance { position: absolute; inset: 0; pointer-events: none; }
 #sc-camera.avance .sc-ambiance, body.camera .sc-ambiance { display: none; }
 .sc-ambiance .lueur { position: absolute; inset: 0; overflow: hidden; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; mix-blend-mode: screen; }
-.sc-ambiance .lueur i { position: absolute; top: 0; bottom: 0; left: 0; }
-/* Porte 1 : une vague d'énergie court de gauche à droite dans les lignes bleues */
-.amb0 .lueur i { width: calc(100% + 900px); left: -900px;
-  background: repeating-linear-gradient(90deg, transparent 0 640px, rgba(120, 230, 255, .35) 700px, rgba(230, 255, 255, 1) 760px, rgba(120, 230, 255, .35) 800px, transparent 860px 900px);
-  animation: flux 3.4s linear infinite; }
-@keyframes flux { to { transform: translateX(900px); } }
-/* Porte 2 : chenillard — des bandes de lumière sautent d'un néon à l'autre */
-.amb1 .lueur i { width: calc(100% + 360px); left: -360px;
-  background: repeating-linear-gradient(90deg, transparent 0 270px, rgba(230, 255, 160, .95) 270px 360px);
-  animation: chenillard 1.6s steps(4) infinite; }
-@keyframes chenillard { to { transform: translateX(360px); } }
-.rayures { position: absolute; overflow: hidden; }
-.rayures i { position: absolute; left: 0; right: 0; top: -51px; bottom: 0;
-  background: repeating-linear-gradient(135deg, #d4f20a 0 21px, #2b5a4f 21px 36px); animation: rayures 1.4s linear infinite; }
-@keyframes rayures { to { transform: translateY(51px); } }
+/* Porte 1 : une lumière au hasard s'illumine puis redescend (classe .eclat posée par le jeu) */
+.sc-ambiance .lueur > i { position: absolute; opacity: 0; }
+.amb0 .lueur > i { background: rgba(225, 250, 255, 1); }
+.amb0 .lueur > i.eclat { animation: eclat 1.4s ease-in-out; }
+@keyframes eclat { 0%, 100% { opacity: 0; } 35% { opacity: .9; } 55% { opacity: .65; } }
+/* Porte 2 : néon défaillant — il s'éteint et se rallume plusieurs fois (calque sombre, sans fusion lumineuse) */
+.amb1 .lueur { mix-blend-mode: normal; }
+.amb1 .lueur > i { background: #0a2a20; }
+.amb1 .lueur > i.panne { animation: panne 1.5s steps(1); }
+@keyframes panne { 0% { opacity: .85; } 8% { opacity: 0; } 14% { opacity: .9; } 22% { opacity: .2; } 30% { opacity: .85; } 46% { opacity: 0; } 52% { opacity: .7; } 60%, 100% { opacity: 0; } }
+/* Porte 2 : vumètre du petit écran en haut à gauche (les barres montent et descendent doucement) */
+.vumetre { position: absolute; left: 384px; top: 66px; width: 130px; height: 70px; background: rgb(0, 30, 30); }
+.vumetre i { position: absolute; bottom: 2px; height: 63px; background: rgb(126, 240, 26); box-shadow: inset 0 0 0 2px rgb(9, 57, 0), 0 0 6px rgba(126, 240, 26, .5);
+  transform-origin: 50% 100%; animation: vumetre 2s ease-in-out infinite; }
+@keyframes vumetre { 0%, 100% { transform: scaleY(.25); } 20% { transform: scaleY(.7); } 40% { transform: scaleY(.45); } 60% { transform: scaleY(1); } 80% { transform: scaleY(.55); } }
 /* Porte 3 : néons d'alerte qui pulsent (vitesse = --pouls, réglée par l'alarme) */
-.amb2 .lueur i { right: 0; background: rgba(255, 225, 150, .9); animation: pouls var(--pouls, 2.6s) ease-in-out infinite; }
+.amb2 .lueur i.pouls { inset: 0; opacity: 1; background: rgba(255, 225, 150, .9); animation: pouls var(--pouls, 2.6s) ease-in-out infinite; }
 @keyframes pouls { 0%, 100% { opacity: 0; } 50% { opacity: .75; } }
 .voyant-or { position: absolute; width: 15px; height: 15px; background: #241c2c; animation: voyant-or 1.6s steps(1) infinite; }
 @keyframes voyant-or { 0% { opacity: 0; } 40% { opacity: .92; } 70% { opacity: 0; } 85% { opacity: .92; } }
