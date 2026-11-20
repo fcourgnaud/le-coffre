@@ -5,7 +5,7 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.25.0';
+self.APP_VERSION = '3.25.1';
 self.APP_NOTES = [
-  'Décors animés : flux d’énergie (bleu), chenillard (vert), alerte, étincelles et voyants (or)'
+  'Hologramme : nouveaux pictos cadenas'
 ];

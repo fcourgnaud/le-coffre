@@ -38,6 +38,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.25.1** — Hologramme : nouveaux pictos holo1 à holo5 (cadenas entouré d'un motif différent à chaque étape).
 - **3.25.0** — Ambiance animée différente sur chaque décor (calques sur l'encadrement, masques `img/ambiance/masque-*.png` = pixels lumineux de chaque décor) : porte 1 bleue, une vague d'énergie court de gauche à droite dans les lignes lumineuses ; porte 2 verte, chenillard sur les néons verts et bandes de danger qui défilent sur le cadre de la porte ; porte 3 or, néons d'alerte qui pulsent (de 2,6 s à 0,6 s selon l'alarme), étincelles au hasard sur les tuyaux et le bras robot, panneau de 6 voyants qui clignotent. Cachées pendant le zoom.
 - **3.24.1** — Hologramme : disque bleu agrandi (déborde de 11 % autour de la roue, jusqu'à l'anneau du coffre) ; le picto garde sa taille.
 - **3.24.0** — La roue du coffre ne tourne plus : un écran rond translucide (hologramme bleu cyan) se pose dessus, avec lignes de balayage, reflet qui descend, respiration lumineuse, picto qui flotte et grésille de temps en temps. Picto `img/holo1.webp` au départ, puis holo2 → holo5 à chaque verrou validé (grésillement au changement ; retour à holo1 si le coffre 3 se rebloque). Quand la serrure joue, l'hologramme s'illumine un instant.
