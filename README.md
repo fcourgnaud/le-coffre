@@ -9,7 +9,7 @@ Jeu coopératif en temps réel (2 à 4 joueurs) : le téléphone posé au centre
 | `index.html` | Les écrans et toute la logique du jeu | Oui, avec prudence |
 | `theme.css` | Tout le visuel (couleurs, polices, tailles), rangé par écran | **Oui, c'est fait pour** |
 | `scene.js` | Place tes illustrations et règle les animations (porte, caméra, verrous, écrans du décor) | Les réglages en haut du fichier, oui |
-| `img/` | Tes illustrations : cuivre1/2, argent1/2, or1/2 (1783 × 882 px), fond1 à fond6, logo, cyber-dog (chien-corps + chien-tete) (en .webp) | Oui, remplace-les par tes nouvelles versions |
+| `img/` | Tes illustrations : cuivre1/2, argent1/2, or1/2 (1783 × 882 px), fond1 à fond6, logo, cyber-dog (chien-corps + chien-tete), drone (en .webp) | Oui, remplace-les par tes nouvelles versions |
 | `audio/` | Les musiques : introfin (accueil + fin), musique1/2/3 (une par porte) | Oui, garde les mêmes noms |
 | `polices/` | Les polices pixel VT323 et BP Pixel Titre (Press Start 2P modifiée), licence libre OFL | Non |
 | `lib/jsQR.js`, `lib/quirc.wasm` | Les deux lecteurs de QR codes (jsQR, licence Apache 2.0 ; quirc, licence ISC, compilé en WebAssembly depuis `outils/`) | Non |
@@ -38,6 +38,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.18.0** — Le drone remplace la lampe du vigile : pendant la première partie de l'approche (`DRONE_ENTREE` = 55 %), seule sa lumière entre par la droite ; ensuite le drone (`img/drone.webp`) apparaît en haut à droite et ralentit jusqu'à sa place, en oscillant, feux d'antennes qui clignotent, projecteur qui balaie la pièce vers le bas à gauche ; au départ (ou demi-tour) il ressort par la droite. Correctif : le cyber-dog n'apparaît plus immobile à gauche au début d'un coffre.
 - **3.17.0** — Accueil : le cyber-dog traverse la pièce de gauche à droite au niveau du sol, en reniflant, toutes les 30 s (réglage `PROMENADE_CHIEN`, traversée de 11 s ; premier passage 6 s après le lancement).
 - **3.16.2** — Cyber-dog toujours au niveau du sol, même avec l'aide pour les tests : la barre d'aide passe par-dessus lui.
 - **3.16.1** — Cyber-dog : il entre par le bord gauche de l'app au niveau du sol, passe devant le grand écran et glisse en continu jusqu'au centre du coffre en `DUREE_CHIEN` secondes (7 s) ; s'il y arrive sans os, il aboie (+1 alarme) et repart vers la droite ; avec l'os, il repart vers la gauche.

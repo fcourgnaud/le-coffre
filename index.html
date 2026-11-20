@@ -175,7 +175,7 @@
   <!-- Petit écran du décor (à droite de la porte) : le symbole de la serrure -->
   <div id="ecran-symbole" class="ecran-deco"><svg id="picto" viewBox="0 0 24 24" shape-rendering="crispEdges"></svg><div class="veille"></div></div>
 
-  <div id="lampe"><div class="halo"></div><div class="faisceau"></div><div class="ampoule"></div></div>
+  <div id="lampe"><div class="halo"></div><div id="drone"><div class="faisceau"></div><div class="vol"><div class="source"></div><div class="coque"></div><i class="feu g"></i><i class="feu d"></i></div></div></div>
   <div id="chien-zone"><div id="chien" class="k9"><div class="corps"></div><div class="tete"><div class="oeil"></div></div></div></div>
   <div id="annonce"><div class="titre-plan">Plan <span id="annonce-lettre"></span></div><div id="decompte"><span id="decompte-chiffre">5</span></div></div>
   <div id="test"></div>
@@ -525,7 +525,7 @@ function choisirAide(on) {
 }
 $('#opt-aide').addEventListener('change', (e) => choisirAide(e.target.checked));
 try { choisirAide(localStorage.getItem('casse-aide') === '1'); } catch (e) {}
-// Indices visuels (symbole, lampe du vigile, cyber-dog) : toujours affichés
+// Indices visuels (symbole, projecteur du drone, cyber-dog) : toujours affichés
 document.body.classList.add('visuels');
 
 $('#btn-regles').addEventListener('click', () => ecran('regles'));
@@ -640,7 +640,7 @@ function demarrerCoffre() {
   assurerEtape(); majBoutons();
   Scene.afficher(J.coffre);
   J.planques = false; document.body.classList.remove('planques');
-  document.documentElement.style.setProperty('--garde', 0); tic.lumiere = '0.00';
+  document.documentElement.style.setProperty('--garde', 0); tic.lumiere = '0.00'; majDrone(0);
   placerChien(0, true); tic.sec = -1;
   J.garde.etat = 'repos'; J.garde.prochain = J.horloge + hasard(c.attenteMin, c.attenteMax);
   J.chien.etat = 'absent'; J.chien.prochain = J.horloge + hasard(20, 35);
@@ -672,7 +672,7 @@ function placerChien(p, brusque) {
   el.chien.classList.toggle('brusque', !!brusque);
   el.chien.classList.toggle('renifle', p > 0);
   if (brusque || p > 0) el.chien.classList.remove('aboie', 'content');
-  el.chien.style.setProperty('--x', xChien(p).toFixed(1) + 'px');
+  el.chien.style.setProperty('--x', brusque && p === 0 ? '-150vw' : xChien(p).toFixed(1) + 'px');   // caché : loin à gauche (même si l'écran n'est pas encore affiché)
 }
 function chienPart(classe) {   // aboie : il repart vers la droite ; os : il repart vers la gauche
   el.chien.classList.remove('aboie', 'content', 'brusque', 'renifle'); void el.chien.offsetWidth; el.chien.classList.add(classe);
@@ -742,10 +742,22 @@ function tic(dt) {
   if (g.etat === 'depart') lumiere = g.gainDepart * Math.max(0, (g.finDepart - h) / 4);
   const l = lumiere.toFixed(2);
   if (l !== tic.lumiere) { tic.lumiere = l; document.documentElement.style.setProperty('--garde', l); }
+  // Le drone : d'abord seulement sa lumière qui entre par la droite, puis il apparaît en haut à droite (fin de l'approche)
+  let e = 0;
+  if (g.etat === 'approche') e = Math.max(0, (Math.min(1, (h - g.debut) / c.approche) - DRONE_ENTREE) / (1 - DRONE_ENTREE));
+  if (g.etat === 'depart') e = (g.eDepart || 0) * Math.max(0, (g.finDepart - h) / 4);
+  majDrone(e);
 
   majAide();
 }
 
+const DRONE_ENTREE = 0.55;   // part de l'approche où l'on ne voit que la lumière (ensuite le drone entre)
+function majDrone(e) {
+  const v = (1 - Math.pow(1 - e, 2)).toFixed(3);   // arrivée qui ralentit
+  if (v === tic.droneAff) return;
+  tic.droneAff = v; tic.drone = e;
+  document.documentElement.style.setProperty('--drone', v);
+}
 function flashEcran(classe) { const j = $('#jeu'); j.classList.remove(classe); void j.offsetWidth; j.classList.add(classe); setTimeout(() => j.classList.remove(classe), 900); }
 
 const DUREE_DECOMPTE = 5;   // secondes de compte à rebours quand le plan s'affiche
@@ -773,7 +785,7 @@ function avancerDecompte(dt) {
   }
 }
 
-function depart(gainActuel) { const g = J.garde; g.etat = 'depart'; g.finDepart = J.horloge + 4; g.gainDepart = gainActuel; g.prochainPas = J.horloge + 0.4; }
+function depart(gainActuel) { const g = J.garde; g.eDepart = tic.drone || 0; g.etat = 'depart'; g.finDepart = J.horloge + 4; g.gainDepart = gainActuel; g.prochainPas = J.horloge + 0.4; }
 
 function jouerSerrure() {
   if (J.etape >= 4) return;
@@ -889,7 +901,7 @@ function annulerMenaces() {
   J.garde.etat = 'repos'; J.garde.demiTour = null;
   J.chien.etat = 'absent';
   J.planques = false; document.body.classList.remove('planques');
-  document.documentElement.style.setProperty('--garde', 0); tic.lumiere = '0.00';
+  document.documentElement.style.setProperty('--garde', 0); tic.lumiere = '0.00'; majDrone(0);
   placerChien(0, true);
   $('#jeu').classList.remove('flash-garde', 'flash-chien');
 }

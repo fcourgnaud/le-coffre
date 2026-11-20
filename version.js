@@ -5,7 +5,7 @@
    ET la ligne VERSION en haut de sw.js.
    APP_NOTES = ce qui s'affiche dans le bandeau de mise à jour.
    ========================================================= */
-self.APP_VERSION = '3.17.0';
+self.APP_VERSION = '3.18.0';
 self.APP_NOTES = [
-  'Accueil : le cyber-dog traverse la pièce toutes les 30 secondes'
+  'Le drone arrive en image : sa lumière entre par la droite, puis il apparaît en haut à droite'
 ];
