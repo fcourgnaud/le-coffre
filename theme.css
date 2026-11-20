@@ -343,18 +343,18 @@ body.mode-test .camera-cadre span { display: flex; }
 #lampe { position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; }
 #drone { position: absolute; top: 3vh; left: 50%; height: 24vh; aspect-ratio: 552 / 309;
   transform: translateX(-50%) translateX(calc((1 - var(--drone)) * (50vw + 140%))); }
-#drone .halo { position: absolute; left: 50%; top: 50%; width: 340%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%;
+.drone .halo { position: absolute; left: 50%; top: 50%; width: 340%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 50, 40, 1) 0%, rgba(255, 30, 30, .75) 18%, rgba(255, 20, 20, .38) 38%, rgba(255, 10, 10, .12) 55%, transparent 70%);
   mix-blend-mode: screen; opacity: calc(.8 + var(--garde) * .2); animation: pulse-drone 1s ease-in-out infinite; }
 @keyframes pulse-drone { 0%, 100% { scale: .82; filter: brightness(.75); } 50% { scale: 1.08; filter: brightness(1.25); } }
-#drone .coque { position: absolute; inset: 0; background: url(img/drone.webp) center / 100% 100% no-repeat; }
+.drone .coque { position: absolute; inset: 0; background: url(img/drone.webp) center / 100% 100% no-repeat; }
 /* Feux des antennes qui clignotent en rouge, l'un après l'autre */
-#drone .feu { position: absolute; width: 9%; height: 16%; top: 1.5%; border-radius: 50%; background: #ffd0d0; mix-blend-mode: screen; opacity: 0;
+.drone .feu { position: absolute; width: 9%; height: 16%; top: 1.5%; border-radius: 50%; background: #ffd0d0; mix-blend-mode: screen; opacity: 0;
   box-shadow: 0 0 10px 5px rgba(255, 40, 40, 1); animation: feu 1s steps(1) infinite; }
-#drone .feu.g { left: 21.2%; } #drone .feu.d { left: 58.9%; animation-delay: .5s; }
+.drone .feu.g { left: 21.2%; } .drone .feu.d { left: 58.9%; animation-delay: .5s; }
 @keyframes feu { 0% { opacity: .95; } 25% { opacity: 0; } }
 /* Écran de façade qui grésille */
-#drone .voyant { position: absolute; left: 32.6%; top: 67.6%; width: 28%; height: 16%; background: #ff5030; mix-blend-mode: screen;
+.drone .voyant { position: absolute; left: 32.6%; top: 67.6%; width: 28%; height: 16%; background: #ff5030; mix-blend-mode: screen;
   animation: voyant .35s steps(2) infinite; }
 @keyframes voyant { 0% { opacity: .05; } 50% { opacity: .35; } }
 
@@ -388,6 +388,11 @@ body.mode-test .camera-cadre span { display: flex; }
 /* Écran d'accueil : le cyber-dog traverse la pièce de temps en temps (toutes les 30 s), en reniflant */
 #promenade { position: absolute; z-index: 3; left: var(--bande-g, 0px); right: var(--bande-d, 0px); bottom: 1.5vh; height: 40vh; overflow: hidden; pointer-events: none; }
 #promenade .k9 { left: auto; right: 100%; visibility: hidden; }
+/* Accueil : le drone traverse la pièce de droite à gauche toutes les 45 s (sans halo) */
+#survol { position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; }
+#survol .drone { position: absolute; top: 3vh; left: 100%; height: 24vh; aspect-ratio: 552 / 309; visibility: hidden; }
+#survol .drone.passe { visibility: visible; animation: survole 12s linear forwards; }
+@keyframes survole { from { left: 100%; translate: 0 0; } to { left: 0%; translate: -100% 0; } }
 #promenade .k9.passe { visibility: visible; animation: traverse 11s linear forwards; }
 @keyframes traverse { from { right: 100%; translate: 0 0; } to { right: 0%; translate: 100% 0; } }
 

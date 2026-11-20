@@ -49,6 +49,7 @@
 
 <!-- ============ ACCUEIL ============ -->
 <section id="accueil" class="ecran actif">
+  <div id="survol"><div class="drone"><div class="coque"></div><i class="feu g"></i><i class="feu d"></i><i class="voyant"></i></div></div>
   <div id="promenade"><div class="k9 renifle"><div class="corps"></div><div class="tete"><div class="oeil"></div></div></div></div>
   <div class="colonne">
     <p class="accroche">Une nuit, trois run.</p>
@@ -175,7 +176,7 @@
   <!-- Petit écran du décor (à droite de la porte) : le symbole de la serrure -->
   <div id="ecran-symbole" class="ecran-deco"><svg id="picto" viewBox="0 0 24 24" shape-rendering="crispEdges"></svg><div class="veille"></div></div>
 
-  <div id="lampe"><div id="drone"><div class="halo"></div><div class="coque"></div><i class="feu g"></i><i class="feu d"></i><i class="voyant"></i></div></div>
+  <div id="lampe"><div id="drone" class="drone"><div class="halo"></div><div class="coque"></div><i class="feu g"></i><i class="feu d"></i><i class="voyant"></i></div></div>
   <div id="chien-zone"><div id="chien" class="k9"><div class="corps"></div><div class="tete"><div class="oeil"></div></div></div></div>
   <div id="annonce"><div class="titre-plan">Plan <span id="annonce-lettre"></span></div><div id="decompte"><span id="decompte-chiffre">5</span></div></div>
   <div id="test"></div>
@@ -487,6 +488,13 @@ function promenerChien() {
   if (document.body.dataset.ecran === 'accueil' && !document.hidden) { k.classList.remove('passe'); void k.offsetWidth; k.classList.add('passe'); }
 }
 setTimeout(() => { promenerChien(); setInterval(promenerChien, PROMENADE_CHIEN * 1000); }, 6000);
+// … et le drone la survole de droite à gauche toutes les 45 secondes (décalé du chien)
+const SURVOL_DRONE = 45;
+function survolDrone() {
+  const d = document.querySelector('#survol .drone');
+  if (document.body.dataset.ecran === 'accueil' && !document.hidden) { d.classList.remove('passe'); void d.offsetWidth; d.classList.add('passe'); }
+}
+setTimeout(() => { survolDrone(); setInterval(survolDrone, SURVOL_DRONE * 1000); }, 20000);
 function ecran(id) {
   document.body.dataset.ecran = id;
   if (id === 'accueil' || id === 'fin' || id === 'regles') Musique.jouer('intro');
