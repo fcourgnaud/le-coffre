@@ -28,7 +28,11 @@ const ECRANS = {
   grand: { x: 84, y: 280, w: 568, h: 336 },
   petit: { x: 1586, y: 312, w: 156, h: 104 }
 };
-const CENTRE_PORTE = 1177;   // milieu de l'encadrement de porte dans les images
+const CENTRE_PORTE = 1177;
+// Aperçu caméra : collé dans le coin bas gauche de la vitre du grand écran, mesuré sur chaque décor (pixels de l'image)
+// g = bord intérieur gauche du cadre, b = bord intérieur bas, c = taille du coin coupé (45°) ; droite et haut communs
+const CAMERA_ECRAN = [{ g: 59, b: 650, c: 35 }, { g: 75, b: 655, c: 33 }, { g: 57, b: 658, c: 37 }];
+const CAMERA_DROITE = 243, CAMERA_HAUT = 508;   // milieu de l'encadrement de porte dans les images
 
 // Les salles fortes finales : une est tirée au hasard à chaque partie,
 // jamais la même que la partie précédente. Ajoute ou retire des noms ici.
@@ -173,10 +177,21 @@ const Scene = {
     }
     st.setProperty('--u', (ECRANS.grand.h * c / 100).toFixed(3) + 'px');      // 1 unité = 1 % de la hauteur du grand écran
     st.setProperty('--colonne', (x + 700 * c).toFixed(1) + 'px');           // bord droit du grand écran
+    this.majCamera();
     this.centrePorte = x + CENTRE_PORTE * c;                                 // centre du coffre à l'écran (le cyber-dog s'y arrête)
+  },
+  majCamera() {
+    if (!this.vue) return;
+    const { x, y, c } = this.vue, k = CAMERA_ECRAN[Math.min(2, this.niveau || 0)], st = document.documentElement.style;
+    st.setProperty('--cam-x', (x + k.g * c).toFixed(1) + 'px');
+    st.setProperty('--cam-y', (y + CAMERA_HAUT * c).toFixed(1) + 'px');
+    st.setProperty('--cam-w', ((CAMERA_DROITE - k.g) * c).toFixed(1) + 'px');
+    st.setProperty('--cam-h', ((k.b - CAMERA_HAUT) * c).toFixed(1) + 'px');
+    st.setProperty('--cam-c', (k.c * c).toFixed(1) + 'px');
   },
   afficher(niveau) {
     this.niveau = niveau;
+    this.majCamera();
     document.body.dataset.niveau = niveau;                                   // couleur des écrans (bleu, vert, or)
     document.getElementById('sc-stage').style.setProperty('--fond-flou', `url(${NIVEAUX_SCENE[niveau].cadre})`);
     const cam = document.getElementById('sc-camera');
