@@ -250,41 +250,36 @@ body.en-jeu #maj { display: none; }
 
 .ecran-deco { position: absolute; z-index: 4; color: var(--ecran); text-shadow: 0 0 calc(var(--u) * 2) color-mix(in srgb, var(--ecran) 70%, transparent); }
 .ecran-deco::after { mix-blend-mode: multiply; }
-/* 4 rangées de hauteur fixe : rien ne déborde, quelle que soit la taille du téléphone */
-#jeu .hud { left: var(--grand-x); top: var(--grand-y); width: var(--grand-w); height: var(--grand-h); padding: calc(var(--u) * 3.5) calc(var(--u) * 5) calc(var(--u) * 2.5);
-  display: grid; grid-template-rows: calc(var(--u) * 29) calc(var(--u) * 17) minmax(0, 1fr) calc(var(--u) * 18); gap: calc(var(--u) * 2.5);
+/* Disposition de la maquette (20/11) : tout centré — coffre, détection, plan ; en bas : caméra dans le coin gauche, chrono au milieu, son et pause à droite */
+#jeu .hud { left: var(--grand-x); top: var(--grand-y); width: var(--grand-w); height: var(--grand-h); text-align: center;
   overflow: hidden; animation: allume-ecran .5s steps(4) both; }
-#jeu .hud > * { min-height: 0; overflow: hidden; }
 @keyframes allume-ecran { 0% { opacity: 0; } 40% { opacity: .7; } 60% { opacity: .2; } 100% { opacity: 1; } }
 
-/* Rangée 1 : coffre et chrono */
-#jeu .haut { display: flex; justify-content: space-between; align-items: flex-start; gap: calc(var(--u) * 3); }
-#jeu .titres { min-width: 0; }
-#jeu .coffre-num { font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 5.8); letter-spacing: .05em; opacity: .75; }
-#jeu .coffre-nom { font-size: calc(var(--u) * 12); line-height: .92; margin-top: calc(var(--u) * 1.5); color: #fff; text-transform: uppercase; }
-#chrono { font-size: calc(var(--u) * 23); line-height: .8; color: #fff; }
-#chrono.presse { color: var(--alarme); text-shadow: 0 0 10px var(--alarme); animation: clignote 1s steps(2) infinite; }
+/* Coffre et nom */
+/* Positions mesurées sur la maquette (en % de la hauteur de l'écran) */
+#jeu .titres { position: absolute; left: 0; right: 0; top: calc(var(--u) * 7); }
+#jeu .coffre-num { font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 4.8); letter-spacing: .05em; opacity: .8; padding-left: .125em; }
+#jeu .coffre-nom { font-size: calc(var(--u) * 10); line-height: .9; margin-top: calc(var(--u) * 2.5); color: #fff; text-transform: uppercase; letter-spacing: .04em; }
 
-/* Rangée 2 : jauge de détection (20 blocs, 4 par point d'alarme) et plan */
-#jeu .milieu { display: flex; align-items: flex-end; justify-content: space-between; gap: calc(var(--u) * 4); }
-#plan { font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 5.2); white-space: nowrap; }
-#plan-lettre { font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 11); color: #fff; vertical-align: middle; }
-#alarme { flex: 1; min-width: 0; }
-#alarme .etiquette { display: flex; align-items: baseline; gap: calc(var(--u) * 3); font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 5); margin-bottom: calc(var(--u) * 1.5); }
-#alarme-pc { font-family: var(--police-pixel); font-weight: normal; font-size: calc(var(--u) * 9.5); line-height: .6; color: #fff; }
-#alarme .etiquette em { display: none; margin-left: auto; font-style: normal; font-size: 1.25em; color: var(--alarme); text-shadow: 0 0 6px var(--alarme); animation: clignote .6s steps(2) infinite; }
-#alarme .segments { display: flex; gap: calc(var(--u) * .7); padding: calc(var(--u) * .9); border: calc(var(--u) * .7) solid var(--ecran); background: rgba(0,0,0,.45); }
-#alarme .seg { flex: 1; height: calc(var(--u) * 7); --c: var(--alarme-vert); background: color-mix(in srgb, var(--c) 14%, transparent); }
+/* Jauge de détection (20 blocs, 4 par point d'alarme) */
+#alarme { position: absolute; left: 19%; width: 62%; top: calc(var(--u) * 31); }
+#alarme .etiquette { font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 3.9); margin-bottom: calc(var(--u) * 2); padding-left: .125em; }
+#alarme-pc { font-family: var(--police-pixel); font-weight: normal; font-size: calc(var(--u) * 7); line-height: .6; color: #fff; }
+#alarme .segments { display: flex; gap: calc(var(--u) * .6); padding: calc(var(--u) * .9); border: calc(var(--u) * .6) solid var(--ecran); background: rgba(0,0,0,.45); }
+#alarme .seg { flex: 1; height: calc(var(--u) * 9.5); --c: var(--alarme-vert); background: color-mix(in srgb, var(--c) 14%, transparent); }
 #alarme .seg.orange { --c: var(--alarme-orange); }
 #alarme .seg.rouge { --c: var(--alarme); }
 #alarme .seg.on { background: var(--c); box-shadow: 0 0 calc(var(--u) * 2.5) var(--c); animation: bloc-allume .27s steps(3); }
-@keyframes bloc-allume { 0% { background: #fff; } 34% { background: transparent; } 67% { background: #fff; } }
-/* Danger (alarme 4) : la jauge clignote, l'écran rougeoie, « ! ALERTE ! » */
-body.danger #alarme .etiquette em { display: inline; }
+@keyframes bloc-allume { 0% { filter: brightness(3); } 100% { filter: none; } }
 body.danger #alarme .seg.on { animation: clignote .8s steps(2) infinite; }
 body.danger #alarme .segments { border-color: var(--alarme); }
 body.danger #jeu .hud { box-shadow: inset 0 0 calc(var(--u) * 10) rgba(255, 59, 47, .45); }
-/* Quand l'alarme monte : tremblement, flash rouge et « ALERTE +1 » */
+
+/* Plan */
+#plan { position: absolute; left: 0; right: 0; top: calc(var(--u) * 59); font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 3.9); white-space: nowrap; }
+#plan-lettre { font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 9); color: #fff; vertical-align: middle; margin-left: calc(var(--u) * 2); }
+
+/* Flash « ALERTE +1 » quand l'alarme monte */
 #alerte-flash { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; opacity: 0;
   font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 11); color: #fff; text-shadow: 0 0 8px var(--alarme), 0 0 20px var(--alarme); background: rgba(255, 30, 20, .35); }
 #jeu .hud.prise { animation: prise .5s steps(6); }
@@ -292,33 +287,26 @@ body.danger #jeu .hud { box-shadow: inset 0 0 calc(var(--u) * 10) rgba(255, 59, 
 @keyframes prise { 0%, 100% { transform: none; } 20% { transform: translate(calc(var(--u) * -2), calc(var(--u) * 1)); } 40% { transform: translate(calc(var(--u) * 2), calc(var(--u) * -1)); } 60% { transform: translate(calc(var(--u) * -1), 0); } 80% { transform: translate(calc(var(--u) * 1), calc(var(--u) * 1)); } }
 @keyframes flash-alerte { 0% { opacity: 1; } 12% { opacity: .2; } 24%, 70% { opacity: 1; } 100% { opacity: 0; } }
 
-/* Rangée 3 : le message */
-#message { font-size: calc(var(--u) * 11.5); line-height: .92; color: #fff; }
-#message::before { content: '> '; color: var(--ecran); }
-#message::after { content: '_'; animation: clignote 1s steps(2) infinite; }
-#message.alerte { color: #ff8a7a; text-shadow: 0 0 calc(var(--u) * 2) var(--alarme); }
-
-/* Rangée 4 : indice, caméra, son, pause */
-#jeu .pied-ecran { display: flex; align-items: stretch; gap: calc(var(--u) * 3); }
-#indice-ecoute { align-self: flex-end; flex: 1; min-width: 0; font-size: calc(var(--u) * 7.8); line-height: .95; opacity: .85; }
-#indice-ecoute::before { content: '▶ '; }
-#jeu .commandes { display: flex; align-items: stretch; gap: calc(var(--u) * 2.5); height: 100%; }
+/* Bas de l'écran : chrono au centre, son et pause à droite, caméra collée dans le coin bas gauche */
+#jeu .pied-ecran { position: absolute; left: 0; right: 10%; top: calc(var(--u) * 76); height: calc(var(--u) * 14); display: flex; align-items: center; justify-content: center; }
+#jeu .pied-ecran #chrono { margin-left: 10%; }   /* centré sur l'écran malgré la marge de droite */
+#chrono { font-size: calc(var(--u) * 21); line-height: .8; color: #fff; letter-spacing: .03em; }
+#chrono.presse { color: var(--alarme); text-shadow: 0 0 10px var(--alarme); animation: clignote 1s steps(2) infinite; }
+#jeu .commandes { position: absolute; right: 0; top: 0; bottom: 0; display: flex; gap: calc(var(--u) * 2.5); }
 #jeu .commandes button { height: 100%; aspect-ratio: 1; padding: calc(var(--u) * 3); display: flex; align-items: center; justify-content: center;
-  background: rgba(0,0,0,.45); border-width: calc(var(--u) * .8); box-shadow: none; }
+  border: calc(var(--u) * .6) solid var(--ecran); background: rgba(0,0,0,.35); color: var(--ecran); box-shadow: none; }
 #jeu .commandes button svg { width: 100%; height: 100%; fill: currentColor; filter: drop-shadow(0 0 2px currentColor); }
 #jeu .commandes button:active { background: var(--ecran); color: var(--encre); }
-.camera-cadre { position: relative; height: 100%; aspect-ratio: 4 / 3; border: calc(var(--u) * .8) solid var(--ecran); background: #000; overflow: hidden;
-  box-shadow: 0 0 calc(var(--u) * 3) color-mix(in srgb, var(--ecran) 50%, transparent); }
+/* Caméra : collée au bord gauche et au bas de l'écran, coin haut droit coupé (le cadre = fond couleur écran, la vidéo par-dessus) */
+.camera-cadre { --coupe: polygon(0 0, 84% 0, 100% 24%, 100% 100%, 0 100%); position: absolute; left: 0; bottom: 0; width: 28%; height: 32%; z-index: 1;
+  background: var(--ecran); clip-path: var(--coupe); }
+#apercu { position: absolute; top: calc(var(--u) * .8); right: calc(var(--u) * .8); left: 0; bottom: 0; width: calc(100% - var(--u) * .8); height: calc(100% - var(--u) * .8);
+  display: block; object-fit: cover; transform: scaleX(-1); filter: saturate(.6) contrast(1.1); background: #000; clip-path: var(--coupe); }
 .camera-cadre::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,0,0,.35) 0 1px, transparent 1px 3px); }
-#apercu { width: 100%; height: 100%; display: block; object-fit: cover; transform: scaleX(-1); filter: saturate(.6) contrast(1.1); }
-.camera-cadre.vu { border-color: var(--alarme-orange); box-shadow: 0 0 calc(var(--u) * 4) var(--alarme-orange); }   /* un QR est vu, pas encore lisible : tenir la carte immobile */
-.camera-cadre:has(#apercu.lu) { border-color: #fff; box-shadow: 0 0 calc(var(--u) * 5) #fff; }   /* une carte vient d'être lue */
-.camera-cadre span { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; text-align: center;
-  font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 4.3); line-height: 1.3; }
-body.mode-test #apercu { display: none; }
-body.mode-test .camera-cadre span { display: flex; }
+.camera-cadre.vu { background: var(--alarme-orange); }   /* un QR est vu, pas encore lisible : tenir la carte immobile */
+.camera-cadre:has(#apercu.lu) { background: #fff; }      /* une carte vient d'être lue */
+body.mode-test .camera-cadre { display: none; }           /* sans scan : pas de caméra */
 
-/* Entre deux coffres, l'écran laisse la place à la carte */
 #jeu:has(#entracte.visible) .hud { visibility: hidden; }
 
 /* =========================================================
