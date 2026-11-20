@@ -24,7 +24,6 @@
   --alarme: #ff3b2f;               /* rouge d'alarme, d'erreur et des boutons de test */
   --alarme-vert: #6cff5a;          /* jauge de détection : zones vert / orange / rouge */
   --alarme-orange: #ffa82e;
-  --lumiere: 255, 236, 190;        /* lampe du vigile (rouge, vert, bleu) */
   --verrou-ferme: #d10f0f;         /* verrous sur la plaque de la porte */
   --verrou-ouvert: #2fb51b;
   --menu-fond: rgba(4, 8, 18, .94);
@@ -464,9 +463,8 @@ body.mode-test .camera-cadre { display: none; }           /* sans scan : pas de 
 #annonce.visible { opacity: 1; pointer-events: auto; }   /* pendant le compte à rebours : on ne peut rien toucher derrière */
 /* La police pixel laisse une colonne vide à droite de chaque lettre (1/8 de la taille) : on la compense à gauche pour bien centrer */
 #annonce .titre-plan, #annonce-lettre, #decompte-chiffre { padding-left: .125em; }
-#annonce-lettre { margin-left: calc(-1.1rem * .125); }   /* la lettre est dans le titre : on annule le décalage du titre */
 #annonce .titre-plan { text-align: center; font-family: var(--police-pixel-titre); font-size: 1.1rem; text-shadow: 0 0 10px var(--ecran); }
-#annonce-lettre { display: block; margin-top: 18px; text-align: center; line-height: 1; font-family: var(--police-pixel-titre); font-size: 5rem; color: #fff;
+#annonce-lettre { display: block; margin-top: 18px; margin-left: calc(-1.1rem * .125); /* annule le décalage du titre */ text-align: center; line-height: 1; font-family: var(--police-pixel-titre); font-size: 5rem; color: #fff;
   text-shadow: 0 0 14px var(--ecran), 0 0 40px var(--ecran); }
 /* Compte à rebours sous la lettre du plan */
 #decompte { width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border: 3px solid var(--ecran); box-shadow: 0 0 14px var(--ecran), inset 0 0 10px rgba(0,0,0,.6); }
@@ -500,7 +498,7 @@ body.camera #barre-test, body.camera #chien-zone { opacity: 0; transition: opaci
 .carte-entracte, .carte-fin { position: absolute; left: var(--grand-x); top: var(--grand-y); width: var(--grand-w); height: var(--grand-h);
   display: flex; flex-direction: column; gap: calc(var(--u) * 3); padding: calc(var(--u) * 5); overflow: hidden;
   color: var(--ecran); text-shadow: 0 0 calc(var(--u) * 2) color-mix(in srgb, var(--ecran) 70%, transparent); }
-.carte-entracte .sur-titre { font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 5.8); opacity: .75; }
+.carte-entracte .sur-titre { font-family: var(--police-pixel-titre); font-size: calc(var(--u) * 5.8); opacity: .75; padding-left: .125em; }
 .carte-entracte h2, .carte-fin h2 { font-size: calc(var(--u) * 16); line-height: .9; color: #fff; text-transform: uppercase; }
 .carte-entracte p, .carte-fin p { margin: 0; font-size: calc(var(--u) * 9.5); line-height: 1; }
 .carte-entracte button, .carte-fin button { font-size: max(17px, calc(var(--u) * 9.5)); background: rgba(0,0,0,.35);
@@ -510,7 +508,6 @@ body.camera #barre-test, body.camera #chien-zone { opacity: 0; transition: opaci
 .carte-entracte button { margin-top: auto; }
 /* Écran entre deux coffres (« On y va ») : tout centré, comme le grand écran en jeu */
 .carte-entracte { align-items: center; text-align: center; }
-.carte-entracte .sur-titre { padding-left: .125em; }   /* compense la colonne vide de la police pixel */
 .carte-entracte button.principal { align-self: stretch; padding-left: calc(8px + .125em); }
 .carte-fin .boutons-fin { display: flex; gap: calc(var(--u) * 3); margin-top: auto; }
 .carte-fin .boutons-fin button { flex: 1; }

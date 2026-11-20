@@ -13,6 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Le Coffre">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
 <link rel="stylesheet" href="theme.css">
 <script src="version.js"></script>
 <script src="scene.js"></script>
@@ -995,7 +996,7 @@ function finPartie(gagne, texte) {
   $('#fin').className = 'ecran ' + (gagne ? 'gagne' : 'perdu');
   $('#fin-titre').textContent = gagne ? 'Casse réussi !' : 'Raté…';
   $('#fin-texte').textContent = (gagne ? `Trois coffres vidés, ${Math.floor(reste / 60)} min ${Math.floor(reste % 60)} s avant l'aube. ` : texte + ' ')
-    + `Coffres ouverts : ${gagne ? 3 : J.coffre}. Erreurs : ${J.stats.erreurs}. Vus par le garde : ${J.stats.vu}. Aboiements : ${J.stats.aboiements}.`;
+    + `Coffres ouverts : ${gagne ? 3 : J.coffre}. Erreurs : ${J.stats.erreurs}. Vus par le drone : ${J.stats.vu}. Aboiements : ${J.stats.aboiements}.`;
   ecran('fin');
 }
 
@@ -1014,8 +1015,9 @@ function majAide() {
   const son = J.etape < 4 ? SONS[J.combinaison[J.etape]].nom : '—';
   const outil = J.etape < 4 ? outilsAcceptes().map((t) => `${OUTILS[t].nom} (${restants(t)})`).join(' ou ') : '—';
   // Deux lignes : ce qu'il faut scanner, puis les menaces
-  $('#aide').innerHTML = `<div><span>💾 <b>${outil}</b></span><span class="petit">plan ${LETTRES[J.plans[J.coffre]]} · ${son}</span></div>`
+  const html = `<div><span>💾 <b>${outil}</b></span><span class="petit">plan ${LETTRES[J.plans[J.coffre]]} · ${son}</span></div>`
     + `<div><span>🛸 ${vigile}</span><span>🐕 ${chien}</span><span class="petit">défausse ${J.usees.size}/${NB_CARTES_OUTILS}</span></div>`;
+  if (html !== majAide.dernier) { majAide.dernier = html; $('#aide').innerHTML = html; }   // on ne réécrit la barre que si elle change (pas à chaque image)
 }
 function toastAide(t) { if (document.body.classList.contains('aide-visuelle')) toast(t); }
 
