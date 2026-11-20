@@ -112,18 +112,22 @@ const POINTS_ETINCELLES = [[182, 108], [262, 122], [1700, 196], [1706, 470]];
 function _htmlAmbiance(niveau) {
   const masque = (n) => `-webkit-mask-image:url(img/ambiance/${n}.png);mask-image:url(img/ambiance/${n}.png)`;
   const lampes = (niveau in LUMIERES) ? LUMIERES[niveau].map(([x, y, w, h]) => `<i style="left:${x}px;top:${y}px;width:${w}px;height:${h}px"></i>`).join('') : '';
-  if (niveau === 0) return `<div class="sc-ambiance amb0"><div class="lueur" style="${masque('lumieres-bleu')}">${lampes}</div></div>`;
-  if (niveau === 1) return `<div class="sc-ambiance amb1"><div class="lueur" style="${masque('lumieres-vert')}">${lampes}</div>
+  // halos : une lueur plus large autour de chaque lumière (non masquée), qui s'allume en même temps qu'elle
+  const halos = (niveau in LUMIERES) ? '<div class="halos">' + LUMIERES[niveau].map(([x, y, w, h]) => { const m = Math.max(28, Math.min(w, h) * 0.9); return `<i style="left:${x - m}px;top:${y - m}px;width:${w + 2 * m}px;height:${h + 2 * m}px"></i>`; }).join('') + '</div>' : '';
+  if (niveau === 0) return `<div class="sc-ambiance amb0">${halos}<div class="lueur" style="${masque('lumieres-bleu')}">${lampes}</div></div>`;
+  if (niveau === 1) return `<div class="sc-ambiance amb1">${halos}<div class="lueur" style="${masque('lumieres-vert')}">${lampes}</div>
     <div class="vumetre">${VUMETRE.map(([x, w], i) => `<i style="left:${x - 384}px;width:${w}px;animation-duration:${(1.7 + i * 0.37).toFixed(2)}s;animation-delay:${(-i * 0.6).toFixed(1)}s"></i>`).join('')}</div></div>`;
   const voyants = VOYANTS.map(([x, y], i) => `<i class="voyant-or" style="left:${x}px;top:${y}px;animation-delay:${(-i * 0.37 - (i % 2) * 0.9).toFixed(2)}s;animation-duration:${(1.3 + (i * 0.53) % 1.4).toFixed(2)}s"></i>`).join('');
   return `<div class="sc-ambiance amb2"><div class="lueur" style="${masque('masque-or')}"><i class="pouls"></i></div>${voyants}</div>`;
 }
 // Une lumière au hasard s'allume (porte 1) ou grésille (porte 2)
 function lumiereHasard(classe, duree) {
-  const l = document.querySelectorAll(`#sc-camera > .sc-niveau > .sc-ambiance .lueur > i:not(.${classe})`);
+  const a = document.querySelector('#sc-camera > .sc-niveau > .sc-ambiance'); if (!a) return;
+  const l = a.querySelectorAll('.lueur > i'), h = a.querySelectorAll('.halos > i');
   if (!l.length) return;
-  const e = l[Math.floor(Math.random() * l.length)];
-  e.classList.add(classe); setTimeout(() => e.classList.remove(classe), duree);
+  const k = Math.floor(Math.random() * l.length);
+  if (l[k].classList.contains(classe)) return;
+  [l[k], h[k]].forEach((e) => { if (e) { e.classList.add(classe); setTimeout(() => e.classList.remove(classe), duree); } });
 }
 // Étincelles sur la porte 3 : un petit jaillissement de pixels à un endroit au hasard
 function etincelle() {

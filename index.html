@@ -617,12 +617,12 @@ for (let i = 0; i < NB_BLOCS; i++) {
 let blocsAffiches = 0, minuteurBlocs = null;
 // Remplit (ou vide) la jauge bloc par bloc, en grésillant
 // Ambiance des décors : seulement en jeu (pas en pause, pas pendant le zoom)
-//   porte 1 : une lumière au hasard s'illumine souvent ; porte 2 : un néon grésille toutes les 7 s environ ; porte 3 : étincelles toutes les 15 s environ
+//   porte 1 : une lumière au hasard s'illumine souvent ; porte 2 : un néon grésille toutes les 3 s environ ; porte 3 : étincelles toutes les 15 s environ
 setInterval(() => {
   if (document.body.dataset.ecran !== 'jeu' || !J || J.enPause || J.fini || document.hidden || document.body.classList.contains('camera')) return;
   const n = Scene.niveau;
   if (n === 0 && Math.random() < 0.55) lumiereHasard('eclat', 1400);
-  if (n === 1 && Math.random() < 0.06) lumiereHasard('panne', 1500);
+  if (n === 1 && Math.random() < 0.15) lumiereHasard('panne', 1500);
   if (n === 2 && Math.random() < 0.027) etincelle();
 }, 400);
 function majAlarme(instantane) {

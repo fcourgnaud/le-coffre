@@ -148,7 +148,15 @@ button:disabled { opacity: .35; }
 .sc-ambiance .lueur > i { position: absolute; opacity: 0; }
 .amb0 .lueur > i { background: rgba(225, 250, 255, 1); }
 .amb0 .lueur > i.eclat { animation: eclat 1.4s ease-in-out; }
-@keyframes eclat { 0%, 100% { opacity: 0; } 35% { opacity: .9; } 55% { opacity: .65; } }
+@keyframes eclat { 0%, 100% { opacity: 0; } 30% { opacity: 1; } 55% { opacity: .75; } }
+/* Halos autour des lumières (portes 1 et 2) */
+.halos { position: absolute; inset: 0; mix-blend-mode: screen; }
+.halos > i { position: absolute; opacity: 0; border-radius: 50%; }
+.amb0 .halos > i { background: radial-gradient(closest-side, rgba(150, 235, 255, .95), rgba(60, 190, 255, .45) 55%, transparent); }
+.amb0 .halos > i.eclat { animation: eclat 1.4s ease-in-out; }
+.amb1 .halos > i { background: radial-gradient(closest-side, rgba(220, 255, 140, .95), rgba(120, 240, 40, .45) 55%, transparent); }
+.amb1 .halos > i.panne { animation: panne-halo 1.5s steps(1); }
+@keyframes panne-halo { 0% { opacity: 0; } 14% { opacity: 1; } 22% { opacity: 0; } 30% { opacity: .9; } 46% { opacity: 0; } 52% { opacity: 1; } 60% { opacity: .5; } 75%, 100% { opacity: 0; } }
 /* Porte 2 : néon défaillant — il s'éteint et se rallume plusieurs fois (calque sombre, sans fusion lumineuse) */
 .amb1 .lueur { mix-blend-mode: normal; }
 .amb1 .lueur > i { background: #0a2a20; }
