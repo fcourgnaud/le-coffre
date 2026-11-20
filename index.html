@@ -855,7 +855,7 @@ $('#scene').addEventListener('click', () => {
 
 /* ---------------- Quand une carte est scannée ---------------- */
 function quandCarte(code) {
-  if (!J || J.fini || J.enPause || !$('#jeu').classList.contains('actif')) return;
+  if (!J || J.fini || J.enPause || J.decompte > 0 || !$('#jeu').classList.contains('actif')) return;   // pas de carte pendant le compte à rebours du plan
   const carte = lireCarte(code);
   if (!carte) { toast('Carte inconnue'); return; }
   const h = J.horloge, g = J.garde;
@@ -1176,7 +1176,7 @@ let analyseEnCours = false, etape = 0;
 async function boucleScan() {
   if (!scanActif) return;
   const v = $('#apercu');
-  const enJeu = J && !J.fini && !J.enPause && !document.hidden;   // en pause : on n'analyse pas (économise la batterie)
+  const enJeu = J && !J.fini && !J.enPause && !(J.decompte > 0) && !document.hidden;   // en pause : on n'analyse pas (économise la batterie)
   if (enJeu && v.readyState >= 2 && v.videoWidth && !analyseEnCours) {
     analyseEnCours = true;
     try {

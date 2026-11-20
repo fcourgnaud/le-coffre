@@ -399,8 +399,11 @@ body.mode-test .camera-cadre span { display: flex; }
 /* Annonce du plan au début de chaque coffre */
 #annonce { position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
   background: var(--balayage), rgba(3, 6, 14, .9); color: var(--ecran); opacity: 0; pointer-events: none; transition: opacity .3s; }
-#annonce.visible { opacity: 1; }
-#annonce .titre-plan { font-family: var(--police-pixel-titre); font-size: 1.1rem; text-shadow: 0 0 10px var(--ecran); }
+#annonce.visible { opacity: 1; pointer-events: auto; }   /* pendant le compte à rebours : on ne peut rien toucher derrière */
+/* La police pixel laisse une colonne vide à droite de chaque lettre (1/8 de la taille) : on la compense à gauche pour bien centrer */
+#annonce .titre-plan, #annonce-lettre, #decompte-chiffre { padding-left: .125em; }
+#annonce-lettre { margin-left: calc(-1.1rem * .125); }   /* la lettre est dans le titre : on annule le décalage du titre */
+#annonce .titre-plan { text-align: center; font-family: var(--police-pixel-titre); font-size: 1.1rem; text-shadow: 0 0 10px var(--ecran); }
 #annonce-lettre { display: block; margin-top: 18px; text-align: center; line-height: 1; font-family: var(--police-pixel-titre); font-size: 5rem; color: #fff;
   text-shadow: 0 0 14px var(--ecran), 0 0 40px var(--ecran); }
 /* Compte à rebours sous la lettre du plan */
