@@ -4,7 +4,7 @@
    ⚠️ Changer VERSION à chaque nouvelle version (même valeur
    que dans version.js), sinon le téléphone ne voit rien.
    ========================================================= */
-const VERSION = '3.23.1';
+const VERSION = '3.24.0';
 importScripts('version.js');
 
 const CACHE = 'le-coffre-' + VERSION;
@@ -23,6 +23,11 @@ const FICHIERS = [
   'img/chien-corps.webp',
   'img/chien-tete.webp',
   'img/drone.webp',
+  'img/holo1.webp',
+  'img/holo2.webp',
+  'img/holo3.webp',
+  'img/holo4.webp',
+  'img/holo5.webp',
   'manifest.webmanifest',
   'icon-192.png',
   'icon-512.png'

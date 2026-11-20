@@ -12,7 +12,7 @@
 const SCENE_W = 1783, SCENE_H = 882;
 
 // Chaque niveau : décor + encadrement (trou transparent), porte, et réglages de la porte
-//   volant : centre et rayon de la roue (en % de la largeur/hauteur de la porte) — la partie qui tourne,
+//   volant : centre et rayon de la roue (en % de la largeur/hauteur de la porte) — l'hologramme se pose dessus,
 //            coupée pile dans le cercle sombre qui entoure l'anneau intérieur (mesuré sur chaque image)
 //   plaque : rectangle de la plaque des verrous sur la porte (en %)
 const NIVEAUX_SCENE = [
@@ -91,8 +91,9 @@ function _htmlPorte(niveau, actif) {
   const pilules = [0, 1, 2, 3].map((i) => `<span class="verrou" data-i="${i}"></span>`).join('');
   return `<div class="sc-porte" style="left:${p.x}px;top:${p.y}px;width:${p.w}px;height:${p.h}px">
       <img src="${src}" alt="">
-      <div class="sc-volant" style="left:${cx - rv}px;top:${cy - rv}px;width:${rv * 2}px;height:${rv * 2}px;
-           background-image:url(${src});background-size:${p.w}px ${p.h}px;background-position:${-(cx - rv)}px ${-(cy - rv)}px"></div>
+      <div class="sc-holo" style="left:${cx - rv}px;top:${cy - rv}px;width:${rv * 2}px;height:${rv * 2}px">
+        <div class="disque"></div>${[1, 2, 3, 4, 5].map((i) => `<div class="picto${i === 1 ? ' actif' : ''}" style="background-image:url(img/holo${i}.webp)"></div>`).join('')}<div class="balayage"></div>
+      </div>
       <div class="sc-plaque" style="left:${R.plaque.x}%;top:${R.plaque.y}%;width:${R.plaque.w}%;height:${R.plaque.h}%">${pilules}</div>
     </div>`;
 }
@@ -201,8 +202,22 @@ const Scene = {
   },
   porte() { return document.querySelector('#sc-camera > .sc-niveau > .sc-porte'); },
   // Verrous : les n premiers sont débloqués (verts)
-  verrous(n) { (this.porte()?.querySelectorAll('.verrou') || []).forEach((v) => v.classList.toggle('ouvert', +v.dataset.i < n)); },
-  tourner() { const v = this.porte()?.querySelector('.sc-volant'); if (v) v.style.transform = `rotate(${Math.floor(Math.random() * 300) - 150}deg)`; },
+  verrous(n) {
+    (this.porte()?.querySelectorAll('.verrou') || []).forEach((v) => v.classList.toggle('ouvert', +v.dataset.i < n));
+    this.holo(n);
+  },
+  // Hologramme au centre du coffre : un picto par étape (holo1 au départ, puis un nouveau à chaque verrou validé)
+  holo(n) {
+    const h = this.porte()?.querySelector('.sc-holo'); if (!h) return;
+    const i = Math.min(4, Math.max(0, n));
+    if (+h.dataset.etape === i) return;
+    const premier = h.dataset.etape === undefined;
+    h.dataset.etape = i;
+    h.querySelectorAll('.picto').forEach((p, k) => p.classList.toggle('actif', k === i));
+    if (!premier) { h.classList.remove('change'); void h.offsetWidth; h.classList.add('change'); }   // petit grésillement au changement
+  },
+  // La serrure (re)joue : l'hologramme s'illumine un instant
+  tourner() { const h = this.porte()?.querySelector('.sc-holo'); if (!h) return; h.classList.remove('ping'); void h.offsetWidth; h.classList.add('ping'); },
   secouer() { const p = this.porte(); if (!p) return; p.classList.remove('secoue'); void p.offsetWidth; p.classList.add('secoue'); },
   // La porte glisse vers la gauche, pas jusqu'au bout (exemples 2 et 3)
   ouvrir() {
