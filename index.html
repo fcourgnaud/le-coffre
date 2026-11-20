@@ -616,7 +616,14 @@ for (let i = 0; i < NB_BLOCS; i++) {
 }
 let blocsAffiches = 0, minuteurBlocs = null;
 // Remplit (ou vide) la jauge bloc par bloc, en grésillant
+// Étincelles de la porte 3 : de temps en temps, seulement en jeu (pas en pause, pas pendant le zoom)
+setInterval(() => {
+  if (document.body.dataset.ecran !== 'jeu' || !J || J.enPause || J.fini || document.hidden || document.body.classList.contains('camera')) return;
+  if (Math.random() < 0.35) etincelle();
+}, 1200);
 function majAlarme(instantane) {
+  // Porte 3 : les néons d'alerte pulsent plus vite quand l'alarme monte
+  document.documentElement.style.setProperty('--pouls', [2.6, 2, 1.5, 1, .6, .6][Math.min(5, J ? J.alarme : 0)] + 's');
   const cible = J ? J.alarme * BLOCS_PAR_POINT : 0;
   const segs = document.querySelectorAll('#segments .seg');
   clearInterval(minuteurBlocs);

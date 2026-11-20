@@ -98,6 +98,34 @@ function _htmlPorte(niveau, actif) {
     </div>`;
 }
 
+// Animations d'ambiance du décor, différentes pour chaque porte (calques posés sur l'encadrement, en pixels de l'image)
+//   porte 1 (bleue) : flux d'énergie qui court dans les lignes lumineuses bleues
+//   porte 2 (verte) : chenillard sur les néons verts + bandes de danger qui défilent
+//   porte 3 (or)    : néons d'alerte qui pulsent (plus vite quand l'alarme monte), étincelles, panneau de voyants qui clignote
+// Les masques (img/ambiance/masque-*.png) = les pixels lumineux de chaque décor : la lumière ne passe que là
+const RAYURES = [{ x: 740, y: 613, w: 40, h: 161 }, { x: 1580, y: 613, w: 40, h: 161 }];
+const VOYANTS = [[466, 59], [485, 59], [502, 59], [466, 79], [485, 79], [502, 79]];
+const POINTS_ETINCELLES = [[182, 108], [262, 122], [1700, 196], [1706, 470]];
+function _htmlAmbiance(niveau) {
+  const masque = ['bleu', 'vert', 'or'][niveau];
+  let plus = '';
+  if (niveau === 1) plus = RAYURES.map((r) => `<div class="rayures" style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px"><i></i></div>`).join('');
+  if (niveau === 2) plus = VOYANTS.map(([x, y], i) => `<i class="voyant-or" style="left:${x}px;top:${y}px;animation-delay:${(-i * 0.37 - (i % 2) * 0.9).toFixed(2)}s;animation-duration:${(1.3 + (i * 0.53) % 1.4).toFixed(2)}s"></i>`).join('');
+  return `<div class="sc-ambiance amb${niveau}"><div class="lueur" style="-webkit-mask-image:url(img/ambiance/masque-${masque}.png);mask-image:url(img/ambiance/masque-${masque}.png)"><i></i></div>${plus}</div>`;
+}
+// Étincelles sur la porte 3 : un petit jaillissement de pixels à un endroit au hasard
+function etincelle() {
+  const a = document.querySelector('#sc-camera > .sc-niveau > .sc-ambiance.amb2'); if (!a) return;
+  const [x, y] = POINTS_ETINCELLES[Math.floor(Math.random() * POINTS_ETINCELLES.length)];
+  const e = document.createElement('div'); e.className = 'etincelles'; e.style.left = x + 'px'; e.style.top = y + 'px';
+  let html = '<b></b>';
+  for (let i = 0; i < 12; i++) {
+    const ang = Math.random() * Math.PI * 2, d = 45 + Math.random() * 90;
+    html += `<i style="--dx:${(Math.cos(ang) * d).toFixed(0)}px;--dy:${(Math.sin(ang) * d - 20).toFixed(0)}px;animation-delay:${(Math.random() * 0.08).toFixed(2)}s"></i>`;
+  }
+  e.innerHTML = html; a.appendChild(e); setTimeout(() => e.remove(), 1000);
+}
+
 // Un niveau complet : (ce qu'il y a derrière) + porte + encadrement
 function _htmlNiveau(niveau, actif) {
   const n = NIVEAUX_SCENE[niveau];
@@ -117,7 +145,7 @@ function _htmlNiveau(niveau, actif) {
     }
     derriere = `<div class="sc-derriere" style="left:${r.x}px;top:${r.y}px;width:${SCENE_W}px;height:${SCENE_H}px;transform:scale(${r.s})">${prolongement}${contenu}</div>`;
   }
-  return `<div class="sc-niveau" data-niveau="${niveau}">${derriere}${_htmlPorte(niveau, actif)}<img class="sc-cadre" src="${n.cadre}" alt=""></div>`;
+  return `<div class="sc-niveau" data-niveau="${niveau}">${derriere}${_htmlPorte(niveau, actif)}<img class="sc-cadre" src="${n.cadre}" alt="">${actif ? _htmlAmbiance(niveau) : ''}</div>`;
 }
 
 // Bande noire du côté de la caméra (encoche / Dynamic Island) : on y met rien, le décor commence après.

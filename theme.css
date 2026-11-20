@@ -140,6 +140,38 @@ button:disabled { opacity: .35; }
 .sc-holo.ping .disque { animation: holo-ping .8s ease-out; }
 @keyframes holo-ping { 0% { filter: brightness(1.9); box-shadow: 0 0 30px 10px rgba(var(--holo), .9), inset 0 0 40px rgba(var(--holo), .7); } 100% { filter: none; } }
 
+/* ---------- Ambiance du décor, différente pour chaque porte ---------- */
+.sc-ambiance { position: absolute; inset: 0; pointer-events: none; }
+#sc-camera.avance .sc-ambiance, body.camera .sc-ambiance { display: none; }
+.sc-ambiance .lueur { position: absolute; inset: 0; overflow: hidden; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; mix-blend-mode: screen; }
+.sc-ambiance .lueur i { position: absolute; top: 0; bottom: 0; left: 0; }
+/* Porte 1 : une vague d'énergie court de gauche à droite dans les lignes bleues */
+.amb0 .lueur i { width: calc(100% + 900px); left: -900px;
+  background: repeating-linear-gradient(90deg, transparent 0 640px, rgba(120, 230, 255, .35) 700px, rgba(230, 255, 255, 1) 760px, rgba(120, 230, 255, .35) 800px, transparent 860px 900px);
+  animation: flux 3.4s linear infinite; }
+@keyframes flux { to { transform: translateX(900px); } }
+/* Porte 2 : chenillard — des bandes de lumière sautent d'un néon à l'autre */
+.amb1 .lueur i { width: calc(100% + 360px); left: -360px;
+  background: repeating-linear-gradient(90deg, transparent 0 270px, rgba(230, 255, 160, .95) 270px 360px);
+  animation: chenillard 1.6s steps(4) infinite; }
+@keyframes chenillard { to { transform: translateX(360px); } }
+.rayures { position: absolute; overflow: hidden; }
+.rayures i { position: absolute; left: 0; right: 0; top: -51px; bottom: 0;
+  background: repeating-linear-gradient(135deg, #d4f20a 0 21px, #2b5a4f 21px 36px); animation: rayures 1.4s linear infinite; }
+@keyframes rayures { to { transform: translateY(51px); } }
+/* Porte 3 : néons d'alerte qui pulsent (vitesse = --pouls, réglée par l'alarme) */
+.amb2 .lueur i { right: 0; background: rgba(255, 225, 150, .9); animation: pouls var(--pouls, 2.6s) ease-in-out infinite; }
+@keyframes pouls { 0%, 100% { opacity: 0; } 50% { opacity: .75; } }
+.voyant-or { position: absolute; width: 15px; height: 15px; background: #241c2c; animation: voyant-or 1.6s steps(1) infinite; }
+@keyframes voyant-or { 0% { opacity: 0; } 40% { opacity: .92; } 70% { opacity: 0; } 85% { opacity: .92; } }
+.etincelles { position: absolute; width: 0; height: 0; }
+.etincelles b { position: absolute; left: -40px; top: -40px; width: 80px; height: 80px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 250, 210, 1), rgba(255, 190, 60, .6) 40%, transparent 70%); animation: eclair .35s ease-out forwards; }
+.etincelles i { position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; background: #fff6c0; box-shadow: 0 0 10px 4px #ffb020;
+  animation: etincelle .75s cubic-bezier(.2, .6, .4, 1) forwards; }
+@keyframes eclair { from { opacity: 1; transform: scale(.4); } to { opacity: 0; transform: scale(1.6); } }
+@keyframes etincelle { 0% { transform: translate(0, 0); opacity: 1; } 70% { opacity: 1; } 100% { transform: translate(var(--dx), calc(var(--dy) + 40px)); opacity: 0; } }
+
 /* La caméra avance : l'écran d'avant grossit et reste net, puis disparaît d'un coup à la fin ; la porte file vite à gauche */
 #sc-camera.avance > .sc-niveau > .sc-cadre { opacity: 0; transform-origin: 0 0; transition: opacity 0s calc(var(--zoom) - .1s), transform var(--zoom) cubic-bezier(.55, 0, .25, 1); }
 #sc-camera.avance > .sc-niveau > .sc-porte { opacity: 0; transition: opacity 0s calc(var(--zoom) - .1s), transform .5s cubic-bezier(.55, 0, .75, .4); }
