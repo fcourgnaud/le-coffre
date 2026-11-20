@@ -336,9 +336,40 @@ const Son = {
 
   // Bruits de jeu
   pas(g, pan) { const t = this.t(); this.ton(t, 0.14, { f: 180, f2: 90, g: g * 0.6, pan }); this.souffle(t, 0.1, { filtre: 'lowpass', f: 900, g: g * 0.5, pan }); },
-  reniflement(g) { const t = this.t(); for (let i = 0; i < 3; i++) this.souffle(t + i * 0.12, 0.08, { f: 2200, q: 2, g: g * 0.5, pan: 0.3 }); },
-  aboiement() { const t = this.t(); [0, 0.28].forEach((d) => { this.ton(t + d, 0.16, { f: 620, f2: 280, type: 'sawtooth', g: 0.35 }); this.souffle(t + d, 0.12, { f: 900, q: 1, g: 0.3 }); }); },
-  chienContent() { const t = this.t(); this.ton(t, 0.25, { f: 900, f2: 1300, type: 'triangle', g: 0.15 }); },
+  // Le drone : bourdonnement d'hélices (scie modulée) + souffle, et un bip radar une fois sur deux
+  rotor(t, dur, { f = 90, g = 0.2, pan = 0, vibre = 32 } = {}) {
+    const o = this.ctx.createOscillator(), v = this.ctx.createGain(), l = this.ctx.createOscillator(), lg = this.ctx.createGain(), fi = this.ctx.createBiquadFilter();
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(f, t); o.frequency.linearRampToValueAtTime(f * 1.06, t + dur);
+    fi.type = 'lowpass'; fi.frequency.value = 900;
+    l.frequency.value = vibre; lg.gain.value = g * 0.5; l.connect(lg); lg.connect(v.gain);
+    v.gain.setValueAtTime(0.0001, t); v.gain.linearRampToValueAtTime(g * 0.5, t + dur * 0.3); v.gain.linearRampToValueAtTime(0.0001, t + dur);
+    o.connect(fi); fi.connect(v); v.connect(this._pan(pan)); o.start(t); l.start(t); o.stop(t + dur + 0.05); l.stop(t + dur + 0.05);
+  },
+  drone(g, pan) {
+    const t = this.t();
+    this.rotor(t, 0.7, { f: 82 + 30 * g, g: g * 0.55, pan });
+    this.souffle(t, 0.6, { f: 1400, q: 0.7, g: g * 0.12, pan, att: 0.2 });
+    this._radar = !this._radar;
+    if (this._radar) { this.ton(t + 0.05, 0.16, { f: 1900, f2: 1500, g: g * 0.18, pan }); this.ton(t + 0.24, 0.1, { f: 1500, g: g * 0.07, pan }); }   // ping… écho
+  },
+  // Le cyber-dog : bruit de servomoteur + 3 petits bips de scan qui montent (il « renifle » en numérique), il vient de la gauche
+  reniflement(g) {
+    const t = this.t(), pan = -0.8 + g * 0.8;
+    this.ton(t, 0.16, { f: 260, f2: 420, type: 'sawtooth', g: g * 0.16, pan });
+    [1300, 1650, 2100].forEach((f, i) => { this.ton(t + 0.05 + i * 0.09, 0.05, { f, type: 'square', g: g * 0.22, pan }); this.souffle(t + 0.05 + i * 0.09, 0.04, { f: 3200, q: 4, g: g * 0.3, pan }); });
+  },
+  // Aboiement robot : deux « ouaf » synthétiques graves et grésillants, puis une petite sirène numérique
+  aboiement() {
+    const t = this.t();
+    [0, 0.3].forEach((d) => {
+      this.ton(t + d, 0.2, { f: 560, f2: 150, type: 'square', g: 0.28 });
+      this.ton(t + d, 0.2, { f: 590, f2: 165, type: 'sawtooth', g: 0.16 });
+      this.souffle(t + d, 0.14, { f: 1200, q: 2, g: 0.25 });
+    });
+    [880, 660, 880, 660].forEach((f, i) => this.ton(t + 0.66 + i * 0.07, 0.06, { f, type: 'square', g: 0.1 }));
+  },
+  // Os scanné : petit arpège 8 bits joyeux + servomoteur qui redescend
+  chienContent() { const t = this.t(); [880, 1175, 1568, 2093].forEach((f, i) => this.ton(t + i * 0.07, 0.1, { f, type: 'square', g: 0.16 })); this.ton(t + 0.3, 0.25, { f: 420, f2: 220, type: 'sawtooth', g: 0.12 }); },
   reussite() { const t = this.t(); this.tic(t); this.tic(t + 0.08); this.ton(t + 0.16, 0.3, { f: 200, f2: 120, type: 'triangle', g: 0.5 }); this.ton(t + 0.2, 0.4, { f: 880, type: 'triangle', g: 0.15 }); this.ton(t + 0.3, 0.5, { f: 1320, type: 'triangle', g: 0.12 }); },
   erreur() { const t = this.t(); this.ton(t, 0.45, { f: 160, type: 'square', g: 0.25 }); this.souffle(t, 0.3, { filtre: 'lowpass', f: 600, g: 0.3 }); },
   alarme(niveau) { const t = this.t(); const f = 600 + niveau * 140; this.ton(t, 0.18, { f, type: 'square', g: 0.2 }); this.ton(t + 0.24, 0.18, { f: f * 1.25, type: 'square', g: 0.2 }); },
@@ -714,7 +745,7 @@ function tic(dt) {
   }
   if (g.etat === 'approche') {
     const p = Math.min(1, (h - g.debut) / c.approche);
-    if (h >= g.prochainPas) { Son.pas(0.04 + 0.96 * Math.pow(p, 1.6), g.pan * (1 - p)); g.prochainPas = h + (0.8 - 0.38 * p); }
+    if (h >= g.prochainPas) { Son.drone(0.08 + 0.92 * Math.pow(p, 1.4), g.pan * (1 - p)); g.prochainPas = h + 0.5; }
     if (g.demiTour && h >= g.demiTour) { depart(0.04 + 0.96 * Math.pow(p, 1.6)); toastAide('Le drone fait demi-tour'); }
     else if (h >= g.arrivee) {
       if (J.planques) { message('Le drone passe sans vous voir…'); }
@@ -724,7 +755,7 @@ function tic(dt) {
   }
   if (g.etat === 'depart') {
     const p = Math.min(1, (h - (g.finDepart - 4)) / 4);
-    if (h >= g.prochainPas) { Son.pas(g.gainDepart * (1 - p) + 0.02, -g.pan * p); g.prochainPas = h + 0.45 + 0.4 * p; }
+    if (h >= g.prochainPas) { Son.drone(g.gainDepart * (1 - p) + 0.03, (J.drone.sens < 0 ? 1 : -1) * g.pan * p); g.prochainPas = h + 0.5; }
     if (h >= g.finDepart) {
       g.etat = 'repos'; g.prochain = h + hasard(c.attenteMin, c.attenteMax);
       if (J.planques) { J.planques = false; document.body.classList.remove('planques'); message('La voie est libre.'); J.prochaineSerrure = h + 0.6; }
