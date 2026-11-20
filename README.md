@@ -38,6 +38,7 @@ QR standard uniquement (pas de Micro QR).
 - Pour publier une version : changer `APP_VERSION` dans `version.js` **et** `VERSION` en haut de `sw.js` (même valeur).
 
 ### Historique
+- **3.23.1** — Écran entre deux coffres (bouton « On y va ») : numéro du coffre, nom et texte centrés, comme le grand écran en jeu.
 - **3.23.0** — Grand écran : infos du coffre, « Détection », jauge, « Plan » et boutons son et pause agrandis. L'aperçu caméra sort du bloc de texte et se pose dans le coin bas gauche de la vitre du décor, contre le cadre, avec le même coin coupé que la vitre (mesuré sur chaque porte : `CAMERA_ECRAN` dans scene.js) et le coin haut droit coupé pareil ; liseré couleur écran en haut, sur le biais et à droite.
 - **3.22.1** — Grand écran : boutons son et pause et cadre caméra en tailles fixes (Safari sur iPhone gérait mal les hauteurs en % et aspect-ratio : boutons invisibles) ; la vidéo n'est plus découpée elle-même, elle est placée dans un bloc découpé (coin haut droit coupé, liseré en haut, sur le biais et à droite).
 - **3.22.0** — Grand écran en jeu refait d'après la maquette : tout centré — « Coffre 1 / 3 » et nom du coffre, « Détection x % » au-dessus de la jauge, « Plan X » ; en bas, chrono au centre, son et pause à droite, aperçu caméra collé dans le coin bas gauche avec le coin haut droit coupé. Retirés de l'écran : la ligne de message, « Touchez le coffre pour réécouter », « ! ALERTE ! » et « SANS SCAN » (en mode sans scan, pas de cadre caméra). Le flash « ALERTE +1 » reste.

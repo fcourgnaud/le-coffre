@@ -442,6 +442,10 @@ body.camera #barre-test, body.camera #chien-zone { opacity: 0; transition: opaci
 .carte-entracte button.principal, .carte-fin button.principal { font-size: max(11px, calc(var(--u) * 6)); padding: calc(var(--u) * 4) 8px; background: var(--ecran);
   box-shadow: 0 calc(var(--u) * 1.2) 0 rgba(0,0,0,.55), 0 0 14px var(--ecran); }
 .carte-entracte button { margin-top: auto; }
+/* Écran entre deux coffres (« On y va ») : tout centré, comme le grand écran en jeu */
+.carte-entracte { align-items: center; text-align: center; }
+.carte-entracte .sur-titre { padding-left: .125em; }   /* compense la colonne vide de la police pixel */
+.carte-entracte button.principal { align-self: stretch; padding-left: calc(8px + .125em); }
 .carte-fin .boutons-fin { display: flex; gap: calc(var(--u) * 3); margin-top: auto; }
 .carte-fin .boutons-fin button { flex: 1; }
 
